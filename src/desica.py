@@ -202,8 +202,7 @@ class Desica(object):
                             'flux_to_leaf':dummy,
                             'flux_to_stem':dummy,
                             'ksoil2stem':dummy,
-                            'kstem2leaf':dummy,
-                            'cwd':dummy})
+                            'kstem2leaf':dummy})
 
         return out
 
