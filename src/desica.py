@@ -765,7 +765,18 @@ if __name__ == "__main__":
     g1 = 10.0      # sensitivity of stomatal conductance to the assimilation
                    # rate, kPa
     g0 = 0.0
-    F = Canopy(g1=g1, g0=g0)
+    theta_J = 0.85
+    Rd25 = 0.92
+    Q10 = 1.92
+    Vcmax25 = 50.0
+    Jmax25 = 100.
+    Eav = 58550.0
+    deltaSv = 629.26
+    Eaj = 29680.
+    deltaSj = 631.88
+    F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
+               Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
+               Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
     out = D.run_simulation(met)
