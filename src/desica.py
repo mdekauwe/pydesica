@@ -563,13 +563,13 @@ class Desica(object):
 
         Parameters:
         -----------
-        sw : object
-            volumetric soil water content (m3 m-3)
+        psi_soil : float
+            soil water potential, MPa
 
         Returns:
         --------
-        psi_swp : float
-            soil water potential, MPa
+        Ksoil : float
+            soil hydraulic conductance, mmol m-2 s-1 MPa-1
 
         References:
         -----------
@@ -760,8 +760,10 @@ if __name__ == "__main__":
                    # due to embolism, MPa
     psi_f = -2.    # reference potential for Tuzet model, MPa
     gmin = 18.     # minimum stomatal conductance, mmol m-2 s-1
-    Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
-    Cs = 120000.   # stem capacitance, mmol MPa-1
+    #Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
+    #Cs = 120000.   # stem capacitance, mmol MPa-1
+    Cl = 0.1*150000    # leaf capacitance, mmol MPa-1 (total plant)
+    Cs = 0.9*150000   # stem capacitance, mmol MPa-1
     g1 = 4.0       # sensitivity of stomatal conductance to the assimilation
                    # rate, kPa
     theta_sat = 0.5
