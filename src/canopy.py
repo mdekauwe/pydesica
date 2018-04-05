@@ -402,6 +402,10 @@ class FarquharC3(object):
         # Calculate conductance to CO2
         gsc = max(g0, g0 + gs_over_a * An)
 
+        # Extra step here; GS can be negative
+        if gsc < g0:
+            gsc = g0
+
         gsw = gsc * self.GSC_2_GSW
 
         return (An, gsc, gsw)
