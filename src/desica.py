@@ -51,6 +51,7 @@ import os
 from generate_met_data import generate_met_data
 from canopy import Canopy, FarquharC3
 from math import isclose
+from calc_pet import calc_net_radiation, calc_pet_energy
 
 class Desica(object):
 
@@ -101,6 +102,9 @@ class Desica(object):
         self.MOL_WATER_2_G_WATER = 18.02
         self.MMOL_2_MOL = 1E-03
         self.G_TO_KG = 1E-03
+        self.J_TO_MJ = 1.0E-6
+        self.PAR_2_SW = 1.0 / 2.3
+        self.SEC_2_HLFHR = 1800.
 
     def run_simulation(self, met=None):
         """
@@ -138,9 +142,18 @@ class Desica(object):
                 if plc > self.plc_dead:
                     break
 
+            sw_rad = met.par[i] * self.PAR_2_SW
+            rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
+            # W m-2 -> MJ m-2 s-1
+            rnet *= self.J_TO_MJ
+
+            out.pet[i] = calc_pet_energy(rnet)
+
         out["plc"] = self.calc_plc(out.kplant)
+
         # mmol s-1
         out["Eplant"] = self.AL * out.Eleaf
+
         out["t"] = np.arange(1, n+1)
 
         return (out)
@@ -202,7 +215,9 @@ class Desica(object):
                             'flux_to_leaf':dummy,
                             'flux_to_stem':dummy,
                             'ksoil2stem':dummy,
-                            'kstem2leaf':dummy})
+                            'kstem2leaf':dummy,
+                            'pet':dummy,
+                            'cwd':dummy})
 
         return out
 
@@ -490,8 +505,8 @@ class Desica(object):
         sw : float
             new volumetric soil water (m3 m-3)
         """
-        loss = water_loss * self.MMOL_2_MOL * self.G_TO_KG * \
-                self.MOL_WATER_2_G_WATER * self.timestep_sec
+        loss = water_loss * self.MMOL_2_MOL * self.MOL_WATER_2_G_WATER * \
+                self.G_TO_KG * self.timestep_sec
 
         delta_sw = precip - loss
         sw = min(self.theta_sat, \
@@ -676,6 +691,47 @@ def plot_transpiration(out):
     ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
 
+def plot_cwd(out):
+    SEC_2_HLFHR = 1800.
+    J_TO_MJ = 1.0E-6
+    PAR_2_SW = 1.0 / 2.3
+    SEC_2_HLFHR = 1800.
+    MMOL_2_MOL = 1E-03
+    G_TO_KG = 1E-03
+    MOL_WATER_2_G_WATER = 18.02
+    cwd = []
+    cum_sumx = 0.0
+    for i in range(0, len(out), 48):
+        pet = np.sum(out.pet[i:i+48] * SEC_2_HLFHR)
+        aet = np.sum(out["Eplant"][i:i+48] * MMOL_2_MOL * \
+                     MOL_WATER_2_G_WATER * G_TO_KG * \
+                     SEC_2_HLFHR)
+        cum_sumx += pet - aet
+        cwd.append(cum_sumx)
+    cb = ['#377eb8', '#ff7f00', '#4daf4a', \
+          '#f781bf', '#a65628', '#984ea3',\
+          '#999999', '#e41a1c', '#dede00']
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+    #ax1.set_xlim(48)
+    ax1.plot(cwd, ls="-", color=cb[1], label="Eplant")
+
+    ax1.set_ylabel("CWD (mm)")
+    ax1.legend(numpoints=1, loc="best")
+    fig.savefig("plots/cwd.pdf", bbox_inches='tight', pad_inches=0.1)
+
 
 if __name__ == "__main__":
 
@@ -702,3 +758,4 @@ if __name__ == "__main__":
     make_plot(out, time_step)
     plot_swp_sw(out)
     plot_transpiration(out)
+    plot_cwd(out)
