@@ -238,6 +238,7 @@ class Desica(object):
                                               out.flux_to_leaf[i],
                                               out.psi_stem[i-1])
 
+        # Flux from the root to the stem
         out.flux_to_stem[i] = self.calc_flux_to_stem(out.psi_stem[i],
                                                      out.psi_stem[i-1],
                                                      out.flux_to_leaf[i])
@@ -648,6 +649,33 @@ def plot_swp_sw(out):
     #ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/sw_swp.pdf", bbox_inches='tight', pad_inches=0.1)
 
+def plot_transpiration(out):
+
+    cb = ['#377eb8', '#ff7f00', '#4daf4a', \
+          '#f781bf', '#a65628', '#984ea3',\
+          '#999999', '#e41a1c', '#dede00']
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+    ax1.set_xlim(48)
+    #ax1.plot(out.flux_to_leaf, ls="-", color=cb[0], label="flux2leaf")
+    ax1.plot(out.Eplant, ls="-", color=cb[1], label="Eplant")
+
+    ax1.set_ylabel("Transpiration")
+    ax1.legend(numpoints=1, loc="best")
+    fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
+
 
 if __name__ == "__main__":
 
@@ -673,3 +701,4 @@ if __name__ == "__main__":
 
     make_plot(out, time_step)
     plot_swp_sw(out)
+    plot_transpiration(out)
