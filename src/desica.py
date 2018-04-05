@@ -622,7 +622,7 @@ def plot_time_to_mortality(out, timestep=15):
     ln1 = ax1.plot(ndays, out.psi_leaf, ls="-", color=cb[2], label="Leaf")
     ln2 = ax1.plot(ndays, out.psi_stem, ls="-", color=cb[1], label="Stem")
     ln3 = ax1.plot(ndays, out.psi_soil, ls="-", color=cb[0], label="Soil")
-    ln4 = ax2.plot(ndays, out.plc, ls='-', color=cb[7],
+    ln4 = ax2.plot(ndays, out.plc, ls='-', color=cb[6],
                    label="PLC")
 
     # added these three lines
@@ -654,7 +654,7 @@ def plot_swp_sw(out):
     ax1.plot(out.sw, out.psi_soil, "b.", label="Soil")
 
     ax1.set_xlabel("Volumetric soil water content (m$^{3}$ m$^{-3}$)")
-    ax1.set_ylabel("$\psi$$_{s}$ (MPa)")
+    ax1.set_ylabel("Soil water potential (MPa)")
     #ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/sw_swp.pdf", bbox_inches='tight', pad_inches=0.1)
 
