@@ -751,22 +751,25 @@ if __name__ == "__main__":
 
     time_step = 30
 
-    met = generate_met_data(Tmin=10, RH=30, ndays=200, time_step=time_step)
+    met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=700,
+                            time_step=time_step)
 
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 6.        # plant leaf area, m2
-    p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
+    p50 = -3.      # xylem pressure inducing 50% loss of hydraulic conductivity
                    # due to embolism, MPa
-    psi_f = -3.    # reference potential for Tuzet model, MPa
-    gmin = 10.     # minimum stomatal conductance, mmol m-2 s-1
+    psi_f = -2.    # reference potential for Tuzet model, MPa
+    gmin = 18.     # minimum stomatal conductance, mmol m-2 s-1
     Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
     Cs = 120000.   # stem capacitance, mmol MPa-1
     g1 = 4.0       # sensitivity of stomatal conductance to the assimilation
                    # rate, kPa
-
+    theta_sat = 0.5
+    sw0 = 0.4
     F = Canopy(g1=g1)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=3, stop_dead=True)
+               Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, theta_sat=theta_sat,
+               sw0=sw0, stop_dead=True)
     out = D.run_simulation(met)
 
     plot_time_to_mortality(out, time_step)
