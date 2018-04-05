@@ -382,7 +382,7 @@ class Desica(object):
         Parameters:
         -----------
         sw : object
-            volumetric soil water content (m3 m-3)
+            volumetric soil water content, m3 m-3
 
         Returns:
         -----------
