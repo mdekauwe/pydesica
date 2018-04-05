@@ -52,6 +52,7 @@ from generate_met_data import generate_met_data
 from canopy import Canopy, FarquharC3
 from math import isclose
 from calc_pet import calc_net_radiation, calc_pet_energy
+import constants as c
 
 class Desica(object):
 
@@ -97,14 +98,7 @@ class Desica(object):
         self.F = F
         self.rroot = rroot # mean radius of water absorbing roots, m
         self.timestep_sec = 60. * self.met_timestep / self.nruns
-        self.mol_2_mmol = 1000.0
-        self.M_2_MM = 1E03
-        self.MOL_WATER_2_G_WATER = 18.02
-        self.MMOL_2_MOL = 1E-03
-        self.G_TO_KG = 1E-03
-        self.J_TO_MJ = 1.0E-6
-        self.PAR_2_SW = 1.0 / 2.3
-        self.SEC_2_HLFHR = 1800.
+
 
     def run_simulation(self, met=None):
         """
@@ -142,10 +136,10 @@ class Desica(object):
                 if plc > self.plc_dead:
                     break
 
-            sw_rad = met.par[i] * self.PAR_2_SW
+            sw_rad = met.par[i] * c.PAR_2_SW
             rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
             # W m-2 -> MJ m-2 s-1
-            rnet *= self.J_TO_MJ
+            rnet *= c.J_TO_MJ
 
             out.pet[i] = calc_pet_energy(rnet)
 
@@ -233,7 +227,7 @@ class Desica(object):
                             met.vpd[i], mult)
 
         # Don't add gmin, instead use it as the lower boundary
-        gsw = max(self.gmin, self.mol_2_mmol * gsw)
+        gsw = max(self.gmin, c.mol_2_mmol * gsw)
 
         # Leaf transpiration assuming perfect coupling, mmol m-2 s-1
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
@@ -505,12 +499,12 @@ class Desica(object):
         sw : float
             new volumetric soil water (m3 m-3)
         """
-        loss = water_loss * self.MMOL_2_MOL * self.MOL_WATER_2_G_WATER * \
-                self.G_TO_KG * self.timestep_sec
+        loss = water_loss * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
+                c.G_TO_KG * self.timestep_sec
 
         delta_sw = precip - loss
         sw = min(self.theta_sat, \
-                 sw_prev + delta_sw / (self.soil_volume * self.M_2_MM))
+                 sw_prev + delta_sw / (self.soil_volume * c.M_2_MM))
 
         return sw
 
@@ -692,22 +686,16 @@ def plot_transpiration(out):
     fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
 
 def plot_cwd(out):
-    SEC_2_HLFHR = 1800.
-    J_TO_MJ = 1.0E-6
-    PAR_2_SW = 1.0 / 2.3
-    SEC_2_HLFHR = 1800.
-    MMOL_2_MOL = 1E-03
-    G_TO_KG = 1E-03
-    MOL_WATER_2_G_WATER = 18.02
     cwd = []
     cum_sumx = 0.0
     for i in range(0, len(out), 48):
-        pet = np.sum(out.pet[i:i+48] * SEC_2_HLFHR)
-        aet = np.sum(out["Eplant"][i:i+48] * MMOL_2_MOL * \
-                     MOL_WATER_2_G_WATER * G_TO_KG * \
-                     SEC_2_HLFHR)
+        pet = np.sum(out.pet[i:i+48] * c.SEC_2_HLFHR)
+        aet = np.sum(out["Eplant"][i:i+48] * c.MMOL_2_MOL * \
+                     c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
+                     c.SEC_2_HLFHR)
         cum_sumx += pet - aet
         cwd.append(cum_sumx)
+        
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
           '#999999', '#e41a1c', '#dede00']
