@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 import os
 
 def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
-                      sunrise=8, time_step=15, lag=0.5, ndays=40):
+                      sunrise=8, time_step=15, lag=0.5, ndays=40,
+                      co2_conc=400., air_press=101.0):
 
     if time_step == 15:
         nx = 96
@@ -29,9 +30,9 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     p = np.zeros(len(r))
     ta = np.zeros(len(r))
     ii = np.argwhere((r > (sunrise*60)) & (r <= (sunrise*60 + day_length*60)))
-
     relt = (r[ii] - sunrise * 60) / float(day_length * 60)
     p[ii] = generate_par(relt, PPFDmax)
+
     timeh = np.arange(0, (day_length - time_step / 60.) + 0.25, time_step / 60.)
     td = par_to_diurnal(timeh, Tmax, Tmin, day_length, lag)
     for i,ival in enumerate(ii):
@@ -41,7 +42,6 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     tdec = ta[max(ii)-1] + (Tmin - ta[max(ii)-1]) * \
             np.arange(1, nnight+1) / nnight
     after = np.arange((max(ii)), len(r))
-
     ta[after] = tdec[np.arange(len(after))]
     before = np.arange(min(ii)-1)
     ta[before] = tdec[np.arange(len(after), len(tdec))]
@@ -49,23 +49,14 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     vpd = rh_to_vpd(RH, ta)
 
     day = np.repeat(np.arange(1, ndays+1), nx)
-    new_size = int(len(day)/nx)
-
-    """
-    if time_step == 15:
-        new_size = int(len(day)/96)
-    elif time_step == 30:
-        new_size = int(len(day)/96*2)
-    """
+    new_size = int(len(day) / nx)
     vpd = np.tile(vpd, new_size)
     tair = np.tile(ta, new_size)
     par = np.tile(p, new_size)
     precip = np.zeros(len(par))
-    Ca = np.ones(len(par)) * 400.0 # umol mol-1
-    press = np.ones(len(par)) * 101.0 # kPa
+    Ca = np.ones(len(par)) * co2_conc # umol mol-1
+    press = np.ones(len(par)) * air_press # kPa
 
-    #print(len(day), len(par), len(tair), len(vpd), len(precip), len(press), len(Ca))
-    #sys.exit()
     met = pd.DataFrame({'day':day, 'par':par, 'tair':tair,
                         'vpd':vpd, 'precip':precip, 'press':press,
                         'Ca':Ca})

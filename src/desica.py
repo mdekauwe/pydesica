@@ -591,7 +591,7 @@ class Desica(object):
         return Ksoil
 
 
-def make_plot(out, timestep=15):
+def plot_time_to_mortality(out, timestep=15):
 
     if timestep == 15:
         ndays = out.t / 96
@@ -660,6 +660,17 @@ def plot_swp_sw(out):
 
 def plot_transpiration(out):
 
+    conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
+            c.SEC_2_HLFHR
+
+    trans = []
+    for i in range(0, len(out), 48):
+        vals = out["Eplant"][i:i+48]
+        vals = vals[~np.isnan(vals)]
+        if len(vals) > 0:
+            aet = np.sum(vals * conv)
+            trans.append(aet)
+
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
           '#999999', '#e41a1c', '#dede00']
@@ -677,12 +688,9 @@ def plot_transpiration(out):
     plt.rcParams['ytick.labelsize'] = 12
 
     ax1 = fig.add_subplot(111)
-    ax1.set_xlim(48)
-    #ax1.plot(out.flux_to_leaf, ls="-", color=cb[0], label="flux2leaf")
-    ax1.plot(out.Eplant, ls="-", color=cb[1], label="Eplant")
-
-    ax1.set_ylabel("Transpiration")
-    ax1.legend(numpoints=1, loc="best")
+    ax1.plot(trans, ls="-", color=cb[1])
+    ax1.set_ylabel("Transpiration (mm d$^{-1}$)")
+    ax1.set_xlabel("Time (days)")
     fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
 
 def plot_cwd(out, timestep=15):
@@ -734,6 +742,7 @@ def plot_cwd(out, timestep=15):
     ax1.plot(ndays, cwd, ls="-", color=cb[1], label="Eplant")
 
     ax1.set_ylabel("CWD (mm)")
+    ax1.set_xlabel("Time (days)")
     ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/cwd.pdf", bbox_inches='tight', pad_inches=0.1)
 
@@ -760,7 +769,7 @@ if __name__ == "__main__":
                Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=3, stop_dead=True)
     out = D.run_simulation(met)
 
-    make_plot(out, time_step)
+    plot_time_to_mortality(out, time_step)
     plot_swp_sw(out)
     plot_transpiration(out)
     plot_cwd(out, time_step)
