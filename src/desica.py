@@ -130,18 +130,17 @@ class Desica(object):
                 out.psi_stem[i-1] = out.psi_stem[i]
                 out = self.run_timestep(i, met, out)
 
+                sw_rad = met.par[i] * c.PAR_2_SW
+                rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
+                # W m-2 -> MJ m-2 s-1
+                rnet *= c.J_TO_MJ
+                out.pet[i] = calc_pet_energy(rnet)
+
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
                 if plc > self.plc_dead:
                     break
-
-            sw_rad = met.par[i] * c.PAR_2_SW
-            rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
-            # W m-2 -> MJ m-2 s-1
-            rnet *= c.J_TO_MJ
-
-            out.pet[i] = calc_pet_energy(rnet)
 
         out["plc"] = self.calc_plc(out.kplant)
 
@@ -178,6 +177,7 @@ class Desica(object):
         out.sw[0] = self.sw0
         out.psi_soil[0] = self.calc_swp(self.sw0)
         out.Eleaf[0] = 0.0
+        out.pet[0] = 0.0
 
         # soil hydraulic conductance (mmol m-2 s-1 MPa-1)
         out.ksoil[0] = self.calc_ksoil(out.psi_soil[0])
@@ -685,7 +685,15 @@ def plot_transpiration(out):
     ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
 
-def plot_cwd(out):
+def plot_cwd(out, timestep=15):
+
+    if timestep == 15:
+        ndays = out.t / 96
+    elif timestep == 30:
+        ndays = out.t / 96 * 2
+    elif timestep == 60:
+        ndays = out.t / 96 * 4
+    """
     cwd = []
     cum_sumx = 0.0
     for i in range(0, len(out), 48):
@@ -695,7 +703,16 @@ def plot_cwd(out):
                      c.SEC_2_HLFHR)
         cum_sumx += pet - aet
         cwd.append(cum_sumx)
-        
+    """
+    cwd = []
+    cum_sumx = 0.0
+    for i in range(len(out)):
+        pet = out.pet[i] * c.SEC_2_HLFHR
+        aet = out["Eplant"][i] * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
+                c.G_TO_KG * c.SEC_2_HLFHR
+        cum_sumx += pet - aet
+        cwd.append(cum_sumx)
+
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
           '#999999', '#e41a1c', '#dede00']
@@ -714,7 +731,7 @@ def plot_cwd(out):
 
     ax1 = fig.add_subplot(111)
     #ax1.set_xlim(48)
-    ax1.plot(cwd, ls="-", color=cb[1], label="Eplant")
+    ax1.plot(ndays, cwd, ls="-", color=cb[1], label="Eplant")
 
     ax1.set_ylabel("CWD (mm)")
     ax1.legend(numpoints=1, loc="best")
@@ -746,4 +763,4 @@ if __name__ == "__main__":
     make_plot(out, time_step)
     plot_swp_sw(out)
     plot_transpiration(out)
-    plot_cwd(out)
+    plot_cwd(out, time_step)
