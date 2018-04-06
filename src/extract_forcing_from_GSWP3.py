@@ -10,29 +10,30 @@ __author__ = "Martin De Kauwe"
 __version__ = "1.0 (06.04.2018)"
 __email__ = "mdekauwe@gmail.com"
 
+import os
 import sys
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 
-def main():
+def main(met_dir, odir):
     k_2_c = 273.15
     sw_2_par = 2.3
 
-    fname = "GSWP3.BC.Tair.3hrMap.2006.nc"
+    fname = os.path.join(met_dir, "GSWP3.BC.Tair.3hrMap.2006.nc")
     tair_vals = open_file(fname, "Tair")
 
-    fname = "GSWP3.BC.Qair.3hrMap.2006.nc"
+    fname = os.path.join(met_dir, "GSWP3.BC.Qair.3hrMap.2006.nc")
     qair_vals = open_file(fname, "Qair")
 
-    fname = "GSWP3.BC.SWdown.3hrMap.2006.nc"
+    fname = os.path.join(met_dir, "GSWP3.BC.SWdown.3hrMap.2006.nc")
     sw_vals = open_file(fname, "SWdown")
 
-    fname = "GSWP3.BC.Rainf.3hrMap.2006.nc"
+    fname = os.path.join(met_dir, "GSWP3.BC.Rainf.3hrMap.2006.nc")
     rain_vals = open_file(fname, "Rainf")
 
     yr = fname.split(".")[4]
-    f = open("GSWP3_met_%s.csv" % (yr), 'w')
+    f = open(os.path.join(odir, "GSWP3_met_%s.csv" % (yr)), 'w')
     print("doy,tmin,tmax,rain,par,rh", file=f)
 
     #random location
@@ -89,4 +90,9 @@ def qair_to_rh(qair, tair, press=1013.25):
 
 if __name__ == "__main__":
 
-    main()
+    met_dir = "/Users/mdekauwe/Desktop"
+    odir = "gswp3_met"
+    if not os.path.exists(odir):
+        os.makedirs(odir)
+
+    main(met_dir, odir)
