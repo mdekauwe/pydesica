@@ -599,7 +599,7 @@ class Desica(object):
         return Ksoil
 
 
-def plot_time_to_mortality(out, timestep=15):
+def plot_time_to_mortality(odir, out, timestep=15):
 
     if timestep == 15:
         ndays = out.t / 96
@@ -641,9 +641,10 @@ def plot_time_to_mortality(out, timestep=15):
     ax2.set_ylabel(r'PLC (%)')
     ax1.set_xlabel("Time (days)")
     ax1.set_ylabel("Water potential (MPa)")
-    fig.savefig("plots/time_to_mortality.pdf", bbox_inches='tight', pad_inches=0.1)
+    fig.savefig("%s/time_to_mortality.pdf" % (odir), bbox_inches='tight',
+                pad_inches=0.1)
 
-def plot_swp_sw(out):
+def plot_swp_sw(odir, out):
 
     fig = plt.figure(figsize=(9,6))
     fig.subplots_adjust(hspace=0.3)
@@ -664,9 +665,9 @@ def plot_swp_sw(out):
     ax1.set_xlabel("Volumetric soil water content (m$^{3}$ m$^{-3}$)")
     ax1.set_ylabel("Soil water potential (MPa)")
     #ax1.legend(numpoints=1, loc="best")
-    fig.savefig("plots/sw_swp.pdf", bbox_inches='tight', pad_inches=0.1)
+    fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
 
-def plot_transpiration(out):
+def plot_transpiration(odir, out):
 
     conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
             c.SEC_2_HLFHR
@@ -699,9 +700,10 @@ def plot_transpiration(out):
     ax1.plot(trans, ls="-", color=cb[1])
     ax1.set_ylabel("Transpiration (mm d$^{-1}$)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("plots/transpiration.pdf", bbox_inches='tight', pad_inches=0.1)
+    fig.savefig("%s/transpiration.pdf" % (odir), bbox_inches='tight',
+                pad_inches=0.1)
 
-def plot_cwd(out, timestep=15):
+def plot_cwd(odir, out, timestep=15):
 
     if timestep == 15:
         ndays = out.t / 96
@@ -751,9 +753,9 @@ def plot_cwd(out, timestep=15):
 
     ax1.set_ylabel("CWD (mm)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("plots/cwd.pdf", bbox_inches='tight', pad_inches=0.1)
+    fig.savefig("%s/cwd.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
 
-def plot_gmin_sensitvity(gmin, death):
+def plot_gmin_sensitvity(odir, gmin, death):
 
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
@@ -775,7 +777,7 @@ def plot_gmin_sensitvity(gmin, death):
     ax1.plot(gmin, death, ls="-", color=cb[1])
     ax1.set_ylabel("Time to mortality (days)")
     ax1.set_xlabel("g$_{min}$ (mmol m$^{-2}$ s$^{-1}$)")
-    fig.savefig("plots/gmin_sensitivity.pdf", bbox_inches='tight',
+    fig.savefig("%s/gmin_sensitivity.pdf" % (odir), bbox_inches='tight',
                 pad_inches=0.1)
 
 if __name__ == "__main__":
@@ -793,7 +795,7 @@ if __name__ == "__main__":
     gmin = 10.     # minimum stomatal conductance, mmol m-2 s-1
     Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
     Cs = 120000.   # stem capacitance, mmol MPa-1
-    g1 = 10.0      # sensitivity of stomatal conductance to the assimilation
+    g1 = 4.0       # sensitivity of stomatal conductance to the assimilation
                    # rate, kPa
     g0 = 0.0
     theta_J = 0.85
@@ -812,16 +814,24 @@ if __name__ == "__main__":
                Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
     out, day_of_death = D.run_simulation(met)
 
-    plot_time_to_mortality(out, time_step)
-    plot_swp_sw(out)
-    plot_transpiration(out)
-    plot_cwd(out, time_step)
+    odir = "plots"
+    if not os.path.exists(odir):
+        os.makedirs(odir)
 
-    death = []
-    gminx = np.linspace(10, 50, 10)
-    for gmin in gminx:
-        D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-                   Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
-        out, day_of_death = D.run_simulation(met)
-        death.append(day_of_death)
-    plot_gmin_sensitvity(gminx, death)
+    plot_time_to_mortality(odir, out, time_step)
+    plot_swp_sw(odir, out)
+    plot_transpiration(odir, out)
+    plot_cwd(odir, out, time_step)
+
+    # Examine how time to death changes as gmin is increased?
+    do_sensitivity = False
+    if do_sensitivity:
+        death = []
+        gminx = np.linspace(10, 50, 10)
+        for gmin in gminx:
+            D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
+                       gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2,
+                       stop_dead=True)
+            out, day_of_death = D.run_simulation(met)
+            death.append(day_of_death)
+        plot_gmin_sensitvity(odir, gminx, death)
