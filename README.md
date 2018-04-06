@@ -11,3 +11,7 @@ When soil water uptake does not meet demand by the plant (which includes an impo
 3. Xu X, Medvigy D, Powers JS, Becknell JM, Guan K (2016) Diversity in plant hydraulic traits explains seasonal and inter-annual variations of vegetation dynamics in seasonally dry tropical forests. New Phytologist, 212, 80–95.
 
 ## Running the model
+
+```bash
+$ python src/desica.py
+```
