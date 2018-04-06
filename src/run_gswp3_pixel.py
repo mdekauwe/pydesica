@@ -68,7 +68,7 @@ if __name__ == "__main__":
     deltaSv = 629.26
     Eaj = 29680.
     deltaSj = 631.88
-    soil_depth = 0.5
+    soil_depth = 2.0
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
