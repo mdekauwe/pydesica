@@ -18,7 +18,8 @@ import os
 
 def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
                       sunrise=8, time_step=15, lag=0.5, ndays=40,
-                      co2_conc=400., air_press=101.0, precip=None):
+                      co2_conc=400., air_press=101.0, precip=None,
+                      keep_dry=False):
 
     day_2_sec = 1.0 / (60. * 60. * 24.)
     hlhr_2_sec = 1.0 / 1800.0
@@ -57,17 +58,21 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     vpd = np.tile(vpd, new_size)
     tair = np.tile(ta, new_size)
     par = np.tile(p, new_size)
-    if precip is None:
+
+    if keep_dry:
         precip = np.zeros(len(par))
     else:
-        if precip > 0.0:
-            #print(precip)
-            precipx = np.ones(len(par)) * precip
-            precip = precipx / nx * hlhr_2_sec
-            #print(precip)
-            #print(np.sum(precip*1800.))
-        else:
+        if precip is None:
             precip = np.zeros(len(par))
+        else:
+            if precip > 0.0:
+                #print(precip)
+                precipx = np.ones(len(par)) * precip
+                precip = precipx / nx * hlhr_2_sec
+                #print(precip)
+                #print(np.sum(precip*1800.))
+            else:
+                precip = np.zeros(len(par))
 
     Ca = np.ones(len(par)) * co2_conc # umol mol-1
     press = np.ones(len(par)) * air_press # kPa
