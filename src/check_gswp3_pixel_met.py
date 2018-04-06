@@ -30,6 +30,13 @@ if __name__ == "__main__":
     fname = "gswp3_met/GSWP3_met_2006.csv"
     df = pd.read_csv(fname)
 
+    #plt.plot(df.tmax)
+    #plt.plot(df.tmin)
+    #plt.plot(df.rain)
+    plt.plot(df.rh*100)
+    plt.show()
+    sys.exit()
+
     met = generate_met_data(Tmin=df.tmin[0], Tmax=df.tmax[0],
                             RH=df.rh[0]*100., PPFDmax=df.par[0],
                             precip=df.rain[0], ndays=1, time_step=time_step,
