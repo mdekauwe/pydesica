@@ -52,7 +52,7 @@ def main(met_dir, odir):
         # Get RH
         qair = qair_vals[i:i+8,row,col].values
         tair = tair_vals[i:i+8,row,col].values - k_2_c
-        rh = np.max(qair_to_rh(qair, tair))
+        rh = np.mean(qair_to_rh(qair, tair))
 
         print("%d,%f,%f,%f,%f,%f" % (doy, tmin, tmax, rain, par, rh), file=f)
         doy += 1
