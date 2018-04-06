@@ -32,9 +32,14 @@ if __name__ == "__main__":
 
     fname = "gswp3_met/GSWP3_met_2006.csv"
     df = pd.read_csv(fname)
-    met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=1,
-                            time_step=time_step)
+    for i in range(len(df)):
 
+        met = generate_met_data(Tmin=df.tmin[i], Tmax=df.tmax[i],
+                                RH=df.rh[i]*100., PPFDmax=df.par[i],
+                                precip=df.rain[i], ndays=1,
+                                time_step=time_step)
+        print(met)
+        sys.exit()
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 6.        # plant leaf area, m2
     p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
