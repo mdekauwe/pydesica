@@ -115,6 +115,7 @@ class Desica(object):
             output dataframe containing calculations for each timestep
 
         """
+        day_of_death = -999.
         (n, out) = self.initialise_model(met)
 
         for i in range(1, n):
@@ -140,6 +141,12 @@ class Desica(object):
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
                 if plc > self.plc_dead:
+                    if self.met_timestep == 15:
+                        day_of_death = i / 96.
+                    elif self.met_timestep == 30:
+                        day_of_death = i / 48.
+                    elif self.met_timestep == 60:
+                        day_of_death = i / 24.
                     break
 
         out["plc"] = self.calc_plc(out.kplant)
@@ -149,7 +156,7 @@ class Desica(object):
 
         out["t"] = np.arange(1, n+1)
 
-        return (out)
+        return (out, day_of_death)
 
     def initialise_model(self, met):
         """
@@ -232,6 +239,7 @@ class Desica(object):
         # Leaf transpiration assuming perfect coupling, mmol m-2 s-1
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
 
+        # Calculate the leaf water potential.
         out.psi_leaf[i] = self.calc_lwp(out.kstem2leaf[i], out.psi_stem[i-1],
                                         out.psi_leaf[i-1], out.Eleaf[i])
 
@@ -247,7 +255,7 @@ class Desica(object):
                                               out.flux_to_leaf[i],
                                               out.psi_stem[i-1])
 
-        # Flux from the root to the stem
+        # Flux from the soil to the stem = change in storage + flux_to_leaf
         out.flux_to_stem[i] = self.calc_flux_to_stem(out.psi_stem[i],
                                                      out.psi_stem[i-1],
                                                      out.flux_to_leaf[i])
@@ -739,13 +747,36 @@ def plot_cwd(out, timestep=15):
 
     ax1 = fig.add_subplot(111)
     #ax1.set_xlim(48)
-    ax1.plot(ndays, cwd, ls="-", color=cb[1], label="Eplant")
+    ax1.plot(ndays, cwd, ls="-", color=cb[1])
 
     ax1.set_ylabel("CWD (mm)")
     ax1.set_xlabel("Time (days)")
-    ax1.legend(numpoints=1, loc="best")
     fig.savefig("plots/cwd.pdf", bbox_inches='tight', pad_inches=0.1)
 
+def plot_gmin_sensitvity(gmin, death):
+
+    cb = ['#377eb8', '#ff7f00', '#4daf4a', \
+          '#f781bf', '#a65628', '#984ea3',\
+          '#999999', '#e41a1c', '#dede00']
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+    ax1.plot(gmin, death, ls="-", color=cb[1])
+    ax1.set_ylabel("Time to mortality (days)")
+    ax1.set_xlabel("g$_{min}$ (mmol m$^{-2}$ s$^{-1}$)")
+    fig.savefig("plots/gmin_sensitivity.pdf", bbox_inches='tight',
+                pad_inches=0.1)
 
 if __name__ == "__main__":
 
@@ -779,9 +810,18 @@ if __name__ == "__main__":
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
-    out = D.run_simulation(met)
+    out, day_of_death = D.run_simulation(met)
 
     plot_time_to_mortality(out, time_step)
     plot_swp_sw(out)
     plot_transpiration(out)
     plot_cwd(out, time_step)
+
+    death = []
+    gminx = np.linspace(10, 50, 10)
+    for gmin in gminx:
+        D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
+                   Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
+        out, day_of_death = D.run_simulation(met)
+        death.append(day_of_death)
+    plot_gmin_sensitvity(gminx, death)
