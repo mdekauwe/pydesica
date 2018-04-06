@@ -33,10 +33,10 @@ References:
   curves. Journal of Plant Hydraulics, 4, e002.
 * Tuzet et al. (2003) A coupled model of stomatal conductance,
   photosynthesis and transpiration. Plant, Cell and Environment 26,
-  1097–1116.
+  10971116.
 * Xu X, Medvigy D, Powers JS, Becknell JM, Guan K (2016) Diversity in plant
   hydraulic traits explains seasonal and inter-annual variations of vegetation
-  dynamics in seasonally dry tropical forests. New Phytologist, 212, 80–95.
+  dynamics in seasonally dry tropical forests. New Phytologist, 212, 8095.
 
 That's all folks.
 """
@@ -371,7 +371,7 @@ class Desica(object):
 
         References:
         -----------
-        * Xu et al. (2016) New Phytol, 212: 80–95. doi:10.1111/nph.14009; see
+        * Xu et al. (2016) New Phytol, 212: 8095. doi:10.1111/nph.14009; see
           appendix and code. Can write the dynamic equation as:
           dpsi_leaf_dt = b + a*psi_leaf
         """
@@ -400,7 +400,7 @@ class Desica(object):
 
         References:
         -----------
-        * Duursma et al. (2008) Tree Physiology 28, 265–276, eqn 10
+        * Duursma et al. (2008) Tree Physiology 28, 265276, eqn 10
         """
         return self.psi_e * (sw / self.theta_sat)**-self.b
 
@@ -477,7 +477,7 @@ class Desica(object):
 
         References:
         -----------
-        * Xu et al. (2016) New Phytol, 212: 80–95. doi:10.1111/nph.14009; see
+        * Xu et al. (2016) New Phytol, 212: 8095. doi:10.1111/nph.14009; see
           appendix and code
         """
 
@@ -557,7 +557,7 @@ class Desica(object):
         ----------
         * Tuzet et al. (2003) A coupled model of stomatal conductance,
           photosynthesis and transpiration. Plant, Cell and Environment 26,
-          1097–1116
+          10971116
 
         """
         num = 1.0 + np.exp(self.sf * self.psi_f)
@@ -582,7 +582,7 @@ class Desica(object):
 
         References:
         -----------
-        * Duursma et al. (2008) Tree Physiology 28, 265–276, eqn 9, 8, 7
+        * Duursma et al. (2008) Tree Physiology 28, 265276, eqn 9, 8, 7
         """
 
         # A simple equation relating Ks to psi_s is given by (Campbell 1974)

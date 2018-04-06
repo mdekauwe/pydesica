@@ -288,7 +288,7 @@ class FarquharC3(object):
         """
         self.check_supplied_args(Jmax, Vcmax, Rd, Jmax25, Vcmax25, Rd25)
 
-        # calculate temp dependancies of Michaelis–Menten constants for CO2, O2
+        # calculate temp dependancies of MichaelisMenten constants for CO2, O2
         Km = self.calc_michaelis_menten_constants(Tleaf)
 
         # Effect of temp on CO2 compensation point
