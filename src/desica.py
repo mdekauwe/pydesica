@@ -136,11 +136,11 @@ class Desica(object):
                 out2.psi_stem[i-1] = out.psi_stem[i]
                 out = self.run_timestep(i, met, out2)
 
-                sw_rad = met.par[i] * c.PAR_2_SW
-                rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
-                # W m-2 -> MJ m-2 s-1
-                rnet *= c.J_TO_MJ
-                out.pet[i] = calc_pet_energy(rnet)
+            sw_rad = met.par[i] * c.PAR_2_SW
+            rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
+            # W m-2 -> MJ m-2 s-1
+            rnet *= c.J_TO_MJ
+            out.pet[i] = calc_pet_energy(rnet)
 
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
