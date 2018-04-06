@@ -510,8 +510,7 @@ class Desica(object):
         """
         loss = water_loss * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
                 c.G_TO_KG * self.timestep_sec
-
-        delta_sw = precip - loss
+        delta_sw = (precip * self.timestep_sec) - loss
         sw = min(self.theta_sat, \
                  sw_prev + delta_sw / (self.soil_volume * c.M_2_MM))
 
@@ -781,10 +780,43 @@ def plot_gmin_sensitvity(odir, gmin, death):
     fig.savefig("%s/gmin_sensitivity.pdf" % (odir), bbox_inches='tight',
                 pad_inches=0.1)
 
+def plot_sw(odir, out, time_step=30):
+
+    if time_step == 15:
+        ndays = out.t / 96
+    elif time_step == 30:
+        ndays = out.t / 48.
+    elif time_step == 60:
+        ndays = out.t / 24.
+
+    cb = ['#377eb8', '#ff7f00', '#4daf4a', \
+          '#f781bf', '#a65628', '#984ea3',\
+          '#999999', '#e41a1c', '#dede00']
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+    ax1.plot(ndays, out.sw, ls="-", color=cb[1])
+    ax1.set_ylabel("SWC (m$^{3}$ m$^{-3}$)")
+    ax1.set_xlabel("Time (days)")
+    fig.savefig("%s/sw.pdf" % (odir), bbox_inches='tight',
+                pad_inches=0.1)
+
+
 if __name__ == "__main__":
 
     time_step = 30
-    
+
     # Examine how time to death changes as gmin is increased?
     do_sensitivity = False
 
@@ -826,7 +858,7 @@ if __name__ == "__main__":
     plot_swp_sw(odir, out)
     plot_transpiration(odir, out)
     plot_cwd(odir, out, time_step)
-
+    plot_sw(odir, out, time_step)
 
     if do_sensitivity:
         death = []
