@@ -32,8 +32,8 @@ if __name__ == "__main__":
 
     #plt.plot(df.tmax)
     #plt.plot(df.tmin)
-    #plt.plot(df.rain)
-    plt.plot(df.rh)
+    plt.plot(df.rain)
+    #plt.plot(df.rh)
     plt.show()
     sys.exit()
 

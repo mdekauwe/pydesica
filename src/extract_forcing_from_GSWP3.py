@@ -19,8 +19,7 @@ import matplotlib.pyplot as plt
 def main(met_dir, odir):
     k_2_c = 273.15
     sw_2_par = 2.3
-    sec_2_day = 60. * 60. * 24.
-    day_2_sec = 1.0 / sec_2_day
+    sec_2_3hr = 60. * 60. * 3.
     fname = os.path.join(met_dir, "GSWP3.BC.Tair.3hrMap.2006.nc")
     tair_vals = open_file(fname, "Tair")
 
@@ -45,7 +44,7 @@ def main(met_dir, odir):
 
         tmax = np.max(tair_vals[i:i+8,row,col].values) - k_2_c
         tmin = np.min(tair_vals[i:i+8,row,col].values) - k_2_c
-        rain = np.sum(rain_vals[i:i+8,row,col].values) * sec_2_day
+        rain = np.sum(rain_vals[i:i+8,row,col].values * sec_2_3hr)
         par = np.max(sw_vals[i:i+8,row,col].values) * sw_2_par
         qair = np.max(qair_vals[i:i+8,row,col].values)
 
