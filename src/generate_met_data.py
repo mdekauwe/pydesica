@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Generate some fake met data for testing. Replication of Remko's R module

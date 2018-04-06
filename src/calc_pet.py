@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Calculate potential evapotranspiration
@@ -52,6 +53,6 @@ if __name__ == "__main__":
     rnet = calc_net_radiation(sw_rad, met.tair, albedo=0.15)
     # W m-2 -> MJ m-2 s-1
     rnet *= J_TO_MJ
-    
+
     pet = calc_pet_energy(rnet)
     print(np.sum(pet * SEC_2_HLFHR))

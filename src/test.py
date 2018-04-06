@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Test script, with constant met drivers we get steady state after some time, in

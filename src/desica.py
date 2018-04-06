@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Desica model: simple plant hydraulics model with mortality.
@@ -783,6 +784,9 @@ def plot_gmin_sensitvity(odir, gmin, death):
 if __name__ == "__main__":
 
     time_step = 30
+    
+    # Examine how time to death changes as gmin is increased?
+    do_sensitivity = False
 
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=700,
                             time_step=time_step)
@@ -823,8 +827,7 @@ if __name__ == "__main__":
     plot_transpiration(odir, out)
     plot_cwd(odir, out, time_step)
 
-    # Examine how time to death changes as gmin is increased?
-    do_sensitivity = True
+
     if do_sensitivity:
         death = []
         gminx = np.linspace(10, 50, 10)

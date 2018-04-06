@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Canopy wrapper to calculate photosynthesis and stomatal conductance.
