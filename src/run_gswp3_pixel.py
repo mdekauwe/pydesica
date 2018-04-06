@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
         met_df.day = i+1
         met = met.append(met_df)
+    met = met.reset_index(drop=True)
 
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 6.        # plant leaf area, m2
