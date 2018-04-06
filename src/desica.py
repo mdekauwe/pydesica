@@ -602,11 +602,11 @@ class Desica(object):
 def plot_time_to_mortality(odir, out, timestep=15):
 
     if timestep == 15:
-        ndays = out.t / 96
+        ndays = out.t / 96.
     elif timestep == 30:
-        ndays = out.t / 96 * 2
+        ndays = out.t / 48.
     elif timestep == 60:
-        ndays = out.t / 96 * 4
+        ndays = out.t / 24.
 
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
@@ -708,9 +708,9 @@ def plot_cwd(odir, out, timestep=15):
     if timestep == 15:
         ndays = out.t / 96
     elif timestep == 30:
-        ndays = out.t / 96 * 2
+        ndays = out.t / 48.
     elif timestep == 60:
-        ndays = out.t / 96 * 4
+        ndays = out.t / 24.
     """
     cwd = []
     cum_sumx = 0.0
@@ -824,7 +824,7 @@ if __name__ == "__main__":
     plot_cwd(odir, out, time_step)
 
     # Examine how time to death changes as gmin is increased?
-    do_sensitivity = False
+    do_sensitivity = True
     if do_sensitivity:
         death = []
         gminx = np.linspace(10, 50, 10)
