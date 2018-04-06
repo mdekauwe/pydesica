@@ -32,10 +32,10 @@ if __name__ == "__main__":
 
     #plt.plot(df.tmax)
     #plt.plot(df.tmin)
-    plt.plot(df.rain)
+    #plt.plot(df.rain)
     #plt.plot(df.rh)
-    plt.show()
-    sys.exit()
+    #plt.show()
+    #sys.exit()
 
     met = generate_met_data(Tmin=df.tmin[0], Tmax=df.tmax[0],
                             RH=df.rh[0]*100., PPFDmax=df.par[0],
@@ -61,6 +61,6 @@ if __name__ == "__main__":
     """
     #plt.plot(met.tair)
     #plt.plot(met.par)
-    plt.plot(met.vpd)
-    #plt.plot(met.precip)
+    #plt.plot(met.vpd)
+    plt.plot(met.precip)
     plt.show()

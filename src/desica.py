@@ -515,6 +515,7 @@ class Desica(object):
         loss = water_loss * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
                 c.G_TO_KG * self.timestep_sec
         delta_sw = (precip * self.timestep_sec) - loss
+
         sw = min(self.theta_sat, \
                  sw_prev + delta_sw / (self.soil_volume * c.M_2_MM))
 
