@@ -62,12 +62,12 @@ class Desica(object):
                  Cl=10000., kp_sat=3., p50=-4., psi_f=-2., s50=30., gmin=10,
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
                  psi_e=-0.8*1E-03, Ksat=20., Lv=10000., F=None, keep_wet=False,
-                 stop_dead=True, nruns=1, rroot=1E-06):
+                 stop_dead=True, run_twice=True, rroot=1E-06):
 
+        self.run_twice = run_twice
         self.keep_wet = keep_wet
         self.stop_dead = stop_dead
         self.plc_dead = plc_dead
-        self.nruns = nruns
         self.soil_depth = soil_depth # depth of soil bucket, m
         self.ground_area = ground_area # m
         self.soil_volume = self.ground_area * self.soil_depth # m3
@@ -98,7 +98,10 @@ class Desica(object):
         self.Lv = Lv # root length density, m m-3
         self.F = F
         self.rroot = rroot # mean radius of water absorbing roots, m
-        self.timestep_sec = 60. * self.met_timestep / self.nruns
+        if self.run_twice:
+            self.timestep_sec = 60. * self.met_timestep / 2
+        else:
+            self.timestep_sec = 60. * self.met_timeste
 
 
     def run_simulation(self, met=None):
@@ -127,10 +130,11 @@ class Desica(object):
             # keeping everything else the same, this is so we can solve
             # psi_leaf and psi_stem without the need for a numerical integrator.
             # This approach works well for short timesteps (10-15 mins)
-            for j in range(1, self.nruns):
-                out.psi_leaf[i-1] = out.psi_leaf[i]
-                out.psi_stem[i-1] = out.psi_stem[i]
-                out = self.run_timestep(i, met, out)
+            if self.run_twice:
+                out2 = out.copy()
+                out2.psi_leaf[i-1] = out.psi_leaf[i]
+                out2.psi_stem[i-1] = out.psi_stem[i]
+                out = self.run_timestep(i, met, out2)
 
                 sw_rad = met.par[i] * c.PAR_2_SW
                 rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
@@ -847,7 +851,7 @@ if __name__ == "__main__":
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, stop_dead=True)
+               Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
@@ -865,7 +869,7 @@ if __name__ == "__main__":
         gminx = np.linspace(10, 50, 10)
         for gmin in gminx:
             D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
-                       gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2,
+                       gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True,
                        stop_dead=True)
             out, day_of_death = D.run_simulation(met)
             death.append(day_of_death)
