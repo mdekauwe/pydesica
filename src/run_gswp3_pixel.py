@@ -72,7 +72,7 @@ if __name__ == "__main__":
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, nruns=2, soil_depth=soil_depth,
+               Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, soil_depth=soil_depth,
                stop_dead=True)
     out, day_of_death = D.run_simulation(met)
 
