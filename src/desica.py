@@ -122,6 +122,7 @@ class Desica(object):
         day_of_death = -999.
         (n, out) = self.initialise_model(met)
 
+        hod = 0
         for i in range(1, n):
 
             out = self.run_timestep(i, met, out)
@@ -137,7 +138,10 @@ class Desica(object):
                 out = self.run_timestep(i, met, out2)
 
             sw_rad = met.par[i] * c.PAR_2_SW
-            rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
+            #rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
+            rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i], sw_rad,
+                                      met.tair[i], met.ea[i])
+
             # W m-2 -> MJ m-2 s-1
             rnet *= c.J_TO_MJ
             out.pet[i] = calc_pet_energy(rnet)
@@ -154,6 +158,9 @@ class Desica(object):
                         day_of_death = i / 24.
                     break
 
+            hod += 1
+            if hod > 47:
+                hod = 0
         out["plc"] = self.calc_plc(out.kplant)
 
         # mmol s-1
@@ -824,9 +831,10 @@ if __name__ == "__main__":
 
     # Examine how time to death changes as gmin is increased?
     do_sensitivity = False
-
+    lat = -35.76
+    lon = 148.0
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=700,
-                            time_step=time_step)
+                            lat=lat, lon=lon, time_step=time_step)
 
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 6.        # plant leaf area, m2
