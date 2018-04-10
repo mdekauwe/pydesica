@@ -17,6 +17,29 @@ import matplotlib.pyplot as plt
 from generate_met_data import generate_met_data
 import constants as c
 
+def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=2.0, press=100.0*c.KPA_2_PA):
+    # Not right, argh
+    # Convert from mm s-1 to mol m-2 s-1 *
+    cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN));
+    rs = 70.0 # s m-1
+    gsv = (1.0 / rs) *  cmolar
+
+    ga = canopy_boundary_layer_conduct(canht, wind, press, tair)
+
+    # Total leaf conductance to water vapour
+    gv = 1.0 / (1.0 / gsv + 1.0 / ga)
+
+    lambdax = calc_latent_heat_of_vapourisation(tair)
+    gamma = calc_pyschrometric_constant(press, lambdax)
+    slope = calc_slope_of_sat_vapour_pressure_curve(tair)
+
+    arg1 = slope * rnet + vpd * ga * c.CP * c.MASS_AIR
+    arg2 = slope + gamma * ga / gv
+    LE = arg1 / arg2 # W m-2
+    evap = LE / lambdax # mol H20 m-2 s-1
+
+    return evap
+
 def calc_pet_energy(rnet, G=0.0):
 
     # Energy-only PET (mm 30 s-1), based on Milly et al. 2016
@@ -68,6 +91,50 @@ def _calc_net_radiation(sw_rad, tair, albedo=0.23):
     net_rad = np.maximum(0.0, (1.0 - albedo) * sw_rad - net_lw)
 
     return net_rad
+
+def canopy_boundary_layer_conduct(canht, wind, press, tair):
+    """  Canopy boundary layer conductance, ga (from Jones 1992 p 68)
+
+    Parameters:
+    -----------
+    canht : float
+        canopy height (m)
+    wind : float
+        wind speed (m s-1)
+    press : float
+        atmospheric pressure (Pa)
+    tair : float
+        air temperature (deg C)
+
+    Returns:
+    --------
+    ga : float
+        canopy boundary layer conductance (mol m-2 s-1)
+    """
+
+    vk = 0.41
+    displace_ratio = 0.67
+
+    # Convert from mm s-1 to mol m-2 s-1
+    cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN))
+
+    # roughness length for momentum
+    z0m = 0.123 * canht
+
+    #  roughness length governing transfer of heat and vapour
+    z0h = 0.1 * z0m
+
+    # zero plan displacement height [m]
+    d = displace_ratio * canht
+
+    arg1 = (vk * vk) * wind
+    arg2 = np.log((canht - d) / z0m)
+    arg3 = np.log((canht - d) / z0h)
+
+    ga = (arg1 / (arg2 * arg3)) * cmolar
+
+    return ga
+
 
 def calculate_solar_geometry(doy, hod, latitude, longitude):
     """
@@ -280,6 +347,66 @@ def calc_extra_terrestrial_rad(doy, cos_zenith):
 
     return So
 
+def calc_latent_heat_of_vapourisation(tair):
+    """
+    Latent heat of water vapour at air temperature
+
+    Returns:
+    -----------
+    lambda : float
+        latent heat of water vaporization [J mol-1]
+    """
+    return (c.H2OLV0 - 2.365E3 * tair) * c.H2OMW
+
+def calc_pyschrometric_constant(press, lambdax):
+    """
+    Psychrometric constant ratio of specific heat of moist air at
+    a constant pressure to latent heat of vaporisation.
+
+    Parameters:
+    -----------
+    press : float
+        air pressure (Pa)
+    lambda : float
+         latent heat of water vaporization (J mol-1)
+
+    Returns:
+    --------
+    gamma : float
+        pyschrometric constant [Pa K-1]
+    """
+    return c.CP * c.MASS_AIR * press / lambdax
+
+def calc_slope_of_sat_vapour_pressure_curve(tair):
+    """
+    Constant slope in Penman-Monteith equation
+
+    Parameters:
+    -----------
+    tavg : float
+        average daytime temperature
+
+    Returns:
+    --------
+    slope : float
+        slope of saturation vapour pressure curve [Pa K-1]
+
+    """
+
+    # Const slope in Penman-Monteith equation  (Pa K-1)
+    arg1 = calc_sat_water_vapour_press(tair + 0.1)
+    arg2 = calc_sat_water_vapour_press(tair)
+    slope = (arg1 - arg2) / 0.1
+
+    return slope
+
+def calc_sat_water_vapour_press(tac):
+    """
+    Calculate saturated water vapour pressure (Pa) at
+    temperature TAC (Celsius). From Jones 1992 p 110 (note error in
+    a - wrong units)
+    """
+    return 613.75 * np.exp(17.502 * tac / (240.97 + tac))
 
 
 if __name__ == "__main__":
@@ -304,6 +431,7 @@ if __name__ == "__main__":
     longitude = 148.0
     hod = 0
     petx = 0.0
+    pety = 0.0
     for i in range(len(met)):
         sw_rad = met.par[i] * PAR_2_SW
 
@@ -314,7 +442,9 @@ if __name__ == "__main__":
         rnet *= J_TO_MJ
 
         pet = calc_pet_energy(rnet)
+        pet2 = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
 
         petx += pet * SEC_2_HLFHR
+        pety += pet2 * SEC_2_HLFHR
         hod += 1
-    print(petx)
+    print(petx, pety)

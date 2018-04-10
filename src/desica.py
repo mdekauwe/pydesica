@@ -52,7 +52,7 @@ import os
 from generate_met_data import generate_met_data
 from canopy import Canopy, FarquharC3
 from math import isclose
-from calc_pet import calc_net_radiation, calc_pet_energy
+from calc_pet import calc_net_radiation, calc_pet_energy, calc_fao_pet
 import constants as c
 
 class Desica(object):
@@ -145,6 +145,7 @@ class Desica(object):
             # W m-2 -> MJ m-2 s-1
             rnet *= c.J_TO_MJ
             out.pet[i] = calc_pet_energy(rnet)
+            #out.pet[i] = pet2 = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
 
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
