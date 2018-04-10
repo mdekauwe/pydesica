@@ -308,7 +308,7 @@ if __name__ == "__main__":
         sw_rad = met.par[i] * PAR_2_SW
 
         rnet = calc_net_radiation(i, hod, latitude, longitude, sw_rad,
-                                  met.tair[i], met.ead[i])
+                                  met.tair[i], met.ea[i])
 
         # W m-2 -> MJ m-2 s-1
         rnet *= J_TO_MJ
