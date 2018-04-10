@@ -15,10 +15,9 @@ import sys
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
+import constants as c
 
 def main(met_dir, odir):
-    k_2_c = 273.15
-    sw_2_par = 2.3
     sec_2_3hr = 60. * 60. * 3.
     fname = os.path.join(met_dir, "GSWP3.BC.Tair.3hrMap.2006.nc")
     tair_vals = open_file(fname, "Tair")
@@ -33,27 +32,34 @@ def main(met_dir, odir):
     rain_vals = open_file(fname, "Rainf")
 
     yr = fname.split(".")[4]
-    f = open(os.path.join(odir, "GSWP3_met_%s.csv" % (yr)), 'w')
-    print("doy,tmin,tmax,rain,par,rh", file=f)
 
     #random location
     row = 10
     col = 17
     doy = 1
+
+    # get lat, lon
+    lat = tair_vals[0,row,col].lat.values
+    lon = tair_vals[0,row,col].lon.values
+
+    f = open(os.path.join(odir, "GSWP3_met_%s.csv" % (yr)), 'w')
+    print("doy,tmin,tmax,rain,par,rh,lat,lon", file=f)
+
     for i in range(0, tair_vals.time.size, 8):
 
-        tmax = np.max(tair_vals[i:i+8,row,col].values) - k_2_c
-        tmin = np.min(tair_vals[i:i+8,row,col].values) - k_2_c
+        tmax = np.max(tair_vals[i:i+8,row,col].values) - c.DEG_2_KELVIN
+        tmin = np.min(tair_vals[i:i+8,row,col].values) - c.DEG_2_KELVIN
         rain = np.sum(rain_vals[i:i+8,row,col].values * sec_2_3hr)
-        par = np.max(sw_vals[i:i+8,row,col].values) * sw_2_par
+        par = np.max(sw_vals[i:i+8,row,col].values) * c.SW_2_PAR
         qair = np.max(qair_vals[i:i+8,row,col].values)
 
         # Get RH
         qair = qair_vals[i:i+8,row,col].values
-        tair = tair_vals[i:i+8,row,col].values - k_2_c
+        tair = tair_vals[i:i+8,row,col].values - c.DEG_2_KELVIN
         rh = np.mean(qair_to_rh(qair, tair))
 
-        print("%d,%f,%f,%f,%f,%f" % (doy, tmin, tmax, rain, par, rh), file=f)
+        print("%d,%f,%f,%f,%f,%f,%f,%f" %
+              (doy,tmin,tmax,rain,par,rh,lat,lon), file=f)
         doy += 1
 
     f.close()

@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 import os
 
 def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
-                      sunrise=8, time_step=15, lag=0.5, ndays=40,
-                      co2_conc=400., air_press=101.0, precip=None,
+                      sunrise=8, time_step=15, lag=0.5, ndays=40, lat=-35.76,
+                      lon=148.0, co2_conc=400., air_press=101.0, precip=None,
                       keep_dry=False):
 
     day_2_sec = 1.0 / (60. * 60. * 24.)
@@ -51,13 +51,15 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     before = np.arange(min(ii)-1)
     ta[before] = tdec[np.arange(len(after), len(tdec))]
 
-    vpd = rh_to_vpd(RH, ta)
+    vpd, ea = rh_to_vpd(RH, ta)
 
     day = np.repeat(np.arange(1, ndays+1), nx)
     new_size = int(len(day) / nx)
     vpd = np.tile(vpd, new_size)
+    ea = np.tile(ea, new_size)
     tair = np.tile(ta, new_size)
     par = np.tile(p, new_size)
+
 
     if keep_dry:
         precip = np.zeros(len(par))
@@ -76,10 +78,12 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
 
     Ca = np.ones(len(par)) * co2_conc # umol mol-1
     press = np.ones(len(par)) * air_press # kPa
+    lat = np.ones(len(par)) * lat
+    lon = np.ones(len(par)) * lon
 
     met = pd.DataFrame({'day':day, 'par':par, 'tair':tair,
                         'vpd':vpd, 'precip':precip, 'press':press,
-                        'Ca':Ca})
+                        'Ca':Ca, 'ea':ea, 'lat':lat, 'lon':lon})
 
     return met
 
@@ -87,7 +91,7 @@ def rh_to_vpd(rh, tair, pressure=101.0):
     esat_val = esat(tair, pressure)
     e = (rh / 100.0) * esat_val
     vpd = (esat_val - e) / 1000.0
-    return vpd
+    return vpd, e
 
 def esat(tair, pressure=101.0):
     a = 611.21
