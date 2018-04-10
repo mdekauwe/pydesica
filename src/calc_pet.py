@@ -25,7 +25,7 @@ def calc_pet_energy(rnet, G=0.0):
 
     return pet
 
-def calc_net_radiation(doy, hod, latitude, longitude, sw_rad, tair,
+def calc_net_radiation(doy, hod, latitude, longitude, sw_rad, tair, ea,
                         albedo=0.23, elevation=0.0):
 
     cos_zenith = calculate_solar_geometry(doy, hod, latitude, longitude)
@@ -37,8 +37,8 @@ def calc_net_radiation(doy, hod, latitude, longitude, sw_rad, tair,
     Rs0 = (0.75 + 2E-5 * elevation) * Rext
 
     # net longwave radiation, rnl
-    arg1 = c.SIGMA * (met.tair[i] + c.DEG_2_KELVIN)**4
-    arg2 = 0.34 - 0.14 * np.sqrt(met.ea[i] * c.PA_2_KPA)
+    arg1 = c.SIGMA * (tair + c.DEG_2_KELVIN)**4
+    arg2 = 0.34 - 0.14 * np.sqrt(ea * c.PA_2_KPA)
     if Rs0 > 0.000001:  #divide by zero
         arg3 = 1.35 * sw_rad / Rs0 - 0.35
     else:
@@ -308,7 +308,7 @@ if __name__ == "__main__":
         sw_rad = met.par[i] * PAR_2_SW
 
         rnet = calc_net_radiation(i, hod, latitude, longitude, sw_rad,
-                                  met.tair[i])
+                                  met.tair[i], met.ead[i])
 
         # W m-2 -> MJ m-2 s-1
         rnet *= J_TO_MJ
