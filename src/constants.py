@@ -9,3 +9,7 @@ G_TO_KG = 1E-03
 J_TO_MJ = 1.0E-6
 PAR_2_SW = 1.0 / 2.3
 SEC_2_HLFHR = 1800.
+SIGMA = 5.67E-8 # Stefan Boltzmann constant, J s-1 m-2 K-4
+DEG_2_KELVIN = 273.15
+PA_2_KPA = 0.001
+SW_2_PAR = 2.3
