@@ -25,6 +25,7 @@ from desica import plot_time_to_mortality
 from desica import plot_transpiration
 from desica import plot_cwd
 from desica import plot_sw
+from desica import plot_transpiration_and_pet
 
 
 if __name__ == "__main__":
@@ -72,12 +73,13 @@ if __name__ == "__main__":
     deltaSj = 631.88
     soil_depth = 2.0
     sw0 = 0.3
+    FAO = False
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, soil_depth=soil_depth,
-               sw0=sw0, stop_dead=True)
+               sw0=sw0, stop_dead=True, FAO=FAO)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
@@ -86,5 +88,6 @@ if __name__ == "__main__":
 
     plot_time_to_mortality(odir, out, time_step)
     plot_transpiration(odir, out)
+    plot_transpiration_and_pet(odir, out)
     plot_cwd(odir, out, time_step)
     plot_sw(odir, out, time_step)

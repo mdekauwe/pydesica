@@ -62,7 +62,7 @@ class Desica(object):
                  Cl=10000., kp_sat=3., p50=-4., psi_f=-2., s50=30., gmin=10,
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
                  psi_e=-0.8*1E-03, Ksat=20., Lv=10000., F=None, keep_wet=False,
-                 stop_dead=True, run_twice=True, rroot=1E-06):
+                 stop_dead=True, run_twice=True, rroot=1E-06, FAO=False):
 
         self.run_twice = run_twice
         self.keep_wet = keep_wet
@@ -102,7 +102,7 @@ class Desica(object):
             self.timestep_sec = 60. * self.met_timestep / 2
         else:
             self.timestep_sec = 60. * self.met_timeste
-
+        self.FAO = FAO
 
     def run_simulation(self, met=None):
         """
@@ -140,8 +140,10 @@ class Desica(object):
             rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i],
                                       met.sw_rad[i], met.tair[i], met.ea[i])
 
-            #out.pet[i] = calc_pet_energy(rnet)
-            Out.pet[i] = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
+            if self.FAO:
+                out.pet[i] = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
+            else:
+                out.pet[i] = calc_pet_energy(rnet)
 
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
@@ -910,11 +912,13 @@ if __name__ == "__main__":
     deltaSv = 629.26
     Eaj = 29680.
     deltaSj = 631.88
+    FAO = True
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True)
+               Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True,
+               FAO=FAO)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
@@ -934,7 +938,7 @@ if __name__ == "__main__":
         for gmin in gminx:
             D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
                        gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True,
-                       stop_dead=True)
+                       stop_dead=True, FAO=FAO)
             out, day_of_death = D.run_simulation(met)
             death.append(day_of_death)
         plot_gmin_sensitvity(odir, gminx, death)
