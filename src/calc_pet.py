@@ -17,25 +17,24 @@ import matplotlib.pyplot as plt
 from generate_met_data import generate_met_data
 import constants as c
 
-def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=5.0, press=100.0*c.KPA_2_PA):
+def calc_fao_pet(rnet, vpd, tair, G=0.0, canht=0.12, wind=5.0,
+                press=100.0*c.KPA_2_PA):
 
     # Convert from m s-1 to mol m-2 s-1
     cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN));
     rs = 70.0 # s m-1
-    gsv = (1.0 / rs)  * cmolar
+    gs = (1.0 / rs) * cmolar
     ga = canopy_boundary_layer_conduct(canht, wind, press, tair)
-
-    # Total leaf conductance to water vapour
-    gv = 1.0 / (1.0 / gsv + 1.0 / ga)
 
     lambdax = calc_latent_heat_of_vapourisation(tair)
     gamma = calc_pyschrometric_constant(press, lambdax)
     slope = calc_slope_of_sat_vapour_pressure_curve(tair)
 
-    arg1 = slope * rnet + vpd * ga * c.CP * c.MASS_AIR
-    arg2 = slope + gamma * ga / gv
+    arg1 = slope * (rnet - G) + (vpd * c.PA_2_KPA) * ga * c.CP * c.MASS_AIR
+    arg2 = slope + gamma * ga / gs
     LE = arg1 / arg2 # W m-2
     evap = LE / lambdax # mol H20 m-2 s-1
+    evap *= c.MOL_WATER_2_G_WATER * c.G_TO_KG # kg m-2 s-1 or mm s-1
 
     return evap
 
@@ -438,9 +437,7 @@ if __name__ == "__main__":
     petx = 0.0
     pety = 0.0
     for i in range(len(met)):
-        sw_rad = met.par[i] * PAR_2_SW
-
-        rnet = calc_net_radiation(i, hod, latitude, longitude, sw_rad,
+        rnet = calc_net_radiation(i, hod, latitude, longitude, met.sw_rad[i],
                                   met.tair[i], met.ea[i])
 
         # W m-2 -> MJ m-2 s-1
