@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from generate_met_data import generate_met_data
 import constants as c
 
-def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=2.0, press=100.0*c.KPA_2_PA):
+def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=5.0, press=100.0*c.KPA_2_PA):
     # Not right, argh
     # Convert from mm s-1 to mol m-2 s-1 *
     cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN));
