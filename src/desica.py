@@ -122,7 +122,8 @@ class Desica(object):
         day_of_death = -999.
         (n, out) = self.initialise_model(met)
 
-        hod = 0
+        hod = 1
+        doy = 0
         for i in range(1, n):
 
             out = self.run_timestep(i, met, out)
@@ -157,9 +158,13 @@ class Desica(object):
                         day_of_death = i / 24.
                     break
 
+            out.hod[i] = hod
+            out.doy[i] = doy
+            out.year[i] = met.year[i]
             hod += 1
             if hod > 47:
                 hod = 0
+                doy += 1
 
         out["plc"] = self.calc_plc(out.kplant)
 
@@ -201,6 +206,10 @@ class Desica(object):
         # soil hydraulic conductance (mmol m-2 s-1 MPa-1)
         out.ksoil[0] = self.calc_ksoil(out.psi_soil[0])
 
+        out.hod[0] = 0
+        out.doy[0] = 0
+        out.year[0] = met.year[0]
+
         return n, out
 
     def setup_out_df(self, met):
@@ -218,7 +227,10 @@ class Desica(object):
             output dataframe to store things as we go along.
         """
         dummy = np.ones(len(met)) * np.nan
-        out = pd.DataFrame({'Eleaf':dummy,
+        out = pd.DataFrame({'year':dummy,
+                            'doy':dummy,
+                            'hod':dummy,
+                            'Eleaf':dummy,
                             'psi_leaf':dummy,
                             'psi_stem':dummy,
                             'psi_soil':dummy,
@@ -611,7 +623,7 @@ class Desica(object):
         return Ksoil
 
 
-def plot_time_to_mortality(odir, out, timestep=15):
+def plot_time_to_mortality(odir, out, timestep=15, year=None):
 
     if timestep == 15:
         ndays = out.t / 96.
@@ -653,10 +665,14 @@ def plot_time_to_mortality(odir, out, timestep=15):
     ax2.set_ylabel(r'PLC (%)')
     ax1.set_xlabel("Time (days)")
     ax1.set_ylabel("Water potential (MPa)")
-    fig.savefig("%s/time_to_mortality.pdf" % (odir), bbox_inches='tight',
-                pad_inches=0.1)
+    if year is None:
+        fig.savefig("%s/time_to_mortality.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
+                    bbox_inches='tight', pad_inches=0.1)
 
-def plot_swp_sw(odir, out):
+def plot_swp_sw(odir, out, year=None):
 
     fig = plt.figure(figsize=(9,6))
     fig.subplots_adjust(hspace=0.3)
@@ -677,9 +693,14 @@ def plot_swp_sw(odir, out):
     ax1.set_xlabel("Volumetric soil water content (m$^{3}$ m$^{-3}$)")
     ax1.set_ylabel("Soil water potential (MPa)")
     #ax1.legend(numpoints=1, loc="best")
-    fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
 
-def plot_transpiration(odir, out):
+    if year is None:
+        fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
+    else:
+        fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
+                    pad_inches=0.1)
+
+def plot_transpiration(odir, out, year=None):
 
     conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
             c.SEC_2_HLFHR
@@ -712,10 +733,15 @@ def plot_transpiration(odir, out):
     ax1.plot(trans, ls="-", color=cb[1])
     ax1.set_ylabel("Transpiration (mm d$^{-1}$)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("%s/transpiration.pdf" % (odir), bbox_inches='tight',
-                pad_inches=0.1)
 
-def plot_transpiration_and_pet(odir, out):
+    if year is None:
+        fig.savefig("%s/transpiration.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/transpiration_%d.pdf" % (odir, year),
+                    bbox_inches='tight', pad_inches=0.1)
+
+def plot_transpiration_and_pet(odir, out, year=None):
 
     conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
             c.SEC_2_HLFHR
@@ -754,11 +780,15 @@ def plot_transpiration_and_pet(odir, out):
     ax1.plot(pet, ls="-", color=cb[2], label="PET")
     ax1.set_ylabel("(mm d$^{-1}$)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("%s/transpiration_and_pet.pdf" % (odir), bbox_inches='tight',
-                pad_inches=0.1)
 
+    if year is None:
+        fig.savefig("%s/transpiration_and_pet.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/transpiration_and_pet_%d.pdf" % (odir, year),
+                    bbox_inches='tight', pad_inches=0.1)
 
-def plot_cwd(odir, out, timestep=15):
+def plot_cwd(odir, out, timestep=15, year=None):
 
     if timestep == 15:
         ndays = out.t / 96
@@ -821,9 +851,14 @@ def plot_cwd(odir, out, timestep=15):
 
     ax1.set_ylabel("Accumulated CWD (mm)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("%s/cwd.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
 
-def plot_gmin_sensitvity(odir, gmin, death):
+    if year is None:
+        fig.savefig("%s/cwd.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
+    else:
+        fig.savefig("%s/cwd_%d.pdf" % (odir, year), bbox_inches='tight',
+                    pad_inches=0.1)
+
+def plot_gmin_sensitvity(odir, gmin, death, year=None):
 
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
@@ -845,10 +880,15 @@ def plot_gmin_sensitvity(odir, gmin, death):
     ax1.plot(gmin, death, ls="-", color=cb[1])
     ax1.set_ylabel("Time to mortality (days)")
     ax1.set_xlabel("g$_{min}$ (mmol m$^{-2}$ s$^{-1}$)")
-    fig.savefig("%s/gmin_sensitivity.pdf" % (odir), bbox_inches='tight',
-                pad_inches=0.1)
 
-def plot_sw(odir, out, time_step=30):
+    if year is None:
+        fig.savefig("%s/gmin_sensitivity.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/gmin_sensitivity_%d.pdf" % (odir, year),
+                    bbox_inches='tight', pad_inches=0.1)
+
+def plot_sw(odir, out, time_step=30, year=None):
 
     if time_step == 15:
         ndays = out.t / 96
@@ -877,9 +917,13 @@ def plot_sw(odir, out, time_step=30):
     ax1.plot(ndays, out.sw, ls="-", color=cb[1])
     ax1.set_ylabel("SWC (m$^{3}$ m$^{-3}$)")
     ax1.set_xlabel("Time (days)")
-    fig.savefig("%s/sw.pdf" % (odir), bbox_inches='tight',
-                pad_inches=0.1)
 
+    if year is None:
+        fig.savefig("%s/sw.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/sw_%d.pdf" % (odir, year), bbox_inches='tight',
+                    pad_inches=0.1)
 
 if __name__ == "__main__":
 
@@ -913,13 +957,14 @@ if __name__ == "__main__":
     Eaj = 29680.
     deltaSj = 631.88
     FAO = False
+    year = 2000
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True,
                FAO=FAO)
-    out, day_of_death = D.run_simulation(met)
+    out, day_of_death = D.run_simulation(met, year)
 
     odir = "plots"
     if not os.path.exists(odir):
@@ -931,6 +976,14 @@ if __name__ == "__main__":
     plot_transpiration_and_pet(odir, out)
     plot_cwd(odir, out, time_step)
     plot_sw(odir, out, time_step)
+
+    odir = "outputs"
+    if not os.path.exists(odir):
+        os.makedirs(odir)
+
+    ofname = os.path.join(odir, "desica_out.csv")
+    out.to_csv(ofname, index=False)
+
 
     if do_sensitivity:
         death = []

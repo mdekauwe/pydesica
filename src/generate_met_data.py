@@ -17,10 +17,10 @@ import matplotlib.pyplot as plt
 import os
 import constants as c
 
-def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
-                      sunrise=8, time_step=15, lag=0.5, ndays=40, lat=-35.76,
-                      lon=148.0, co2_conc=400., air_press=101.0, precip=None,
-                      keep_dry=False):
+def generate_met_data(year=2000, PPFDmax=2000, RH=30, Tmax=30, Tmin=10,
+                      day_length=12, sunrise=8, time_step=15, lag=0.5,
+                      ndays=40, lat=-35.76, lon=148.0, co2_conc=400.,
+                      air_press=101.0, precip=None, keep_dry=False):
 
     day_2_sec = 1.0 / (60. * 60. * 24.)
     hlhr_2_sec = 1.0 / 1800.0
@@ -81,8 +81,8 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     press = np.ones(len(par)) * air_press # kPa
     lat = np.ones(len(par)) * lat
     lon = np.ones(len(par)) * lon
-
-    met = pd.DataFrame({'day':day, 'par':par, 'tair':tair,
+    oyear = np.ones(len(par)) * year
+    met = pd.DataFrame({'year':oyear, 'day':day, 'par':par, 'tair':tair,
                         'vpd':vpd, 'precip':precip, 'press':press,
                         'Ca':Ca, 'ea':ea, 'sw_rad':sw_rad, 'lat':lat,
                         'lon':lon})
