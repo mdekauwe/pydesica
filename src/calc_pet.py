@@ -40,8 +40,10 @@ def calc_fao_pet(rnet, vpd, tair, G=0.0, canht=0.12, wind=5.0,
 
 def calc_pet_energy(rnet, G=0.0):
 
+    # rn-G is in MJ m-2 s-1, so W m-2 -> MJ m-2 s-1
+    rnet *= c.J_TO_MJ
+
     # Energy-only PET (mm 30 s-1), based on Milly et al. 2016
-    # rne-G is in MJ m-2 s-1
     pet = max(0.0, 0.8 * rnet - G)
 
     return pet
