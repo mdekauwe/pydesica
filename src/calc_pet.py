@@ -78,7 +78,7 @@ def calc_net_radiation(doy, hod, latitude, longitude, sw_rad, tair, ea,
     # net shortwave radiation, J m-2 s-1
     Rns = (1.0 - albedo) * sw_rad
 
-    # net radiation, J m-2 s-1
+    # net radiation, J m-2 s-1 or W m-2
     Rn = Rns - Rnl
 
     return Rn
