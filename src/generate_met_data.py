@@ -15,6 +15,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import constants as c
 
 def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
                       sunrise=8, time_step=15, lag=0.5, ndays=40, lat=-35.76,
@@ -59,7 +60,7 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
     ea = np.tile(ea, new_size)
     tair = np.tile(ta, new_size)
     par = np.tile(p, new_size)
-
+    sw_rad = par * c.PAR_2_SW
 
     if keep_dry:
         precip = np.zeros(len(par))
@@ -83,7 +84,8 @@ def generate_met_data(PPFDmax=2000, RH=30, Tmax=30, Tmin=10, day_length=12,
 
     met = pd.DataFrame({'day':day, 'par':par, 'tair':tair,
                         'vpd':vpd, 'precip':precip, 'press':press,
-                        'Ca':Ca, 'ea':ea, 'lat':lat, 'lon':lon})
+                        'Ca':Ca, 'ea':ea, 'sw_rad':sw_rad, 'lat':lat,
+                        'lon':lon})
 
     return met
 
