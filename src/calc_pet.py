@@ -25,7 +25,8 @@ def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=2.0, press=100.0*c.KPA_2_PA):
     gsv = (1.0 / rs) *  cmolar
 
     ga = canopy_boundary_layer_conduct(canht, wind, press, tair)
-
+    print(gsv, ga)
+    sys.exit()
     # Total leaf conductance to water vapour
     gv = 1.0 / (1.0 / gsv + 1.0 / ga)
 
@@ -124,15 +125,21 @@ def canopy_boundary_layer_conduct(canht, wind, press, tair):
     #  roughness length governing transfer of heat and vapour
     z0h = 0.1 * z0m
 
+    # height of wind measurements [m]
+    zm = 2.0
+
+    # height of humidity measurements [m]
+    zh = 2.0
+
     # zero plan displacement height [m]
     d = displace_ratio * canht
 
-    arg1 = (vk * vk) * wind
-    arg2 = np.log((canht - d) / z0m)
-    arg3 = np.log((canht - d) / z0h)
+    arg1 = (vk * vk) #* wind
+    arg2 = np.log((zm - d) / z0m)
+    arg3 = np.log((zh - d) / z0h)
 
     ga = (arg1 / (arg2 * arg3)) * cmolar
-
+    
     return ga
 
 
