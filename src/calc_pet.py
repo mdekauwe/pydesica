@@ -28,12 +28,17 @@ def calc_fao_pet(rnet, vpd, tair, G=0.0, canht=0.12, wind=5.0,
     gs = (1.0 / rs) * cmolar
     ga = canopy_boundary_layer_conduct(canht, wind, press, tair)
 
+    # Total leaf conductance to water vapour
+    gv = 1.0 / (1.0 / gs + 1.0 / ga)
+
     lambdax = calc_latent_heat_of_vapourisation(tair)
     gamma = calc_pyschrometric_constant(press, lambdax)
     slope = calc_slope_of_sat_vapour_pressure_curve(tair)
 
     arg1 = slope * (rnet - G) + (vpd * c.KPA_2_PA) * ga * c.CP * c.MASS_AIR
-    arg2 = slope + gamma * ga / gs
+    arg2 = slope + gamma * ga / gv
+    #arg2 = slope + gamma * ga / gs
+
     LE = arg1 / arg2 # W m-2
     evap = LE / lambdax # mol H20 m-2 s-1
     evap *= c.MOL_WATER_2_G_WATER * c.G_TO_KG # kg m-2 s-1 or mm s-1
