@@ -140,8 +140,8 @@ class Desica(object):
             rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i],
                                       met.sw_rad[i], met.tair[i], met.ea[i])
 
-            out.pet[i] = calc_pet_energy(rnet)
-            #out.pet[i] = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
+            #out.pet[i] = calc_pet_energy(rnet)
+            Out.pet[i] = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
 
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:

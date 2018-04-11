@@ -18,7 +18,9 @@ from generate_met_data import generate_met_data
 import constants as c
 
 def calc_fao_pet(rnet, vpd, tair, G=0.0, canht=0.12, wind=5.0,
-                press=100.0*c.KPA_2_PA):
+                press=100.0):
+
+    press *= c.KPA_2_PA
 
     # Convert from m s-1 to mol m-2 s-1
     cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN));
@@ -30,7 +32,7 @@ def calc_fao_pet(rnet, vpd, tair, G=0.0, canht=0.12, wind=5.0,
     gamma = calc_pyschrometric_constant(press, lambdax)
     slope = calc_slope_of_sat_vapour_pressure_curve(tair)
 
-    arg1 = slope * (rnet - G) + (vpd * c.PA_2_KPA) * ga * c.CP * c.MASS_AIR
+    arg1 = slope * (rnet - G) + (vpd * c.KPA_2_PA) * ga * c.CP * c.MASS_AIR
     arg2 = slope + gamma * ga / gs
     LE = arg1 / arg2 # W m-2
     evap = LE / lambdax # mol H20 m-2 s-1
@@ -441,9 +443,6 @@ if __name__ == "__main__":
     for i in range(len(met)):
         rnet = calc_net_radiation(i, hod, latitude, longitude, met.sw_rad[i],
                                   met.tair[i], met.ea[i])
-
-        # W m-2 -> MJ m-2 s-1
-        rnet *= J_TO_MJ
 
         pet = calc_pet_energy(rnet)
         pet2 = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
