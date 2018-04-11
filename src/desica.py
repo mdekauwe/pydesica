@@ -137,15 +137,11 @@ class Desica(object):
                 out2.psi_stem[i-1] = out.psi_stem[i]
                 out = self.run_timestep(i, met, out2)
 
-            sw_rad = met.par[i] * c.PAR_2_SW
-            #rnet = calc_net_radiation(sw_rad, met.tair[i], albedo=0.15)
-            rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i], sw_rad,
-                                      met.tair[i], met.ea[i])
+            rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i],
+                                      met.sw_rad[i], met.tair[i], met.ea[i])
 
-            # W m-2 -> MJ m-2 s-1
-            rnet *= c.J_TO_MJ
             out.pet[i] = calc_pet_energy(rnet)
-            #out.pet[i] = pet2 = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
+            #out.pet[i] = calc_fao_pet(rnet, met.vpd[i], met.tair[i])
 
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
@@ -717,6 +713,49 @@ def plot_transpiration(odir, out):
     fig.savefig("%s/transpiration.pdf" % (odir), bbox_inches='tight',
                 pad_inches=0.1)
 
+def plot_transpiration_and_pet(odir, out):
+
+    conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
+            c.SEC_2_HLFHR
+
+    trans = []
+    pet = []
+    for i in range(0, len(out), 48):
+        vals = out["Eplant"][i:i+48]
+        vals = vals[~np.isnan(vals)]
+        if len(vals) > 0:
+            aet = np.sum(vals * conv)
+            trans.append(aet)
+        vals = out["pet"][i:i+48]
+        vals = vals[~np.isnan(vals)]
+        if len(vals) > 0:
+            pet.append(np.sum(vals * c.SEC_2_HLFHR))
+
+    cb = ['#377eb8', '#ff7f00', '#4daf4a', \
+          '#f781bf', '#a65628', '#984ea3',\
+          '#999999', '#e41a1c', '#dede00']
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+    ax1.plot(trans, ls="-", color=cb[1], label="AET")
+    ax1.plot(pet, ls="-", color=cb[2], label="PET")
+    ax1.set_ylabel("(mm d$^{-1}$)")
+    ax1.set_xlabel("Time (days)")
+    fig.savefig("%s/transpiration_and_pet.pdf" % (odir), bbox_inches='tight',
+                pad_inches=0.1)
+
+
 def plot_cwd(odir, out, timestep=15):
 
     if timestep == 15:
@@ -885,6 +924,7 @@ if __name__ == "__main__":
     plot_time_to_mortality(odir, out, time_step)
     plot_swp_sw(odir, out)
     plot_transpiration(odir, out)
+    plot_transpiration_and_pet(odir, out)
     plot_cwd(odir, out, time_step)
     plot_sw(odir, out, time_step)
 
