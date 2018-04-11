@@ -134,12 +134,12 @@ def canopy_boundary_layer_conduct(canht, wind, press, tair):
     # zero plan displacement height [m]
     d = displace_ratio * canht
 
-    arg1 = (vk * vk) #* wind
+    arg1 = (vk * vk) * wind
     arg2 = np.log((zm - d) / z0m)
     arg3 = np.log((zh - d) / z0h)
 
     ga = (arg1 / (arg2 * arg3)) * cmolar
-    
+
     return ga
 
 
