@@ -18,15 +18,13 @@ from generate_met_data import generate_met_data
 import constants as c
 
 def calc_fao_pet(rnet, vpd, tair, canht=0.12, wind=5.0, press=100.0*c.KPA_2_PA):
-    # Not right, argh
-    # Convert from mm s-1 to mol m-2 s-1 *
+
+    # Convert from m s-1 to mol m-2 s-1
     cmolar = press / (c.RGAS * (tair + c.DEG_2_KELVIN));
     rs = 70.0 # s m-1
-    gsv = (1.0 / rs) *  cmolar
-
+    gsv = (1.0 / rs)  * cmolar
     ga = canopy_boundary_layer_conduct(canht, wind, press, tair)
-    print(gsv, ga)
-    sys.exit()
+
     # Total leaf conductance to water vapour
     gv = 1.0 / (1.0 / gsv + 1.0 / ga)
 
