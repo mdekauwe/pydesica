@@ -24,7 +24,7 @@ def main(met_dir):
     col = 17
 
     f = open("GSWP3_met_%d_%d.csv" % (row,col), 'w')
-    print("doy,tmin,tmax,rain,par,rh,lat,lon", file=f)
+    print("year,doy,tmin,tmax,rain,par,rh,lat,lon", file=f)
 
     for year in range(2000, 2011):
         #print(year)
@@ -62,8 +62,8 @@ def main(met_dir):
             tair = tair_vals[i:i+8,row,col].values - c.DEG_2_KELVIN
             rh = np.mean(qair_to_rh(qair, tair))
 
-            print("%d,%f,%f,%f,%f,%f,%f,%f" %
-                    (doy,tmin,tmax,rain,par,rh,lat,lon), file=f)
+            print("%d,%d,%f,%f,%f,%f,%f,%f,%f" %
+                    (year,doy,tmin,tmax,rain,par,rh,lat,lon), file=f)
             doy += 1
 
     f.close()
