@@ -208,7 +208,7 @@ class Desica(object):
 
         out.hod[0] = 0
         out.doy[0] = 0
-        out.year[0] = met.year[0]
+        out.year[0] = met.year.iloc[0]
 
         return n, out
 
@@ -671,6 +671,7 @@ def plot_time_to_mortality(odir, out, timestep=15, year=None):
     else:
         fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
                     bbox_inches='tight', pad_inches=0.1)
+    plt.close('all')
 
 def plot_swp_sw(odir, out, year=None):
 
@@ -699,6 +700,7 @@ def plot_swp_sw(odir, out, year=None):
     else:
         fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
                     pad_inches=0.1)
+    plt.close('all')
 
 def plot_transpiration(odir, out, year=None):
 
@@ -740,6 +742,7 @@ def plot_transpiration(odir, out, year=None):
     else:
         fig.savefig("%s/transpiration_%d.pdf" % (odir, year),
                     bbox_inches='tight', pad_inches=0.1)
+    plt.close('all')
 
 def plot_transpiration_and_pet(odir, out, year=None):
 
@@ -787,6 +790,7 @@ def plot_transpiration_and_pet(odir, out, year=None):
     else:
         fig.savefig("%s/transpiration_and_pet_%d.pdf" % (odir, year),
                     bbox_inches='tight', pad_inches=0.1)
+    plt.close('all')
 
 def plot_cwd(odir, out, timestep=15, year=None):
 
@@ -857,6 +861,7 @@ def plot_cwd(odir, out, timestep=15, year=None):
     else:
         fig.savefig("%s/cwd_%d.pdf" % (odir, year), bbox_inches='tight',
                     pad_inches=0.1)
+    plt.close('all')
 
 def plot_gmin_sensitvity(odir, gmin, death, year=None):
 
@@ -887,6 +892,7 @@ def plot_gmin_sensitvity(odir, gmin, death, year=None):
     else:
         fig.savefig("%s/gmin_sensitivity_%d.pdf" % (odir, year),
                     bbox_inches='tight', pad_inches=0.1)
+    plt.close('all')
 
 def plot_sw(odir, out, time_step=30, year=None):
 
@@ -924,6 +930,7 @@ def plot_sw(odir, out, time_step=30, year=None):
     else:
         fig.savefig("%s/sw_%d.pdf" % (odir, year), bbox_inches='tight',
                     pad_inches=0.1)
+    plt.close('all')
 
 if __name__ == "__main__":
 
@@ -964,7 +971,7 @@ if __name__ == "__main__":
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True,
                FAO=FAO)
-    out, day_of_death = D.run_simulation(met, year)
+    out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
     if not os.path.exists(odir):
