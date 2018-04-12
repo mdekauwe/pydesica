@@ -37,19 +37,20 @@ if __name__ == "__main__":
 
     years = np.unique(df.year)
     for year in years:
-
         dfx = df[df.year == year]
 
-        met = generate_met_data(year=year, Tmin=dfx.tmin[0], Tmax=dfx.tmax[0],
-                                RH=dfx.rh[0]*100., PPFDmax=df.par[0],
-                                precip=dfx.rain[0], lat=dfx.lat[0],
-                                lon=dfx.lon[0], ndays=1, time_step=time_step,
+        met = generate_met_data(year=year, Tmin=dfx.tmin.iloc[0], Tmax=dfx.tmax.iloc[0],
+                                RH=dfx.rh.iloc[0]*100., PPFDmax=df.par.iloc[0],
+                                precip=dfx.rain.iloc[0], lat=dfx.lat.iloc[0],
+                                lon=dfx.lon.iloc[0], ndays=1, time_step=time_step,
                                 keep_dry=keep_dry)
+
         for i in range(1, len(dfx)):
-            met_df = generate_met_data(year=year, Tmin=dfx.tmin[i],
-                                       Tmax=dfx.tmax[i], RH=dfx.rh[i]*100.,
-                                       PPFDmax=dfx.par[i], precip=dfx.rain[i],
-                                       lat=dfx.lat[0], lon=dfx.lon[0], ndays=1,
+
+            met_df = generate_met_data(year=year, Tmin=dfx.tmin.iloc[i],
+                                       Tmax=dfx.tmax.iloc[i], RH=dfx.rh.iloc[i]*100.,
+                                       PPFDmax=dfx.par.iloc[i], precip=dfx.rain.iloc[i],
+                                       lat=dfx.lat.iloc[0], lon=dfx.lon.iloc[0], ndays=1,
                                        time_step=time_step, keep_dry=keep_dry)
 
             met_df.day = i+1
