@@ -32,26 +32,24 @@ if __name__ == "__main__":
 
     time_step = 30
     keep_dry = False
-    fname = "gswp3_met/GSWP3_met_2006.csv"
+    fname = "gswp3_met/GSWP3_met_10_17.csv"
     df = pd.read_csv(fname)
 
-    #years = np.unqiue(df.year)
-    years = [2006, 2007]
-
-    current_year = years[0]
-
-    # Mock up capacity to run for multiple years
+    years = np.unique(df.year)
     for year in years:
 
-        met = generate_met_data(year=year, Tmin=df.tmin[0], Tmax=df.tmax[0],
-                                RH=df.rh[0]*100., PPFDmax=df.par[0],
-                                precip=df.rain[0], lat=df.lat[0], lon=df.lon[0],
-                                ndays=1, time_step=time_step, keep_dry=keep_dry)
-        for i in range(1, len(df)):
-            met_df = generate_met_data(year=year, Tmin=df.tmin[i],
-                                       Tmax=df.tmax[i], RH=df.rh[i]*100.,
-                                       PPFDmax=df.par[i], precip=df.rain[i],
-                                       lat=df.lat[0], lon=df.lon[0], ndays=1,
+        dfx = df[df.year == year]
+
+        met = generate_met_data(year=year, Tmin=dfx.tmin[0], Tmax=dfx.tmax[0],
+                                RH=dfx.rh[0]*100., PPFDmax=df.par[0],
+                                precip=dfx.rain[0], lat=dfx.lat[0],
+                                lon=dfx.lon[0], ndays=1, time_step=time_step,
+                                keep_dry=keep_dry)
+        for i in range(1, len(dfx)):
+            met_df = generate_met_data(year=year, Tmin=dfx.tmin[i],
+                                       Tmax=dfx.tmax[i], RH=dfx.rh[i]*100.,
+                                       PPFDmax=dfx.par[i], precip=dfx.rain[i],
+                                       lat=dfx.lat[0], lon=dfx.lon[0], ndays=1,
                                        time_step=time_step, keep_dry=keep_dry)
 
             met_df.day = i+1
