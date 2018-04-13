@@ -21,22 +21,6 @@ col_end=27
 
 cd $PBS_O_WORKDIR
 
-# Clear list of valid points
-rm -f valid_points
-
-# Work out which points are valid, writing them into the file 'valid_points'
-for row in $(seq $row_start $row_end)
-do
-    for col in $(seq $col_start $col_end)
-    do
-        landsea=$(python gswp3_land_sea/check_nsw_gswp3_land_sea_mask.py $row $col gswp3_land_sea/nsw_gswp3_land_sea_mask.bin)
-        if [ "$landsea" -eq 0 ]
-        then
-            echo $row $col >> valid_points
-        fi
-    done
-done
-
 # Process all of the valid points in parallel
 export NP_DEBUG=1
-./utils/node_parallel.sh python src/extract_forcing_timeseries_from_GSWP3.py {1} {2} :::: valid_points
+./utils/node_parallel.sh python src/extract_forcing_timeseries_from_GSWP3.py {1} {2} :::: gswp3_land_sea/valid_points_"$row_start"_"$row_end"_"$col_start"_"$col_end"
