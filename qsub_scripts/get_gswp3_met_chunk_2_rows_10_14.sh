@@ -32,6 +32,7 @@ do
         if [ $landsea -eq 0 ]
         then
             pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col
+            #pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col &
             let new_core=1
         else
             let new_core=0
