@@ -82,6 +82,11 @@ def open_file(fname, var):
     lon_en = np.argwhere(data.lon.values == 154.25)[0][0]
     nsw = data[:,lat_st:lat_en,lon_st:lon_en]
 
+
+    print(nsw[0,0:5,0:28].size)
+    print(nsw[0,4,27])
+    sys.exit()
+
     fname = "/Users/mdekauwe/Desktop/gswp3_landmask_nomissing.nc"
     ds = xr.open_dataset(fname)
     mask = ds["landsea"]
@@ -89,6 +94,7 @@ def open_file(fname, var):
     nsw = np.where(nsw_mask == 1, np.nan, nsw)
 
     all_rows, all_cols = nsw_mask.shape
+    print(all_rows, all_cols)
     total_size = all_rows * all_cols
     x = nsw_mask.values
     land_size = len(x[x!=1])
