@@ -22,13 +22,6 @@ ncols=$(($col_end-$col_start))
 
 cd $PBS_O_WORKDIR
 
-row_start=0
-row_end=4
-col_start=0
-col_end=27
-nrows=$(($row_end-$row_start))
-ncols=$(($col_end-$col_start))
-
 core=0
 new_core=1
 row=$row_start
