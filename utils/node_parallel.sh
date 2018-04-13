@@ -39,7 +39,7 @@ module load pbs
 
 PBSDSH=${PBS_NCPUS:+"pbsdsh -n {%} --"}
 
-parallel ${NP_DEBUG:+"--verbose"} --jobs ${PBS_NCPUS:-2} ${NP_PARALLEL_ARGS} -- \
+parallel ${NP_DEBUG:+"--verbose"} --jobs ${PBS_NCPUS:-2} --colsep ' ' -- \
     ${PBSDSH} \
     /bin/bash -l -c "'\
         source ${NP_ENVFILE}; \
