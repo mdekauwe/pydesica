@@ -5,7 +5,7 @@
 #PBS -q normal
 #PBS -l walltime=00:40:00
 #PBS -l ncpus=144
-#PBS -l mem=16GB
+#PBS -l mem=288GB
 #PBS -l wd
 #PBS -j oe
 #PBS -e logs/error.txt
