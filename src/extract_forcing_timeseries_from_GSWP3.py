@@ -16,14 +16,10 @@ import numpy as np
 import xarray as xr
 import constants as c
 
-def main(met_dir):
+def main(met_dir, odir, row, col):
     sec_2_3hr = 60. * 60. * 3.
 
-    #random location
-    row = 10
-    col = 17
-
-    f = open("GSWP3_met_%d_%d.csv" % (row,col), 'w')
+    f = open(os.path.join(odir, "GSWP3_met_%d_%d.csv" % (row,col)), 'w')
     print("year,doy,tmin,tmax,rain,par,rh,lat,lon", file=f)
 
     for year in range(2000, 2011):
@@ -100,5 +96,8 @@ def qair_to_rh(qair, tair, press=1013.25):
 
 if __name__ == "__main__":
 
+    row = int(sys.argv[1])
+    col = int(sys.argv[2])
     met_dir = "/g/data1/wd9/MetForcing/Global/GSWP3_2017"
-    main(met_dir)
+    odir = "gswp3_met"
+    main(met_dir, odir, row, col)
