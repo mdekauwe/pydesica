@@ -3,9 +3,9 @@
 #PBS -M mdekauwe\@gmail.com
 #PBS -P w35
 #PBS -q normal
-#PBS -l walltime=01:00:00
+#PBS -l walltime=03:00:00
 #PBS -l ncpus=128
-#PBS -l mem=64GB
+#PBS -l mem=16GB
 #PBS -l wd
 #PBS -j oe
 #PBS -e logs/error.txt
@@ -21,7 +21,7 @@ col_end=27
 cd $PBS_O_WORKDIR
 
 core=0
-new_core=1
+new_core=0
 row=$row_start
 while [ $row -le $row_end ]
 do
@@ -32,24 +32,21 @@ do
         if [ $landsea -eq 0 ]
         then
             pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col
-            let new_core=0
-        else
             let new_core=1
+        else
+            let new_core=0
         fi
-
-        let col=col+1
 
         # only increment the core if we found a valid pixel to run
-        if [ $new_core -eq 0 ]
-        then
-            let core=core+1
-        fi
+        (( core += new_core ))
 
         if [ $core -ge $PBS_NCPUS ]
         then
             let core=0
             sleep 3m
         fi
+
+        let col=col+1
     done
     let row=row+1
 done

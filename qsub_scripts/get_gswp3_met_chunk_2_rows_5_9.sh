@@ -13,15 +13,17 @@
 
 ulimit -s unlimited
 
-row_start=5
-row_end=9
+row_start=0
+row_end=4
 col_start=0
 col_end=27
+nrows=$(($row_end-$row_start))
+ncols=$(($col_end-$col_start))
 
 cd $PBS_O_WORKDIR
 
 core=0
-new_core=1
+new_core=0
 row=$row_start
 while [ $row -le $row_end ]
 do
@@ -32,24 +34,21 @@ do
         if [ $landsea -eq 0 ]
         then
             pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col
-            let new_core=0
-        else
             let new_core=1
+        else
+            let new_core=0
         fi
-
-        let col=col+1
 
         # only increment the core if we found a valid pixel to run
-        if [ $new_core -eq 0 ]
-        then
-            let core=core+1
-        fi
+        (( core += new_core ))
 
         if [ $core -ge $PBS_NCPUS ]
         then
             let core=0
             sleep 3m
         fi
+
+        let col=col+1
     done
     let row=row+1
 done
