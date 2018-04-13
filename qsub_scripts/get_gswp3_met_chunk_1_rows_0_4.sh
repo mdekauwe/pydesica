@@ -17,8 +17,7 @@ row_start=0
 row_end=4
 col_start=0
 col_end=27
-nrows=$(($row_end-$row_start))
-ncols=$(($col_end-$col_start))
+
 
 cd $PBS_O_WORKDIR
 
@@ -33,7 +32,7 @@ do
         landsea=$(python gswp3_land_sea/check_nsw_gswp3_land_sea_mask.py $row $col gswp3_land_sea/nsw_gswp3_land_sea_mask.bin)
         if [ $landsea -eq 0 ]
         then
-            python src/extract_forcing_timeseries_from_GSWP3.py $row $col
+            pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col
             let new_core=0
         else
             let new_core=1
