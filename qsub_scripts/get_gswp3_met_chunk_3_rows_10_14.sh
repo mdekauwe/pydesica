@@ -8,8 +8,8 @@
 #PBS -l mem=288GB
 #PBS -l wd
 #PBS -j oe
-#PBS -e logs/error.txt
-#PBS -o logs/log.txt
+#PBS -e logs/error_chunk_3_rows_10_14.txt
+#PBS -o logs/log_chunk_3_rows_10_14.txt
 
 ulimit -s unlimited
 set -eu
