@@ -3,9 +3,9 @@
 #PBS -M mdekauwe\@gmail.com
 #PBS -P w35
 #PBS -q normal
-#PBS -l walltime=01:00:00
+#PBS -l walltime=03:00:00
 #PBS -l ncpus=128
-#PBS -l mem=64GB
+#PBS -l mem=16GB
 #PBS -l wd
 #PBS -j oe
 #PBS -e logs/error.txt
@@ -14,12 +14,10 @@
 ulimit -s unlimited
 set -eu
 
-row_start=0
-row_end=4
+row_start=10
+row_end=14
 col_start=0
 col_end=27
-nrows=$(($row_end-$row_start))
-ncols=$(($col_end-$col_start))
 
 cd $PBS_O_WORKDIR
 
