@@ -12,6 +12,7 @@
 #PBS -o logs/log.txt
 
 ulimit -s unlimited
+set -eu
 
 row_start=15
 row_end=19
@@ -20,36 +21,22 @@ col_end=27
 
 cd $PBS_O_WORKDIR
 
-core=0
-new_core=0
-row=$row_start
-while [ $row -le $row_end ]
+# Clear list of valid points
+rm -f valid_points
+
+# Work out which points are valid, writing them into the file 'valid_points'
+for row in $(seq $row_start $row_end)
 do
-    col=$col_start
-    while [ $col -le $col_end ]
+    for col in $(seq $col_start $col_end)
     do
         landsea=$(python gswp3_land_sea/check_nsw_gswp3_land_sea_mask.py $row $col gswp3_land_sea/nsw_gswp3_land_sea_mask.bin)
-        if [ $landsea -eq 0 ]
+        if [ "$landsea" -eq 0 ]
         then
-            pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col
-            #pbsdsh -n $core python src/extract_forcing_timeseries_from_GSWP3.py $row $col &
-            let new_core=1
-        else
-            let new_core=0
+            echo $row $col >> valid_points
         fi
-
-        # only increment the core if we found a valid pixel to run
-        (( core += new_core ))
-
-        if [ $core -ge $PBS_NCPUS ]
-        then
-            let core=0
-            sleep 3m
-        fi
-
-        let col=col+1
     done
-    let row=row+1
 done
 
-wait
+# Process all of the valid points in parallel
+export NP_DEBUG=1
+./utils/node_parallel.sh python src/extract_forcing_timeseries_from_GSWP3.py {1} {2} :::: valid_points
