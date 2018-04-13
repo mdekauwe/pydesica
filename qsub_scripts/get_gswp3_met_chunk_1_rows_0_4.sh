@@ -3,7 +3,7 @@
 #PBS -M mdekauwe\@gmail.com
 #PBS -P w35
 #PBS -q normal
-#PBS -l walltime=03:00:00
+#PBS -l walltime=00:30:00
 #PBS -l ncpus=128
 #PBS -l mem=16GB
 #PBS -l wd
