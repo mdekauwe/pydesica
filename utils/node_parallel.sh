@@ -17,6 +17,11 @@
 
 set -eu
 
+if [ ! -d /short/$PROJECT/$USER/tmp ]
+then
+    mkdir /short/$PROJECT/$USER/tmp
+fi
+
 # Save the environment in the shared tmp directory so we can see it from all nodes
 NP_ENVFILE=$(mktemp --tmpdir="/short/$PROJECT/$USER/tmp")
 NP_ERRFILE=$(mktemp --tmpdir="/short/$PROJECT/$USER/tmp")

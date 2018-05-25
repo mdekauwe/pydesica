@@ -3,13 +3,13 @@
 #PBS -M mdekauwe\@gmail.com
 #PBS -P w35
 #PBS -q normal
-#PBS -l walltime=03:00:00
-#PBS -l ncpus=128
-#PBS -l mem=16GB
+#PBS -l walltime=00:30:00
+#PBS -l ncpus=144
+#PBS -l mem=288GB
 #PBS -l wd
 #PBS -j oe
-#PBS -e logs/error.txt
-#PBS -o logs/log.txt
+#PBS -e logs/error_chunk_1_rows_0_4.txt
+#PBS -o logs/log_chunk_1_rows_0_4.txt
 
 ulimit -s unlimited
 set -eu

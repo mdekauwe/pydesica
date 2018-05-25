@@ -3,23 +3,21 @@
 #PBS -M mdekauwe\@gmail.com
 #PBS -P w35
 #PBS -q normal
-#PBS -l walltime=01:00:00
-#PBS -l ncpus=128
-#PBS -l mem=64GB
+#PBS -l walltime=00:30:00
+#PBS -l ncpus=144
+#PBS -l mem=288GB
 #PBS -l wd
 #PBS -j oe
-#PBS -e logs/error.txt
-#PBS -o logs/log.txt
+#PBS -e logs/error_chunk_2_rows_5_9.txt
+#PBS -o logs/log_chunk_2_rows_5_9.txt
 
 ulimit -s unlimited
 set -eu
 
-row_start=0
-row_end=4
+row_start=5
+row_end=9
 col_start=0
 col_end=27
-nrows=$(($row_end-$row_start))
-ncols=$(($col_end-$col_start))
 
 cd $PBS_O_WORKDIR
 
