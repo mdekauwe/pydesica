@@ -202,6 +202,7 @@ class Desica(object):
         out.psi_soil[0] = self.calc_swp(self.sw0)
         out.Eleaf[0] = 0.0
         out.pet[0] = 0.0
+        out.gsw[0] = 0.0
 
         # soil hydraulic conductance (mmol m-2 s-1 MPa-1)
         out.ksoil[0] = self.calc_ksoil(out.psi_soil[0])
@@ -242,6 +243,7 @@ class Desica(object):
                             'ksoil2stem':dummy,
                             'kstem2leaf':dummy,
                             'pet':dummy,
+                            'gsw':dummy,
                             'cwd':dummy})
 
         return out
@@ -259,6 +261,7 @@ class Desica(object):
 
         # Don't add gmin, instead use it as the lower boundary
         gsw = max(self.gmin, c.mol_2_mmol * gsw)
+        out.gsw[i] = gsw
 
         # Leaf transpiration assuming perfect coupling, mmol m-2 s-1
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
