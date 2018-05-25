@@ -39,9 +39,10 @@ if __name__ == "__main__":
 
         day_psi_soil = df.psi_soil[i:i+48].values
         day_gsw = df.gsw[i:i+48].values
+        day_gsw = np.nansum(day_gsw[day_gsw>0.0])
 
         psi_pd.append( day_psi_soil[12] ) # 6am
-        gsw_pd.append( day_gsw[12] )# 6am
+        gsw_pd.append( day_gsw )
 
 
     plt.plot(psi_pd, gsw_pd, "ko")
