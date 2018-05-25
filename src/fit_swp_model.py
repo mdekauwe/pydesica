@@ -27,8 +27,15 @@ from desica import plot_cwd
 from desica import plot_sw
 from desica import plot_transpiration_and_pet
 
+from scipy.optimize import curve_fit
+
+def func(x, a):
+    g1 = 4.0
+    return g1 * np.exp(a * x)
 
 if __name__ == "__main__":
+
+    g1 = 4.0
 
     fname = "outputs/drydown_out.csv"
     df = pd.read_csv(fname)
@@ -41,9 +48,12 @@ if __name__ == "__main__":
         day_gsw = df.gsw[i:i+48].values
         day_gsw = np.nansum(day_gsw[day_gsw>0.0])
 
-        psi_pd.append( day_psi_soil[12] ) # 6am
-        gsw_pd.append( day_gsw )
+        if np.isnan(day_gsw) == False and np.isnan(day_psi_soil[12]) == False:
+            gsw_pd.append( day_gsw )
+            psi_pd.append( day_psi_soil[12] ) # 6am
 
-
+    popt, pcov = curve_fit(func, psi_pd, gsw_pd)
+    print(popt, pcov)
     plt.plot(psi_pd, gsw_pd, "ko")
+    plt.plot(psi_pd, func(psi_pd, popt), 'r-')
     plt.show()
