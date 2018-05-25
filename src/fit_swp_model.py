@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
         day_psi_soil = df.psi_soil[i:i+48].values
         day_gsw = df.gsw[i:i+48].values
-        day_gsw = np.nansum(day_gsw[day_gsw>0.0])
+        day_gsw = np.nanmean(day_gsw[day_gsw>0.0])
 
         if np.isnan(day_gsw) == False and np.isnan(day_psi_soil[12]) == False:
             gsw_pd.append( day_gsw )
