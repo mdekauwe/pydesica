@@ -35,8 +35,6 @@ def func(x, a):
 
 if __name__ == "__main__":
 
-    g1 = 4.0
-
     fname = "outputs/drydown_out.csv"
     df = pd.read_csv(fname)
 
@@ -46,11 +44,15 @@ if __name__ == "__main__":
 
         day_psi_soil = df.psi_soil[i:i+48].values
         day_gsw = df.gsw[i:i+48].values
-        day_gsw = np.nanmean(day_gsw[day_gsw>0.0])
 
-        if np.isnan(day_gsw) == False and np.isnan(day_psi_soil[12]) == False:
-            gsw_pd.append( day_gsw )
-            psi_pd.append( day_psi_soil[12] ) # 6am
+        if np.isnan(np.sum(day_gsw)) == False:
+
+            if len(day_gsw) > 1:
+                day_gsw = np.nanmean(day_gsw)
+                if np.isnan(day_gsw) == False and \
+                   np.isnan(day_psi_soil[12]) == False:
+                    gsw_pd.append( day_gsw )
+                    psi_pd.append( day_psi_soil[12] ) # 6am
 
     popt, pcov = curve_fit(func, psi_pd, gsw_pd)
     print(popt, pcov)
