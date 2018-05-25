@@ -31,7 +31,7 @@ from scipy.optimize import curve_fit
 
 def func(x, a):
     g1 = 4.0
-    return g1 * np.exp(a * x)
+    return g1 * np.exp(a * (x+np.min(x)))
 
 if __name__ == "__main__":
 
@@ -54,8 +54,12 @@ if __name__ == "__main__":
                     gsw_pd.append( day_gsw )
                     psi_pd.append( day_psi_soil[12] ) # 6am
 
+    psi_pd = np.asarray(psi_pd)
+    gsw_pd = np.asarray(gsw_pd)
+    print(np.min(psi_pd))
     popt, pcov = curve_fit(func, psi_pd, gsw_pd)
     print(popt, pcov)
     plt.plot(psi_pd, gsw_pd, "ko")
     plt.plot(psi_pd, func(psi_pd, popt), 'r-')
+
     plt.show()
