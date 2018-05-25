@@ -30,14 +30,19 @@ from desica import plot_transpiration_and_pet
 
 if __name__ == "__main__":
 
-    fname = "outputs//drydown_out.csv"
+    fname = "outputs/drydown_out.csv"
     df = pd.read_csv(fname)
 
-    for i in range(len(out), 48):
+    psi_pd = []
+    gsw_pd = []
+    for i in range(0, len(df), 48):
 
-        day.psi_soil = out.psi_soil[i:i+48]
-        print(len
-        print(out.t[i], out.t[i] / 48., out.psi_soil[i])
+        day_psi_soil = df.psi_soil[i:i+48].values
+        day_gsw = df.gsw[i:i+48].values
 
-        if i > 300:
-            sys.exit()
+        psi_pd.append( day_psi_soil[12] ) # 6am
+        gsw_pd.append( day_gsw[12] )# 6am
+
+
+    plt.plot(psi_pd, gsw_pd, "ko")
+    plt.show()

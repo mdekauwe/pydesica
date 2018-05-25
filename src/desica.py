@@ -259,9 +259,10 @@ class Desica(object):
         gsw = self.F.canopy(met.Ca[i], met.tair[i], met.par[i],
                             met.vpd[i], mult)
 
+        out.gsw[i] = gsw
+        
         # Don't add gmin, instead use it as the lower boundary
         gsw = max(self.gmin, c.mol_2_mmol * gsw)
-        out.gsw[i] = gsw
 
         # Leaf transpiration assuming perfect coupling, mmol m-2 s-1
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
