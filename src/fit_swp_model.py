@@ -29,10 +29,20 @@ from desica import plot_transpiration_and_pet
 
 from scipy.optimize import curve_fit
 
-
-def sigmoid(x, a, b):
-    y = 1.0 / (1.0 + np.exp(-b * (x - a)))
+def sigmoid(x, a, b, c, d):
+    """
+    a adjusts amplitude
+    b adjusts y offset
+    c adjusts x offset
+    d adjusts slope
+    """
+    y = ((a-b) / (1 + np.exp(x-(c/2))**d)) + b
     return y
+
+
+#def sigmoid(x, a, b):
+#    y = 1.0 / (1.0 + np.exp(-b * (x - a)))
+#    return y
 
 def func(x, a):
     g1 = 4.0
@@ -64,9 +74,9 @@ if __name__ == "__main__":
     print(np.max(gsw_pd))
     #popt, pcov = curve_fit(func, psi_pd, gsw_pd)
     popt, pcov = curve_fit(sigmoid, psi_pd, gsw_pd)
-    print(popt[0])
+    print(popt)
     plt.plot(psi_pd, gsw_pd, "ko")
     #plt.plot(psi_pd, func(psi_pd, popt[0]), 'r-')
-    plt.plot(psi_pd, sigmoid(psi_pd, popt[0], popt[1]), 'r-')
+    plt.plot(psi_pd, sigmoid(psi_pd, popt[0], popt[1], popt[2], popt[3]), 'r-')
 
     plt.show()
