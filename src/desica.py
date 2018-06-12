@@ -59,7 +59,7 @@ class Desica(object):
 
     def __init__(self, plc_dead=88., soil_depth=1.0, ground_area=1.0,
                  met_timestep=30., sf=8., g1=4., Cs=100000., b=6.,
-                 Cl=10000., kp_sat=3., p50=-4., psi_f=-2., s50=30., gmin=10,
+                 Cl=10000., kp_sat=4., p50=-4., psi_f=-2., s50=30., gmin=10,
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
                  psi_e=-0.8*1E-03, Ksat=20., Lv=10000., F=None, keep_wet=False,
                  stop_dead=True, run_twice=True, rroot=1E-06, FAO=False):
@@ -260,7 +260,7 @@ class Desica(object):
                             met.vpd[i], mult)
 
         out.gsw[i] = gsw
-        
+
         # Don't add gmin, instead use it as the lower boundary
         gsw = max(self.gmin, c.mol_2_mmol * gsw)
 
@@ -969,12 +969,13 @@ if __name__ == "__main__":
     deltaSj = 631.88
     FAO = False
     year = 2000
+    kp_sat = 4  # Tim Brodribb pers comm
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True,
-               FAO=FAO)
+               FAO=FAO, kp_sat=kp_sat)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
