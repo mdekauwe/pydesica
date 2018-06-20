@@ -39,7 +39,7 @@ if __name__ == "__main__":
     met = generate_met_data(Tmin=15, Tmax=35.0, RH=30, ndays=200,
                             lat=lat, lon=lon, time_step=time_step)
 
-    kp_sat = 4  # Tim Brodribb pers comm
+    kp_sat = 4     # Tim Brodribb pers comm
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 3.        # plant leaf area, m2
     p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
