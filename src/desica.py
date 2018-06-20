@@ -947,6 +947,7 @@ if __name__ == "__main__":
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=700,
                             lat=lat, lon=lon, time_step=time_step)
 
+    kp_sat = 4     # Tim Brodribb pers comm
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 6.        # plant leaf area, m2
     p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
@@ -969,7 +970,7 @@ if __name__ == "__main__":
     deltaSj = 631.88
     FAO = False
     year = 2000
-    kp_sat = 4  # Tim Brodribb pers comm
+
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
