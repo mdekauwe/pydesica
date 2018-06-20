@@ -39,6 +39,7 @@ if __name__ == "__main__":
     met = generate_met_data(Tmin=15, Tmax=35.0, RH=30, ndays=200,
                             lat=lat, lon=lon, time_step=time_step)
 
+    kp_sat = 4  # Tim Brodribb pers comm
     psi_stem0 = 0. # initial stem water potential, MPa
     AL = 3.        # plant leaf area, m2
     p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
@@ -66,7 +67,7 @@ if __name__ == "__main__":
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, run_twice=True, stop_dead=True,
-               FAO=FAO)
+               FAO=FAO, kp_sat=kp_sat)
     out, day_of_death = D.run_simulation(met)
 
     odir = "outputs"
