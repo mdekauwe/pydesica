@@ -707,6 +707,36 @@ def plot_swp_sw(odir, out, year=None):
                     pad_inches=0.1)
     plt.close('all')
 
+def plot_swp_ksoil(odir, out, year=None):
+
+    fig = plt.figure(figsize=(9,6))
+    fig.subplots_adjust(hspace=0.3)
+    fig.subplots_adjust(wspace=0.2)
+    plt.rcParams['text.usetex'] = False
+    plt.rcParams['font.family'] = "sans-serif"
+    plt.rcParams['font.sans-serif'] = "Helvetica"
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['legend.fontsize'] = 10
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+
+    ax1 = fig.add_subplot(111)
+
+    ax1.plot(out.psi_soil, out.ksoil, "b.", label="Ksoil")
+
+    ax1.set_ylabel("Soil hyd. cond. (mmol m$^{-2}$ s$^{-1}$ MPa$^{-1}$)")
+    ax1.set_xlabel("Soil water potential (MPa)")
+    #ax1.legend(numpoints=1, loc="best")
+    ax1.set_ylim(0, 10)
+    if year is None:
+        fig.savefig("%s/swp_ksoil.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
+    else:
+        fig.savefig("%s/swp_ksoil_%d.pdf" % (odir, year), bbox_inches='tight',
+                    pad_inches=0.1)
+    plt.close('all')
+
 def plot_transpiration(odir, out, year=None):
 
     conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
@@ -987,6 +1017,7 @@ if __name__ == "__main__":
 
     plot_time_to_mortality(odir, out, time_step)
     plot_swp_sw(odir, out)
+    plot_swp_ksoil(odir, out)
     plot_transpiration(odir, out)
     plot_transpiration_and_pet(odir, out)
     plot_cwd(odir, out, time_step)
