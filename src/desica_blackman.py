@@ -149,6 +149,8 @@ class Desica(object):
             else:
                 out.pet[i] = calc_pet_energy(rnet)
 
+            # Add Blackman reference ...
+
             # If the stomata have closed, start calculating the time it takes
             # for trees to desiccate from stomatal closure to lethal levels of
             # water stress (tcrit; s)
@@ -160,9 +162,17 @@ class Desica(object):
                     store -= self.gmin
 
                     count = 0
-                    theta0 = store / self.Cs
-                    Vw = ?
-                    num = (theta0 - self.Cs * out.psi_stem[i]) * Vw
+
+                    #  water content of the plant when saturated.
+                    Vw = self.Cl + self.Cs
+
+                    # relative water content at stomatal closure
+                    theta0 = store / Vw
+
+                    # relative water content of the hydraulic failure point.
+                    theta_crit = ?
+
+                    num = (theta_0 - theta_crit) * Vw
                     den = self.AL * self.gmin * met.vpd[i]
                     tcrit = num / den
 
