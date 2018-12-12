@@ -182,7 +182,7 @@ class Desica(object):
 
                 # stomata are closed, start drawing down the store plant water
                 elif plc > 12. and stomata_closed:
-                    store -= self.gmin
+                    store -= self.gmin * self.AL
                     day_count += 1
 
                 # it has rained, open up our stomates again, obv we should
