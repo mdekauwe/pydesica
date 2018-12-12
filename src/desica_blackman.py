@@ -156,13 +156,18 @@ class Desica(object):
                 plc = self.calc_plc(out.kplant[i])
                 if plc > 12. and stomata_closed == False:
                     stomata_closed = True
+                    store = self.Cs
+                    store -= self.gmin
+
                     count = 0
-                    theta0 = ?
+                    theta0 = store / self.Cs
                     Vw = ?
                     num = (theta0 - self.Cs * out.psi_stem[i]) * Vw
                     den = self.AL * self.gmin * met.vpd[i]
                     tcrit = num / den
+
                 elif plc > 12. and stomata_closed:
+                    store -= self.gmin
                     count += 1
                 elif plc < 12 and stomata_closed:
                     # it has rained, open up our stomates again, obv we should
