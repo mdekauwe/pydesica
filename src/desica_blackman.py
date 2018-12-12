@@ -37,6 +37,9 @@ References:
 * Xu X, Medvigy D, Powers JS, Becknell JM, Guan K (2016) Diversity in plant
   hydraulic traits explains seasonal and inter-annual variations of vegetation
   dynamics in seasonally dry tropical forests. New Phytologist, 212, 8095.
+* Blackman, C. J., Pfautsch, S., Choat, B., Delzon, S., Gleason, S. M., and
+  Duursma, R. A. (2016) Toward an index of desiccation time to tree mortality
+  under drought. Plant, Cell & Environment, 39: 2342-2345.
 
 That's all folks.
 """
@@ -149,7 +152,7 @@ class Desica(object):
             else:
                 out.pet[i] = calc_pet_energy(rnet)
 
-            # Add Blackman reference ...
+            # Calculate time to death following Blackman et al. (2016) 
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
 
@@ -182,7 +185,7 @@ class Desica(object):
 
                 # stomata are closed, start drawing down the store plant water
                 elif plc > 12. and stomata_closed:
-                    store -= self.gmin 
+                    store -= self.gmin
                     day_count += 1
 
                 # it has rained, open up our stomates again, obv we should
