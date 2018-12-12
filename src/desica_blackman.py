@@ -150,41 +150,48 @@ class Desica(object):
                 out.pet[i] = calc_pet_energy(rnet)
 
             # Add Blackman reference ...
-
-            # If the stomata have closed, start calculating the time it takes
-            # for trees to desiccate from stomatal closure to lethal levels of
-            # water stress (tcrit; s)
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
-                if plc > 12. and stomata_closed == False:
-                    stomata_closed = True
-                    store = self.Cs
-                    store -= self.gmin
 
-                    count = 0
+                # If the stomata have closed, start calculating the time it
+                # takes for trees to desiccate from stomatal closure to lethal
+                # levels of water stress (tcrit; s)
+                if plc > 12. and stomata_closed == False:
+                    day_count = 0
+                    stomata_closed = True
+
+                    # use combined? xylem only? Allows us to translate water
+                    # content to water potential (mmol MPa-1)
+                    capacitance = self.Cl + self.Cs
+
+                    # relative water content at the point of hydaulic failure
+                    theta_crit = psi_crit * capacitance
 
                     #  water content of the plant when saturated.
-                    Vw = self.Cl + self.Cs
+                    Vw = capacitance
 
-                    # relative water content at stomatal closure
+                    # relative water content at point of stomatal closure
+                    store = theta0 * Vw
+
                     theta0 = store / Vw
 
-                    # relative water content of the hydraulic failure point.
-                    theta_crit = ?
 
                     num = (theta_0 - theta_crit) * Vw
                     den = self.AL * self.gmin * met.vpd[i]
                     tcrit = num / den
 
+                # stomata are closed, start drawing down the store plant water
                 elif plc > 12. and stomata_closed:
                     store -= self.gmin
-                    count += 1
+                    day_count += 1
+
+                # it has rained, open up our stomates again, obv we should
+                # add a threshold here ...
                 elif plc < 12 and stomata_closed:
-                    # it has rained, open up our stomates again, obv we should
-                    # add a threshold
                     stomata_closed = False
 
-                if count > tcrit:
+                # We've died! Store the day and exit
+                if day_count > tcrit:
                     if self.met_timestep == 15:
                         day_of_death = i / 96.
                     elif self.met_timestep == 30:
