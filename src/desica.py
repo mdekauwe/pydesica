@@ -628,7 +628,7 @@ class Desica(object):
         return Ksoil
 
 
-def plot_time_to_mortality(odir, out, timestep=15, year=None):
+def plot_time_to_mortality(odir, out, timestep=15, to_screen=False, year=None):
 
     if timestep == 15:
         ndays = out.t / 96.
@@ -670,15 +670,19 @@ def plot_time_to_mortality(odir, out, timestep=15, year=None):
     ax2.set_ylabel(r'PLC (%)')
     ax1.set_xlabel("Time (days)")
     ax1.set_ylabel("Water potential (MPa)")
-    if year is None:
-        fig.savefig("%s/time_to_mortality.pdf" % (odir), bbox_inches='tight',
-                    pad_inches=0.1)
-    else:
-        fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
-                    bbox_inches='tight', pad_inches=0.1)
-    plt.close('all')
 
-def plot_swp_sw(odir, out, year=None):
+    if to_screen:
+        plt.show()
+    else:
+        if year is None:
+            fig.savefig("%s/time_to_mortality.pdf" % (odir),
+                        bbox_inches='tight', pad_inches=0.1)
+        else:
+            fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
+                        bbox_inches='tight', pad_inches=0.1)
+        plt.close('all')
+
+def plot_swp_sw(odir, out, to_screen=False, year=None):
 
     fig = plt.figure(figsize=(9,6))
     fig.subplots_adjust(hspace=0.3)
@@ -699,13 +703,16 @@ def plot_swp_sw(odir, out, year=None):
     ax1.set_xlabel("Volumetric soil water content (m$^{3}$ m$^{-3}$)")
     ax1.set_ylabel("Soil water potential (MPa)")
     #ax1.legend(numpoints=1, loc="best")
-
-    if year is None:
-        fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
+    if to_screen:
+        plt.show()
     else:
-        fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
-                    pad_inches=0.1)
-    plt.close('all')
+        if year is None:
+            fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight',
+                        pad_inches=0.1)
+        else:
+            fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
+                        pad_inches=0.1)
+        plt.close('all')
 
 def plot_swp_ksoil(odir, out, year=None):
 
