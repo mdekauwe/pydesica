@@ -37,6 +37,9 @@ References:
 * Xu X, Medvigy D, Powers JS, Becknell JM, Guan K (2016) Diversity in plant
   hydraulic traits explains seasonal and inter-annual variations of vegetation
   dynamics in seasonally dry tropical forests. New Phytologist, 212, 8095.
+* Blackman, C. J., Pfautsch, S., Choat, B., Delzon, S., Gleason, S. M., and
+  Duursma, R. A. (2016) Toward an index of desiccation time to tree mortality
+  under drought. Plant, Cell & Environment, 39: 2342-2345.
 
 That's all folks.
 """
@@ -100,8 +103,6 @@ class Desica(object):
         self.rroot = rroot # mean radius of water absorbing roots, m
         self.timestep_sec = 60. * self.met_timestep
         self.FAO = FAO
-        self.MMOL_2_MOL = 0.001
-        self.MOL_H2O_2_G_H2O = 18.02
 
     def run_simulation(self, met=None):
         """
@@ -119,6 +120,7 @@ class Desica(object):
 
         """
         stomata_closed = False
+
         day_of_death = -999.
         (n, out) = self.initialise_model(met)
 
@@ -137,43 +139,9 @@ class Desica(object):
             else:
                 out.pet[i] = calc_pet_energy(rnet)
 
-            # Stop the simulation if we've died, i.e. reached P88
+            # Calculate time to death following Blackman et al. (2016)
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
-
-                # If the stomata have closed, start calculating the time it
-                # takes for trees to desiccate from stomatal closure to lethal
-                # levels of water stress (tcrit; VPD hrs)
-                if plc > 12. and stomata_closed == False:
-
-                    sstomata_closed = True
-
-                    # total plant relative water content (g g-1) at stomatal
-                    # closure
-                    theta_0 =
-
-                    # xylem water potential (MPa) associated with lethal levels
-                    # of drought stress (requivalent to p88)
-                    psi_crit = - 8.0
-
-                    # maximum total amount of water in the plant (g)
-                    Vw = 202.1 # E.grandis
-
-                    # shoot capacitance (RWC MPa-1) and represents the RWC at
-                    # psi_crit (that is theta_crit)
-                    shoot_capacitance = self.Cl
-
-                    # relative water content at the point of hydraulic failure
-                    theta_crit = psi_crit * capacitance
-
-
-                    #VPD needs to be mol mol-1 !!!
-
-                    # Convert to g m-2 s-1
-                    gmin = self.gmin * self.MMOL_2_MOL * self.MOL_H2O_2_G_H2O
-                    num = (theta_0 - capacitance * theta_crit) * Vw
-                    den = self.AL * MOL_H2O_2_G_H2O * np.mean(met.vpd)
-                    Tcrit = num / den
 
                 if plc > self.plc_dead:
                     if self.met_timestep == 15:
@@ -183,6 +151,57 @@ class Desica(object):
                     elif self.met_timestep == 60:
                         day_of_death = i / 24.
                     break
+
+                """
+                # If the stomata have closed, start calculating the time it
+                # takes for trees to desiccate from stomatal closure to lethal
+                # levels of water stress (tcrit; s)
+                if plc > 12. and stomata_closed == False:
+                    day_count = 0
+                    stomata_closed = True
+
+                    # use combined? xylem only? Allows us to translate water
+                    # content to water potential (mmol MPa-1)
+                    capacitance = self.Cl + self.Cs
+
+                    # relative water content at the point of hydaulic failure
+                    theta_crit = psi_crit * capacitance
+
+                    #  water content of the plant when saturated.
+                    Vw = capacitance
+
+                    # relative water content at point of stomatal closure
+                    store = theta0 * Vw
+
+                    theta0 = store / Vw
+
+
+                    num = (theta_0 - theta_crit) * Vw
+                    den = self.AL * self.gmin * met.vpd[i]
+                    tcrit = num / den
+
+
+                # stomata are closed, start drawing down the store plant water
+                elif plc > 12. and stomata_closed:
+                    store -= self.gmin
+                    day_count += 1
+
+                # it has rained, open up our stomates again, obv we should
+                # add a threshold here ...
+                elif plc < 12 and stomata_closed:
+                    stomata_closed = False
+
+                # We've died! Store the day and exit
+                if day_count > tcrit:
+                    if self.met_timestep == 15:
+                        day_of_death = i / 96.
+                    elif self.met_timestep == 30:
+                        day_of_death = i / 48.
+                    elif self.met_timestep == 60:
+                        day_of_death = i / 24.
+                    break
+                """
+
 
             out.hod[i] = hod
             out.doy[i] = doy
@@ -326,6 +345,8 @@ class Desica(object):
 
         # Update soil-to-root hydraulic conductance (mmol m-2 s-1 MPa-1)
         out.ksoil[i] = self.calc_ksoil(out.psi_soil[i])
+
+
 
         return out
 
@@ -653,7 +674,7 @@ class Desica(object):
         return Ksoil
 
 
-def plot_time_to_mortality(odir, out, timestep=15, to_screen=False, year=None):
+def plot_time_to_mortality(odir, out, timestep=15, year=None):
 
     if timestep == 15:
         ndays = out.t / 96.
@@ -695,19 +716,15 @@ def plot_time_to_mortality(odir, out, timestep=15, to_screen=False, year=None):
     ax2.set_ylabel(r'PLC (%)')
     ax1.set_xlabel("Time (days)")
     ax1.set_ylabel("Water potential (MPa)")
-
-    if to_screen:
-        plt.show()
+    if year is None:
+        fig.savefig("%s/time_to_mortality.pdf" % (odir), bbox_inches='tight',
+                    pad_inches=0.1)
     else:
-        if year is None:
-            fig.savefig("%s/time_to_mortality.pdf" % (odir),
-                        bbox_inches='tight', pad_inches=0.1)
-        else:
-            fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
-                        bbox_inches='tight', pad_inches=0.1)
-        plt.close('all')
+        fig.savefig("%s/time_to_mortality_%d.pdf" % (odir, year),
+                    bbox_inches='tight', pad_inches=0.1)
+    plt.close('all')
 
-def plot_swp_sw(odir, out, to_screen=False, year=None):
+def plot_swp_sw(odir, out, year=None):
 
     fig = plt.figure(figsize=(9,6))
     fig.subplots_adjust(hspace=0.3)
@@ -728,16 +745,13 @@ def plot_swp_sw(odir, out, to_screen=False, year=None):
     ax1.set_xlabel("Volumetric soil water content (m$^{3}$ m$^{-3}$)")
     ax1.set_ylabel("Soil water potential (MPa)")
     #ax1.legend(numpoints=1, loc="best")
-    if to_screen:
-        plt.show()
+
+    if year is None:
+        fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight', pad_inches=0.1)
     else:
-        if year is None:
-            fig.savefig("%s/sw_swp.pdf" % (odir), bbox_inches='tight',
-                        pad_inches=0.1)
-        else:
-            fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
-                        pad_inches=0.1)
-        plt.close('all')
+        fig.savefig("%s/sw_swp_%d.pdf" % (odir, year), bbox_inches='tight',
+                    pad_inches=0.1)
+    plt.close('all')
 
 def plot_swp_ksoil(odir, out, year=None):
 
@@ -1039,7 +1053,7 @@ if __name__ == "__main__":
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
+               Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=False,
                FAO=FAO, kp_sat=kp_sat, b=b)
     out, day_of_death = D.run_simulation(met)
 
@@ -1062,7 +1076,7 @@ if __name__ == "__main__":
     ofname = os.path.join(odir, "desica_out.csv")
     out.to_csv(ofname, index=False)
 
-
+    """
     if do_sensitivity:
         death = []
         gminx = np.linspace(10, 50, 10)
@@ -1073,3 +1087,4 @@ if __name__ == "__main__":
             out, day_of_death = D.run_simulation(met)
             death.append(day_of_death)
         plot_gmin_sensitvity(odir, gminx, death)
+    """

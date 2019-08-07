@@ -2,12 +2,12 @@
 # coding: utf-8
 
 """
-Apply desica to a single pixel of GSWP3 forcing
+Explore how traits affect vulnerability to reaching critical water potential
 
 That's all folks.
 """
 __author__ = "Martin De Kauwe"
-__version__ = "1.0 (06.03.2018)"
+__version__ = "1.0 (07.08.2019)"
 __email__ = "mdekauwe@gmail.com"
 
 import pandas as pd
