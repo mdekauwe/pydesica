@@ -29,8 +29,7 @@ from desica import plot_transpiration_and_pet
 from get_params import get_params
 import itertools
 
-names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Vcmax', 'Jmax', \
-         'Cl', 'Cs', 'Kplant', 'kp_sat', 'g1' 'day_of_death']
+names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Cl', 'Cs', 'day_of_death']
 df = pd.DataFrame(columns=names)
 
 params = get_params()
