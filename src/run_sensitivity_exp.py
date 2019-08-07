@@ -55,8 +55,8 @@ kp_sat = p.kpsat
 g1 = p.g1
 
 
-names = ['Tmax', 'D', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
-         'psi_stem', 'day_of_death']
+names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
+         'psi_stem', 'plc', 'day_of_death']
 df = pd.DataFrame(columns=names)
 
 #Tmaxx = [30, 35, 40, 45]
@@ -78,7 +78,9 @@ for Tmax in Tmaxx:
     for RH in RHx:
         met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
                                 lat=lat, lon=lon, time_step=time_step)
-        D = np.max(met.vpd)
+        Dmax = np.max(met.vpd)
+        Dmean = np.mean(met.vpd)
+
         for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
 
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
@@ -91,9 +93,10 @@ for Tmax in Tmaxx:
 
             out, day_of_death = D.run_simulation(met)
             psi_stem = out.psi_stem.iloc[-1]
+            plc = out.plc.iloc[-1]
 
-            result = [Tmax, D, gmin, AL, p50, Cl, Cs,  \
-                      psi_stem, day_of_death]
+            result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
+                      psi_stem, plc, day_of_death]
             print(result)
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
