@@ -76,22 +76,18 @@ for Tmax in Tmaxx:
 
         for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
 
-
-            print(result)
-
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
-                       Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
-                       Eaj=Eaj, deltaSj=deltaSj)
+                       Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
+                       deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
             D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
                        gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
                        FAO=FAO, kp_sat=kp_sat)
 
             out, day_of_death = D.run_simulation(met)
-            result = [Tmax, RH, gmin, AL, p50, Vcmax, Jmax, \
-                      Cl, Cs, Kplant, kp_sat, g1, day_of_death]
+            result = [Tmax, RH, gmin, AL, p50, Cl, Cs, day_of_death]
             print(result)
-            
+
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
 
