@@ -29,13 +29,10 @@ from desica import plot_transpiration_and_pet
 from get_params import get_params
 import itertools
 
-names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
-         'psi_stem', 'day_of_death']
-df = pd.DataFrame(columns=names)
-
+pft_name = "rf"
 params = get_params()
 pfts = list(params)
-p = params["rf"]
+p = params[pft_name]
 
 time_step = 30
 lat = -35.76
@@ -57,6 +54,11 @@ Kplant = p.Kplant
 kp_sat = p.kpsat
 g1 = p.g1
 
+
+names = ['Tmax', 'D', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
+         'psi_stem', 'day_of_death']
+df = pd.DataFrame(columns=names)
+
 #Tmaxx = [30, 35, 40, 45]
 #RHx = [30, 20, 10, 5]
 
@@ -76,7 +78,7 @@ for Tmax in Tmaxx:
     for RH in RHx:
         met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
                                 lat=lat, lon=lon, time_step=time_step)
-
+        D = np.mean(met.vpd)
         for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
 
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
@@ -90,16 +92,15 @@ for Tmax in Tmaxx:
             out, day_of_death = D.run_simulation(met)
             psi_stem = out.psi_stem.iloc[-1]
 
-            result = [Tmax, RH, gmin, AL, p50, Cl, Cs,  \
+            result = [Tmax, D, gmin, AL, p50, Cl, Cs,  \
                       psi_stem, day_of_death]
-            print(result)
+
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
-
 
 odir = "outputs"
 if not os.path.exists(odir):
     os.makedirs(odir)
 
-ofname = os.path.join(odir, "trait_sensitivity.csv")
+ofname = os.path.join(odir, "%s_trait_sensitivity.csv" % (pft_name))
 df.to_csv(ofname, index=False)
