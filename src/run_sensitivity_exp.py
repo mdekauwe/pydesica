@@ -27,6 +27,7 @@ from desica import plot_cwd
 from desica import plot_sw
 from desica import plot_transpiration_and_pet
 from get_params import get_params
+import itertools
 
 names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Vcmax', 'Jmax', \
          'Cl', 'Cs', 'Kplant', 'kp_sat', 'g1' 'day_of_death']
@@ -56,16 +57,36 @@ psi_f = -3.
 N = 100
 Tmaxx = [30, 35, 40, 45]
 RHx = [30, 20, 10, 5]
-gminx = np.linspace(0.5, 50, N)
-ALx = np.linspace(0.5, 10, N)
-p50x = np.linspace(-1, -10, N)
-Vcmaxx = np.linspace(10, 100, N)
-Jmaxx = Vcmaxx * 1.67
-Clx = np.linspace(200, 800, N)
-Csx = np.linspace(10000, 50000, N)
-Kplantx = np.linspace(0.5, 5, N)
-kp_satx = np.linspace(0.5, 10, N)
-g1x = np.linspace(0.5, 10, N)
+
+ranges = [
+    np.linspace(0.5, 50, N), # gmain
+    np.linspace(0.5, 10, N), # ALx
+    np.linspace(-1, -10, N), # p50x
+    np.linspace(10, 100, N), # Vcmaxx
+    np.linspace(200, 800, N),  # Clx
+    np.linspace(10000, 50000, N), # Csx
+    np.linspace(0.5, 5, N), # Kplantx
+    np.linspace(0.5, 10, N), # kp_satx
+    np.linspace(0.5, 10, N), # g1x
+]
+
+
+
+for Tmax in Tmaxx:
+    for RH in RHx:
+        met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
+                                lat=lat, lon=lon, time_step=time_step)
+
+        for gmin, AL, p50, Vcmax, Cl, \
+            Cs, Kplant, kp_sat, g1 in itertools.product(*ranges):
+
+            result = [Tmax, RH, gmin, AL, p50, Vcmax, Vcmax*1.67, \
+                      Cl, Cs, Kplant, kp_sat, g1]
+
+            print(result)
+sys.exit()
+
+
 
 
 for Tmax in Tmaxx:
