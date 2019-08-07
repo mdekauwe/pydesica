@@ -78,7 +78,7 @@ for Tmax in Tmaxx:
     for RH in RHx:
         met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
                                 lat=lat, lon=lon, time_step=time_step)
-        D = np.mean(met.vpd)
+        D = np.max(met.vpd)
         for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
 
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
@@ -94,7 +94,7 @@ for Tmax in Tmaxx:
 
             result = [Tmax, D, gmin, AL, p50, Cl, Cs,  \
                       psi_stem, day_of_death]
-
+            print(result)
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
 
