@@ -29,7 +29,8 @@ from desica import plot_transpiration_and_pet
 from get_params import get_params
 import itertools
 
-names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Cl', 'Cs', 'day_of_death']
+names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
+         'psi_stem', 'day_of_death']
 df = pd.DataFrame(columns=names)
 
 params = get_params()
@@ -56,13 +57,16 @@ Kplant = p.Kplant
 kp_sat = p.kpsat
 g1 = p.g1
 
-Tmaxx = [30, 35, 40, 45]
-RHx = [30, 20, 10, 5]
+#Tmaxx = [30, 35, 40, 45]
+#RHx = [30, 20, 10, 5]
 
-N = 3
+Tmaxx = [40]
+RHx = [10]
+
+N = 2
 ranges = [
     np.linspace(5, 15, N),        # gmin
-    np.linspace(0.5, 4, N),       # AL
+    np.linspace(5, 10, N),       # AL
     np.linspace(-1, -6, N),       # p50
     np.linspace(200, 800, N),     # Cl
     np.linspace(10000, 50000, N), # Cs
@@ -84,9 +88,11 @@ for Tmax in Tmaxx:
                        FAO=FAO, kp_sat=kp_sat)
 
             out, day_of_death = D.run_simulation(met)
-            result = [Tmax, RH, gmin, AL, p50, Cl, Cs, day_of_death]
-            print(result)
+            psi_stem = out.psi_stem.iloc[-1]
 
+            result = [Tmax, RH, gmin, AL, p50, Cl, Cs,  \
+                      psi_stem, day_of_death]
+            print(result)
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
 

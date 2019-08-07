@@ -160,6 +160,8 @@ class Desica(object):
 
         out["t"] = np.arange(1, n+1)
 
+        out = out[~np.isnan(out.year)]
+        
         return (out, day_of_death)
 
     def initialise_model(self, met):
