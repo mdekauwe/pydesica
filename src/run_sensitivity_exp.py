@@ -52,75 +52,48 @@ Eaj = 29680.
 deltaSj = 631.88
 FAO = False
 psi_stem0 = -0.5
-psi_f = -3.
+psi_f = p.psiv
+Kplant = p.Kplant
+kp_sat = p.kpsat
+g1 = p.g1
 
-N = 100
 Tmaxx = [30, 35, 40, 45]
 RHx = [30, 20, 10, 5]
 
+N = 3
 ranges = [
-    np.linspace(0.5, 50, N), # gmain
-    np.linspace(0.5, 10, N), # ALx
-    np.linspace(-1, -10, N), # p50x
-    np.linspace(10, 100, N), # Vcmaxx
-    np.linspace(200, 800, N),  # Clx
-    np.linspace(10000, 50000, N), # Csx
-    np.linspace(0.5, 5, N), # Kplantx
-    np.linspace(0.5, 10, N), # kp_satx
-    np.linspace(0.5, 10, N), # g1x
+    np.linspace(5, 15, N),        # gmin
+    np.linspace(0.5, 4, N),       # AL
+    np.linspace(-1, -6, N),       # p50
+    np.linspace(200, 800, N),     # Cl
+    np.linspace(10000, 50000, N), # Cs
 ]
 
-
-
 for Tmax in Tmaxx:
     for RH in RHx:
         met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
                                 lat=lat, lon=lon, time_step=time_step)
 
-        for gmin, AL, p50, Vcmax, Cl, \
-            Cs, Kplant, kp_sat, g1 in itertools.product(*ranges):
+        for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
 
-            result = [Tmax, RH, gmin, AL, p50, Vcmax, Vcmax*1.67, \
-                      Cl, Cs, Kplant, kp_sat, g1]
 
             print(result)
-sys.exit()
 
+            F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
+                       Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
+                       Eaj=Eaj, deltaSj=deltaSj)
 
+            D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
+                       gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
+                       FAO=FAO, kp_sat=kp_sat)
 
-
-for Tmax in Tmaxx:
-    for RH in RHx:
-        met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
-                                lat=lat, lon=lon, time_step=time_step)
-        for gmin in gminx:
-            for AL in ALx:
-                for p50 in p50x:
-                    for Vcmax in Vcmaxx:
-                        for Jmax in Jmaxx:
-                            for Cl in Clx:
-                                for Cs in Csx:
-                                    for Kplant in Kplantx:
-                                        for kp_sat in kp_satx:
-                                            for g1 in g1x:
-
-                                                F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
-                                                           Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
-                                                           Eaj=Eaj, deltaSj=deltaSj)
-
-                                                D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-                                                           Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
-                                                           FAO=FAO, kp_sat=kp_sat)
-
-                                                out, day_of_death = D.run_simulation(met)
-                                                result = [Tmax, RH, gmin, AL, p50, Vcmax, Jmax, \
-                                                          Cl, Cs, Kplant, kp_sat, g1, day_of_death]
-
-                                                names = ['Tmax', 'RH', 'gmin', 'AL', 'p50', 'Vcmax', 'Jmax', \
-                                                         'Cl', 'Cs', 'Kplant', 'kp_sat', 'g1' 'day_of_death']
-
-                                                s = pd.Series(result, index=df.columns)
-                                                df = df.append(s, ignore_index=True)
+            out, day_of_death = D.run_simulation(met)
+            result = [Tmax, RH, gmin, AL, p50, Vcmax, Jmax, \
+                      Cl, Cs, Kplant, kp_sat, g1, day_of_death]
+            print(result)
+            
+            s = pd.Series(result, index=df.columns)
+            df = df.append(s, ignore_index=True)
 
 
 odir = "outputs"
