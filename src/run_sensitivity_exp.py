@@ -34,6 +34,7 @@ def main(ncpus=None):
 
     params = get_params()
     pfts = list(params)
+    pfts = ["rf"]
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -78,7 +79,7 @@ def worker(pft_name, p):
              'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
-    
+
     Tmaxx = [40]
     RHx = [10]
 
@@ -86,13 +87,22 @@ def worker(pft_name, p):
     RHx = [30, 20, 10]
 
     N = 10
+    #ranges = [
+    #    np.linspace(5, 15, N),        # gmin
+    #    np.linspace(1, 5, N),         # AL
+    #    np.linspace(-1, -6, N),       # p50
+    #    np.linspace(200, 800, N),     # Cl
+    #    np.linspace(10000, 50000, N), # Cs
+    #    np.linspace(0.5, 2.0, N)      # soil_depth
+    #]
+    chg = 1.5
     ranges = [
-        np.linspace(5, 15, N),        # gmin
-        np.linspace(1, 5, N),         # AL
-        np.linspace(-1, -6, N),       # p50
-        np.linspace(200, 800, N),     # Cl
-        np.linspace(10000, 50000, N), # Cs
-        np.linspace(0.5, 2.0, N)      # soil_depth
+        np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
+        np.linspace(p.AL/chg, p.AL*chg, N),      # AL
+        np.linspace(p.p50/chg, p.p50*chg, N),    # p50
+        np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
+        np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
+        np.linspace(0.5, 2.0, N)                 # soil_depth
     ]
 
     for Tmax in Tmaxx:
@@ -134,4 +144,4 @@ def worker(pft_name, p):
 
 if __name__ == "__main__":
 
-    main()
+    main(ncpus=3)
