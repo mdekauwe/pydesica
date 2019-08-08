@@ -34,7 +34,7 @@ def main(ncpus=None):
 
     params = get_params()
     pfts = list(params)
-    #pfts = ["rf"]
+    pfts = ["rf"]
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -87,13 +87,15 @@ def worker(pft_name, p):
     df = pd.DataFrame(columns=names)
 
 
-    Tmaxx = [40]
-    RHx = [10]
+    #Tmaxx = [40]
+    #RHx = [10]
 
-    Tmaxx = [20, 30, 40]
-    RHx = [30, 20, 10]
+    Tmaxx = [30, 40]
+    RHx = [20, 10]
 
-    N = 10
+    N = 5
+    total_exp = 62499
+
     #ranges = [
     #    np.linspace(5, 15, N),        # gmin
     #    np.linspace(1, 5, N),         # AL
@@ -112,6 +114,7 @@ def worker(pft_name, p):
         np.linspace(0.5, 2.0, N)                 # soil_depth
     ]
 
+    count = 0
     for Tmax in Tmaxx:
         for RH in RHx:
             met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
@@ -122,9 +125,10 @@ def worker(pft_name, p):
             for gmin, AL, p50, Cl, Cs, soil_depth, in \
                 itertools.product(*ranges):
 
+
                 (D.gmin, D.AL, D.p50,
                  D.Cl, D.Cs, D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
-                
+
                 out, day_of_death = D.run_simulation(met)
                 psi_stem = out.psi_stem.iloc[-1]
                 plc = out.plc.iloc[-1]
@@ -134,6 +138,11 @@ def worker(pft_name, p):
 
                 s = pd.Series(result, index=df.columns)
                 df = df.append(s, ignore_index=True)
+
+                count += 1
+                progress = (count / total_exp) * 100.0
+                print(round(progress,3), count, ":", total_exp)
+    #print(count-1)
 
     odir = "outputs"
     if not os.path.exists(odir):
