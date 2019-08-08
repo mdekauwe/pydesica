@@ -34,7 +34,7 @@ def main(ncpus=None):
 
     params = get_params()
     pfts = list(params)
-    pfts = ["rf"]
+    #pfts = ["rf"]
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -144,4 +144,5 @@ def worker(pft_name, p):
 
 if __name__ == "__main__":
 
-    main(ncpus=3)
+    #main(ncpus=3)
+    main()
