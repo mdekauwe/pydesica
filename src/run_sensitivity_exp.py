@@ -82,7 +82,7 @@ for Tmax in Tmaxx:
         Dmax = np.max(met.vpd)
         Dmean = np.mean(met.vpd)
 
-        for gmin, AL, p50, Cl, Cs soil_depth, in itertools.product(*ranges):
+        for gmin, AL, p50, Cl, Cs, soil_depth, in itertools.product(*ranges):
 
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                        Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
@@ -99,7 +99,7 @@ for Tmax in Tmaxx:
 
             result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
                       psi_stem, plc, day_of_death]
-            print(result)
+
             s = pd.Series(result, index=df.columns)
             df = df.append(s, ignore_index=True)
 
