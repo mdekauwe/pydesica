@@ -79,6 +79,9 @@ def worker(pft_name, p):
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
                deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
+    D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
+               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf)
+
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
              'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
@@ -119,11 +122,9 @@ def worker(pft_name, p):
             for gmin, AL, p50, Cl, Cs, soil_depth, in \
                 itertools.product(*ranges):
 
-                D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
-                           gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
-                           FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf,
-                           soil_depth=soil_depth)
-
+                (D.gmin, D.AL, D.p50,
+                 D.Cl, D.Cs, D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
+                
                 out, day_of_death = D.run_simulation(met)
                 psi_stem = out.psi_stem.iloc[-1]
                 plc = out.plc.iloc[-1]
