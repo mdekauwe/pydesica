@@ -72,7 +72,7 @@ ranges = [
     np.linspace(-1, -6, N),       # p50
     np.linspace(200, 800, N),     # Cl
     np.linspace(10000, 50000, N), # Cs
-    np.linspace(0.1, 3.0, N)      # soil_depth
+    np.linspace(0.5, 2.0, N)      # soil_depth
 ]
 
 for Tmax in Tmaxx:
