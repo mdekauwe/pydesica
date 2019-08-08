@@ -12,6 +12,8 @@ df <- read.csv(fname)
 
 fit <- lm(plc ~ gmin + AL + p50 + Cl + Cs + Tmax + Dmax, data=df)
 
+summary(fit)
+
 par(mfrow=c(2,4))
 visreg(fit, "Tmax")
 visreg(fit, "Dmax")
