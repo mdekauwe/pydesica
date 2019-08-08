@@ -75,6 +75,10 @@ def worker(pft_name, p):
     s50 = p.s50
     sf = p.sf
 
+    F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
+               Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
+               deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
+
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
              'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
@@ -114,10 +118,6 @@ def worker(pft_name, p):
 
             for gmin, AL, p50, Cl, Cs, soil_depth, in \
                 itertools.product(*ranges):
-
-                F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
-                           Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
-                           deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
                 D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
                            gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
