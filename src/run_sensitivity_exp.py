@@ -65,7 +65,7 @@ df = pd.DataFrame(columns=names)
 Tmaxx = [40]
 RHx = [10]
 
-N = 2
+N = 10
 ranges = [
     np.linspace(5, 15, N),        # gmin
     np.linspace(1, 5, N),         # AL
