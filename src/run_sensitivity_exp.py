@@ -78,13 +78,14 @@ def worker(pft_name, p):
              'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
-    #Tmaxx = [30, 35, 40, 45]
-    #RHx = [30, 20, 10, 5]
-
+    
     Tmaxx = [40]
     RHx = [10]
 
-    N = 2
+    Tmaxx = [20, 30, 40]
+    RHx = [30, 20, 10]
+
+    N = 10
     ranges = [
         np.linspace(5, 15, N),        # gmin
         np.linspace(1, 5, N),         # AL
