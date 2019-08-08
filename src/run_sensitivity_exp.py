@@ -50,10 +50,10 @@ deltaSj = 631.88
 FAO = False
 psi_stem0 = -0.5
 psi_f = p.psiv
-Kplant = p.Kplant
 kp_sat = p.kpsat
 g1 = p.g1
-
+s50 = p.s50
+sf = p.sf
 
 names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
          'psi_stem', 'plc', 'day_of_death']
@@ -68,10 +68,11 @@ RHx = [10]
 N = 2
 ranges = [
     np.linspace(5, 15, N),        # gmin
-    np.linspace(5, 10, N),       # AL
+    np.linspace(1, 5, N),         # AL
     np.linspace(-1, -6, N),       # p50
     np.linspace(200, 800, N),     # Cl
     np.linspace(10000, 50000, N), # Cs
+    np.linspace(0.1, 3.0, N)      # soil_depth
 ]
 
 for Tmax in Tmaxx:
@@ -81,7 +82,7 @@ for Tmax in Tmaxx:
         Dmax = np.max(met.vpd)
         Dmean = np.mean(met.vpd)
 
-        for gmin, AL, p50, Cl, Cs in itertools.product(*ranges):
+        for gmin, AL, p50, Cl, Cs soil_depth, in itertools.product(*ranges):
 
             F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                        Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
@@ -89,7 +90,8 @@ for Tmax in Tmaxx:
 
             D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f,
                        gmin=gmin, Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
-                       FAO=FAO, kp_sat=kp_sat)
+                       FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf,
+                       soil_depth=soil_depth)
 
             out, day_of_death = D.run_simulation(met)
             psi_stem = out.psi_stem.iloc[-1]
