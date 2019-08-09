@@ -74,27 +74,28 @@ def worker(pft_name, p):
     g1 = p.g1
     s50 = p.s50
     sf = p.sf
+    AL = 2.0
 
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
                deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
     D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
-               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf)
+               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
 
-    names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'AL', 'p50', 'Cl', 'Cs', \
+    names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'p50', 'Cl', 'Cs', \
              'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
 
-    #Tmaxx = [40]
-    #RHx = [10]
+    #Tmaxx = [30, 40]
+    #RHx = [20, 10]
 
-    Tmaxx = [30, 40]
-    RHx = [20, 10]
+    Tmaxx = [35]
+    RHx = [10]
 
     N = 5
-    total_exp = 62499
+    total_exp = 3125
 
     #ranges = [
     #    np.linspace(5, 15, N),        # gmin
@@ -107,12 +108,13 @@ def worker(pft_name, p):
     chg = 1.5
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
-        np.linspace(p.AL/chg, p.AL*chg, N),      # AL
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
         np.linspace(0.5, 2.0, N)                 # soil_depth
     ]
+
+
 
     count = 0
     for Tmax in Tmaxx:
@@ -122,26 +124,29 @@ def worker(pft_name, p):
             Dmax = np.max(met.vpd)
             Dmean = np.mean(met.vpd)
 
-            for gmin, AL, p50, Cl, Cs, soil_depth, in \
+            for gmin, p50, Cl, Cs, soil_depth, in \
                 itertools.product(*ranges):
 
-
-                (D.gmin, D.AL, D.p50,
-                 D.Cl, D.Cs, D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
+                #"""
+                (D.gmin, D.p50, D.Cl, D.Cs,
+                 D.soil_depth) = gmin, p50, Cl, Cs, soil_depth
 
                 out, day_of_death = D.run_simulation(met)
                 psi_stem = out.psi_stem.iloc[-1]
                 plc = out.plc.iloc[-1]
 
-                result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
+                result = [Tmax, Dmax, Dmean, gmin, p50, Cl, Cs,  \
                           psi_stem, plc, day_of_death]
 
                 s = pd.Series(result, index=df.columns)
                 df = df.append(s, ignore_index=True)
+                #"""
 
                 count += 1
                 progress = (count / total_exp) * 100.0
                 print(round(progress,3), count, ":", total_exp)
+                #if count == 10:
+                #    sys.exit()
     #print(count-1)
 
     odir = "outputs"
