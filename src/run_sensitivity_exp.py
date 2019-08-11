@@ -43,7 +43,7 @@ def main(ncpus=None):
 
     processes = []
     for i, pft_name in enumerate(pfts):
-
+        #print(i, pft_name)
         px = params[pft_name]
         p = mp.Process(target=worker, args=(pft_name, px, ))
         processes.append(p)
@@ -144,7 +144,7 @@ def worker(pft_name, p):
 
                 count += 1
                 progress = (count / total_exp) * 100.0
-                print(round(progress,3), count, ":", total_exp)
+                print(pft_name, "--", round(progress,3), count, ":", total_exp)
                 #if count == 10:
                 #    sys.exit()
     #print(count-1)
