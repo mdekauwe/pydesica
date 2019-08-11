@@ -84,7 +84,7 @@ def worker(pft_name, p):
                FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'p50', 'Cl', 'Cs', \
-             'psi_stem', 'plc', 'day_of_death']
+             'depth', 'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
 
@@ -136,7 +136,7 @@ def worker(pft_name, p):
                 plc = out.plc.iloc[-1]
 
                 result = [Tmax, Dmax, Dmean, gmin, p50, Cl, Cs,  \
-                          psi_stem, plc, day_of_death]
+                          soil_depth, psi_stem, plc, day_of_death]
 
                 s = pd.Series(result, index=df.columns)
                 df = df.append(s, ignore_index=True)
