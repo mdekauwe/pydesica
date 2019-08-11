@@ -4,6 +4,8 @@ library(visreg)
 library(ggplot2)
 library(ppcor)
 library(relaimpo)
+library(tidyverse)
+
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
@@ -31,3 +33,17 @@ boot <- boot.relimp(fit, b=1000, type=c("lmg","last", "first"),
                     rank=TRUE, diff=TRUE, rela=TRUE)
 #booteval.relimp(boot)
 plot(booteval.relimp(boot, sort=TRUE))
+
+
+df_dead <- df %>% filter(day_of_death > 0)
+dev.off()
+ggplot(df_dead, aes(x=day_of_death)) + geom_histogram()
+
+fit <- lm(day_of_death ~ gmin + p50 + Cl + Cs, data=df_dead)
+
+#visreg(fit)
+par(mfrow=c(2,2))
+visreg(fit, "gmin")
+visreg(fit, "p50")
+visreg(fit, "Cl")
+visreg(fit, "Cs")
