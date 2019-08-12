@@ -117,6 +117,7 @@ def worker(pft_name, p):
 
 
     count = 0
+    last_count = 0
     for Tmax in Tmaxx:
         for RH in RHx:
             met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
@@ -144,7 +145,12 @@ def worker(pft_name, p):
 
                 count += 1
                 progress = (count / total_exp) * 100.0
-                print(pft_name, "--", round(progress,3), count, ":", total_exp)
+
+                if count + 300 > last_count:
+                    print(pft_name, "--", round(progress,3),
+                          count, ":", total_exp)
+                    last_count = count
+                    
                 #if count == 10:
                 #    sys.exit()
     #print(count-1)
