@@ -9,7 +9,7 @@ library(tidyverse)
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
-pft = "rf"
+pft = "saw"
 fname <- sprintf("%s_trait_sensitivity.csv", pft)
 df <- read.csv(fname)
 #head(df)
