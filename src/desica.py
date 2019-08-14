@@ -264,7 +264,8 @@ class Desica(object):
         # plus transpiration
         out.flux_to_leaf[i] = self.calc_flux_to_leaf(out.psi_leaf[i],
                                                      out.psi_leaf[i-1],
-                                                     out.Eleaf[i])
+                                                     out.Eleaf[i],
+                                                     out.kstem2leaf[i])
 
         # Update stem water potential
         out.psi_stem[i] = self.update_stem_wp(out.ksoil2stem[i],
@@ -275,7 +276,23 @@ class Desica(object):
         # Flux from the soil to the stem = change in storage + flux_to_leaf
         out.flux_to_stem[i] = self.calc_flux_to_stem(out.psi_stem[i],
                                                      out.psi_stem[i-1],
-                                                     out.flux_to_leaf[i])
+                                                     out.flux_to_leaf[i],
+                                                     out.ksoil2stem[i])
+
+        out.psi_stem[i-1] = out.psi_stem[i]
+        out.psi_stem[i] = self.update_stem_wp2(out.ksoil2stem[i],
+                                              out.psi_soil[i-1],
+                                              out.flux_to_leaf[i],
+                                              out.psi_stem[i-1],
+                                              out.Eleaf[i])
+
+        # Flux from the soil to the stem = change in storage + flux_to_leaf
+        out.flux_to_stem[i] = self.calc_flux_to_stem(out.psi_stem[i],
+                                                     out.psi_stem[i-1],
+                                                     out.Eleaf[i]*self.AL,
+                                                     out.ksoil2stem[i])
+
+
 
         out.sw[i] = self.update_sw_bucket(met.precip[i], out.flux_to_stem[i],
                                           out.sw[i-1])
@@ -391,12 +408,27 @@ class Desica(object):
           appendix and code. Can write the dynamic equation as:
           dpsi_leaf_dt = b + a*psi_leaf
         """
+        stem_cond = self.AL * kstem2leaf
 
+        # there is conductance in the trunk
+        if stem_cond > 1E-09:
+            ap = -(stem_cond / self.Cl)
+            bp = (psi_stem_prev * stem_cond - self.AL * Eleaf) / self.Cl
+            psi_leaf = ((ap * psi_leaf_prev + bp) * \
+                        np.exp(ap * self.timestep_sec) - bp) / ap
+
+        # No conductance in the trunk, delta psi_leaf is due only to
+        # transpiration
+        else:
+            psi_leaf = (psi_leaf_prev - \
+                        self.AL * Eleaf * self.timestep_sec) / self.Cl
+
+        """
         ap = -(self.AL * kstem2leaf / self.Cl)
         bp = (self.AL * kstem2leaf * psi_stem_prev - self.AL * Eleaf) / self.Cl
         psi_leaf = ((ap * psi_leaf_prev + bp) * \
                     np.exp(ap * self.timestep_sec) - bp) / ap
-
+        """
         return psi_leaf
 
     def calc_swp(self, sw):
@@ -420,7 +452,7 @@ class Desica(object):
         """
         return self.psi_e * (sw / self.theta_sat)**-self.b
 
-    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf):
+    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf, ksoil2stem):
         """
         Calculate the flux from the root to the stem, i.e. the root water
         uptake (mmol s-1) = change in stem storage plus flux_to_leaf
@@ -439,10 +471,15 @@ class Desica(object):
         flux_to_stem : float
             flux from soil to the stem, mmol s-1
         """
-        return (psi_stem - psi_stem_prev) * \
-                self.Cs / self.timestep_sec + flux_to_leaf
+        if self.AL * ksoil2stem > 1E-09:
+            J_sr = (psi_stem - psi_stem_prev) * \
+                    self.Cs / self.timestep_sec + flux_to_leaf
+        else:
+            print("here")
+            J_sr = 0.0
+        return J_sr
 
-    def calc_flux_to_leaf(self, psi_leaf, psi_leaf_prev, Eleaf):
+    def calc_flux_to_leaf(self, psi_leaf, psi_leaf_prev, Eleaf, kstem2leaf):
         """
         Calculate the flux from the stem to the leaf = change in leaf storage
         plus transpiration
@@ -461,8 +498,21 @@ class Desica(object):
         flux_to_leaf : float
             flux from stem to the leaf, mmol s-1
         """
-        return (psi_leaf - psi_leaf_prev) * \
-                self.Cl / self.timestep_sec + self.AL * Eleaf
+        stem_cond = self.AL * kstem2leaf
+
+        # there is conductance in the trunk
+        if stem_cond > 1E-09:
+
+            # sapflow rate from stem to leaf within the time step
+            J_rl =  (psi_leaf - psi_leaf_prev) * \
+                    self.Cl / self.timestep_sec + self.AL * Eleaf
+        else:
+            # no conductance in the trunk
+
+            # sapflow rate from stem to leaf within the time step
+            J_rl = 0.0
+
+        return J_rl
 
     def update_stem_wp(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
                        psi_stem_prev):
@@ -497,12 +547,70 @@ class Desica(object):
           appendix and code
         """
 
-        ap = -(self.AL * ksoil2stem / self.Cs)
-        bp = (self.AL * ksoil2stem * psi_soil_prev - flux_to_leaf) / self.Cs
-        psi_stem = ((ap * psi_stem_prev + bp) * \
-                    np.exp(ap * self.timestep_sec)-bp) / ap
+        # plant can take up water
+        if self.AL * ksoil2stem > 1E-09:
+            ap = -(self.AL * ksoil2stem / self.Cs)
+            bp = (psi_soil_prev - flux_to_leaf) / self.Cs
+            psi_stem = ((ap * psi_stem_prev + bp) * \
+                        np.exp(ap * self.timestep_sec) - bp) / ap
 
+        # plant cannot take up water, change of psi_stem is solely due to
+        # flux_to_leaf (J_rl)
+        else:
+            psi_stem = psi_stem_prev - \
+                            flux_to_leaf * self.timestep_sec / self.Cs
+=
         return psi_stem
+
+    def update_stem_wp2(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
+                        psi_stem_prev, Eleaf):
+        """
+        Calculate the flux from the stem to the leaf = change in leaf storage
+        plus transpiration
+
+        This is a simplified equation based on Xu et al., using the water
+        potentials from the previous timestep and the fact that we increase
+        the temporal resolution to get around the need to solve the dynamic eqn
+        with a numerical approach, i.e., Runge-Kutta.
+
+        Parameters:
+        -----------
+        ksoil2stem : float
+            conductance from soil to stem, mmol m-2 s-1 MPa-1
+        psi_soil_prev : float
+            soil water potential from the previous timestep, MPa
+        flux_to_leaf : float
+            flux from stem to the leaf
+        psi_stem_prev : float
+            stem water potential from the previous timestep, MPa
+
+        Returns:
+        -------
+        psi_stem : float
+            new stem water potential from the previous timestep, MPa
+
+        References:
+        -----------
+        * Xu et al. (2016) New Phytol, 212: 8095. doi:10.1111/nph.14009; see
+          appendix and code
+        """
+
+        # plant can take up water
+        if self.AL * ksoil2stem > 1E-09:
+            ap = -(self.AL * ksoil2stem / (self.Cs + self.Cl))
+            bp = (psi_soil_prev - (self.AL * Eleaf)) / (self.Cs + self.Cl)
+            psi_stem = ((ap * psi_stem_prev + bp) * \
+                        np.exp(ap * self.timestep_sec) - bp) / ap
+
+        # plant cannot take up water, change of psi_stem is solely due to
+        # flux_to_leaf (J_rl)
+        else:
+            psi_stem = psi_stem_prev - \
+                            (self.AL * Eleaf) * \
+                            self.timestep_sec / (self.Cs + self.Cl)
+=
+        return psi_stem
+
 
     def update_sw_bucket(self, precip, water_loss, sw_prev):
         """
@@ -1010,7 +1118,9 @@ if __name__ == "__main__":
     if not os.path.exists(odir):
         os.makedirs(odir)
 
-    plot_time_to_mortality(odir, out, time_step)
+    plot_time_to_mortality(odir, out, time_step, to_screen=True)
+
+    """
     plot_swp_sw(odir, out)
     plot_swp_ksoil(odir, out)
     plot_transpiration(odir, out)
@@ -1036,3 +1146,4 @@ if __name__ == "__main__":
             out, day_of_death = D.run_simulation(met)
             death.append(day_of_death)
         plot_gmin_sensitvity(odir, gminx, death)
+    """
