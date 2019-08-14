@@ -371,6 +371,8 @@ class Desica(object):
         # relative conductance (K/Kmax) as a funcion of xylem pressure
         relk = (1. - 50. / 100.)**p
 
+        relk = max(1.0e-9, min(1.0, relk))
+
         return (relk)
 
     def calc_lwp(self, kstem2leaf, psi_stem_prev, psi_leaf_prev, Eleaf):
@@ -475,8 +477,8 @@ class Desica(object):
             J_sr = (psi_stem - psi_stem_prev) * \
                     self.Cs / self.timestep_sec + flux_to_leaf
         else:
-            print("here")
             J_sr = 0.0
+
         return J_sr
 
     def calc_flux_to_leaf(self, psi_leaf, psi_leaf_prev, Eleaf, kstem2leaf):
@@ -559,7 +561,7 @@ class Desica(object):
         else:
             psi_stem = psi_stem_prev - \
                             flux_to_leaf * self.timestep_sec / self.Cs
-=
+
         return psi_stem
 
     def update_stem_wp2(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
@@ -608,7 +610,7 @@ class Desica(object):
             psi_stem = psi_stem_prev - \
                             (self.AL * Eleaf) * \
                             self.timestep_sec / (self.Cs + self.Cl)
-=
+
         return psi_stem
 
 
@@ -687,6 +689,7 @@ class Desica(object):
         num = 1.0 + np.exp(self.sf * self.psi_f)
         den = 1.0 + np.exp(self.sf * (self.psi_f - psi_leaf))
         fw = num / den
+        fw = max(1.0e-9, min(1.0, fw))
 
         return fw
 

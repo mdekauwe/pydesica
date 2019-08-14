@@ -50,3 +50,7 @@ ax.set_xlabel("Day of death")
 ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 plt.show()
+ofdir = "/Users/mdekauwe/Desktop"
+ofname = "day_of_death.pdf"
+fig.savefig(os.path.join(ofdir, ofname),
+            bbox_inches='tight', pad_inches=0.1)

@@ -40,5 +40,4 @@ def get_params():
     sites = sites.rename(columns={'Cbranch_mmol.kg.MPa':'Cs',
                                   'Cleaf_preTLP_mmol.m2.MPa1':'Cl'})
     sites = sites.transpose()
-
     return (sites)
