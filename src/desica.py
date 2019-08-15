@@ -239,7 +239,7 @@ class Desica(object):
 
     def run_timestep(self, i, met, out):
 
-        self.calc_conductances(out, i)
+        out = self.calc_conductances(out, i)
 
         # modified Tuzet model of stomatal conductance
         mult = (self.g1 / met.Ca[i]) * self.fsig_tuzet(out.psi_leaf[i-1])
@@ -256,7 +256,7 @@ class Desica(object):
         # Leaf transpiration assuming perfect coupling, mmol m-2 s-1
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
 
-        # Calculate the leaf water potential.
+        # Calculate the leaf water potential assuming psi_stem is constant
         out.psi_leaf[i] = self.calc_lwp(out.kstem2leaf[i], out.psi_stem[i-1],
                                         out.psi_leaf[i-1], out.Eleaf[i])
 
@@ -267,7 +267,7 @@ class Desica(object):
                                                      out.Eleaf[i],
                                                      out.kstem2leaf[i])
 
-        # Update stem water potential
+        # Update stem water potential assuming soil water potential is constant
         out.psi_stem[i] = self.update_stem_wp(out.ksoil2stem[i],
                                               out.psi_soil[i-1],
                                               out.flux_to_leaf[i],
@@ -279,20 +279,18 @@ class Desica(object):
                                                      out.flux_to_leaf[i],
                                                      out.ksoil2stem[i])
 
+        # Update psi_stem
         out.psi_stem[i-1] = out.psi_stem[i]
         out.psi_stem[i] = self.update_stem_again(out.ksoil2stem[i],
                                                  out.psi_soil[i-1],
-                                                 out.flux_to_leaf[i],
-                                                 out.psi_stem[i-1],
-                                                 out.Eleaf[i])
+                                                 out.Eleaf[i],
+                                                 out.psi_stem[i-1])
 
         # Flux from the soil to the stem = change in storage + flux_to_leaf
         out.flux_to_stem[i] = self.calc_flux_to_stem_again(out.psi_stem[i],
                                                            out.psi_stem[i-1],
                                                            out.Eleaf[i],
                                                            out.ksoil2stem[i])
-
-
 
         out.sw[i] = self.update_sw_bucket(met.precip[i], out.flux_to_stem[i],
                                           out.sw[i-1])
@@ -337,6 +335,8 @@ class Desica(object):
         # Conductance from stem water store to the leaves (mmol m-2 s-1 MPa-1)
         # assumning the water pool is halfway up the stem
         out.kstem2leaf[i] = 2.0 * out.kplant[i]
+
+        return out
 
     def fsig_hydr(self, psi_stem_prev):
         """
@@ -414,12 +414,12 @@ class Desica(object):
 
         # there is conductance in the trunk
         if stem_cond > 1E-09:
-            ap = -(stem_cond / self.Cl)
+            ap = - stem_cond / self.Cl
             bp = (psi_stem_prev * stem_cond - self.AL * Eleaf) / self.Cl
             psi_leaf = ((ap * psi_leaf_prev + bp) * \
                         np.exp(ap * self.timestep_sec) - bp) / ap
 
-        # No conductance in the trunk, delta psi_leaf is due only to
+        # No conductance in the trunk, change in psi_leaf is due only to
         # transpiration
         else:
             psi_leaf = (psi_leaf_prev - \
@@ -432,83 +432,6 @@ class Desica(object):
                     np.exp(ap * self.timestep_sec) - bp) / ap
         """
         return psi_leaf
-
-    def calc_swp(self, sw):
-        """
-        Calculate the soil water potential (MPa). The params The parameters b
-        and psi_e are estimated from a typical soil moisture release function.
-
-        Parameters:
-        -----------
-        sw : object
-            volumetric soil water content, m3 m-3
-
-        Returns:
-        -----------
-        psi_soil : float
-            soil water potential, MPa
-
-        References:
-        -----------
-        * Duursma et al. (2008) Tree Physiology 28, 265276, eqn 10
-        """
-        return self.psi_e * (sw / self.theta_sat)**-self.b
-
-    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf,
-                          ksoil2stem):
-        """
-        Calculate the flux from the root to the stem, i.e. the root water
-        uptake (mmol s-1) = change in stem storage plus flux_to_leaf
-
-        Parameters:
-        -----------
-        psi_stem : float
-            stem water potential, MPa
-        psi_stem_prev : float
-            stem water potential from the previous timestep, MPa
-        flux_to_leaf : float
-            flux of water from the stem to leaf
-
-        Returns:
-        -------
-        flux_to_stem : float
-            flux from soil to the stem, mmol s-1
-        """
-        if self.AL * ksoil2stem > 1E-09:
-            J_sr = (psi_stem - psi_stem_prev) * \
-                    self.Cs / self.timestep_sec + flux_to_leaf
-        else:
-            J_sr = 0.0
-
-        return J_sr
-
-    def calc_flux_to_stem_again(self, psi_stem, psi_stem_prev, transpiration,
-                                ksoil2stem):
-        """
-        Calculate the flux from the root to the stem, i.e. the root water
-        uptake (mmol s-1) = change in stem storage plus flux_to_leaf
-
-        Parameters:
-        -----------
-        psi_stem : float
-            stem water potential, MPa
-        psi_stem_prev : float
-            stem water potential from the previous timestep, MPa
-        flux_to_leaf : float
-            flux of water from the stem to leaf
-
-        Returns:
-        -------
-        flux_to_stem : float
-            flux from soil to the stem, mmol s-1
-        """
-        if self.AL * ksoil2stem > 1E-09:
-            J_sr = (psi_stem - psi_stem_prev) * \
-                    self.Cs / self.timestep_sec + (transpiration * self.AL)
-        else:
-            J_sr = 0.0
-
-        return J_sr
 
     def calc_flux_to_leaf(self, psi_leaf, psi_leaf_prev, Eleaf, kstem2leaf):
         """
@@ -536,7 +459,7 @@ class Desica(object):
 
             # sapflow rate from stem to leaf within the time step
             J_rl =  (psi_leaf - psi_leaf_prev) * \
-                    self.Cl / self.timestep_sec + self.AL * Eleaf
+                    self.Cl / self.timestep_sec + (self.AL * Eleaf)
         else:
             # no conductance in the trunk
 
@@ -580,7 +503,7 @@ class Desica(object):
 
         # plant can take up water
         if self.AL * ksoil2stem > 1E-09:
-            ap = -(self.AL * ksoil2stem / self.Cs)
+            ap = - self.AL * ksoil2stem / self.Cs
             bp = (psi_soil_prev - flux_to_leaf) / self.Cs
             psi_stem = ((ap * psi_stem_prev + bp) * \
                         np.exp(ap * self.timestep_sec) - bp) / ap
@@ -593,8 +516,36 @@ class Desica(object):
 
         return psi_stem
 
-    def update_stem_again(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
-                          psi_stem_prev, Eleaf):
+    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf,
+                          ksoil2stem):
+        """
+        Calculate the flux from the root to the stem, i.e. the root water
+        uptake (mmol s-1) = change in stem storage plus flux_to_leaf
+
+        Parameters:
+        -----------
+        psi_stem : float
+            stem water potential, MPa
+        psi_stem_prev : float
+            stem water potential from the previous timestep, MPa
+        flux_to_leaf : float
+            flux of water from the stem to leaf
+
+        Returns:
+        -------
+        flux_to_stem : float
+            flux from soil to the stem, mmol s-1
+        """
+        if self.AL * ksoil2stem > 1E-09:
+            J_sr = (psi_stem - psi_stem_prev) * \
+                    self.Cs / self.timestep_sec + flux_to_leaf
+        else:
+            J_sr = 0.0
+
+        return J_sr
+
+    def update_stem_again(self, ksoil2stem, psi_soil_prev, Eleaf,
+                          psi_stem_prev):
         """
         Calculate the flux from the stem to the leaf = change in leaf storage
         plus transpiration
@@ -610,8 +561,8 @@ class Desica(object):
             conductance from soil to stem, mmol m-2 s-1 MPa-1
         psi_soil_prev : float
             soil water potential from the previous timestep, MPa
-        flux_to_leaf : float
-            flux from stem to the leaf
+        Eleaf : float
+            transpiration, mmol m-2 s-1
         psi_stem_prev : float
             stem water potential from the previous timestep, MPa
 
@@ -628,7 +579,7 @@ class Desica(object):
 
         # plant can take up water
         if self.AL * ksoil2stem > 1E-09:
-            ap = -(self.AL * ksoil2stem / (self.Cs + self.Cl))
+            ap = - self.AL * ksoil2stem / (self.Cs + self.Cl)
             bp = (psi_soil_prev - (self.AL * Eleaf)) / (self.Cs + self.Cl)
             psi_stem = ((ap * psi_stem_prev + bp) * \
                         np.exp(ap * self.timestep_sec) - bp) / ap
@@ -636,12 +587,61 @@ class Desica(object):
         # plant cannot take up water, change of psi_stem is solely due to
         # flux_to_leaf (J_rl)
         else:
-            psi_stem = psi_stem_prev - \
-                            (self.AL * Eleaf) * \
+            psi_stem = psi_stem_prev - (self.AL * Eleaf) * \
                             self.timestep_sec / (self.Cs + self.Cl)
 
         return psi_stem
 
+    def calc_swp(self, sw):
+        """
+        Calculate the soil water potential (MPa). The params The parameters b
+        and psi_e are estimated from a typical soil moisture release function.
+
+        Parameters:
+        -----------
+        sw : object
+            volumetric soil water content, m3 m-3
+
+        Returns:
+        -----------
+        psi_soil : float
+            soil water potential, MPa
+
+        References:
+        -----------
+        * Duursma et al. (2008) Tree Physiology 28, 265276, eqn 10
+        """
+        return self.psi_e * (sw / self.theta_sat)**-self.b
+
+    def calc_flux_to_stem_again(self, psi_stem, psi_stem_prev, transpiration,
+                                ksoil2stem):
+        """
+        Calculate the flux from the root to the stem, i.e. the root water
+        uptake (mmol s-1) = change in stem storage plus flux_to_leaf
+
+        Parameters:
+        -----------
+        psi_stem : float
+            stem water potential, MPa
+        psi_stem_prev : float
+            stem water potential from the previous timestep, MPa
+        Eleaf : float
+            transpiration, mmol m-2 s-1
+        ksoil2stem : float
+            conductance from soil to stem, mmol m-2 s-1 MPa-1
+
+        Returns:
+        -------
+        flux_to_stem : float
+            flux from soil to the stem, mmol s-1
+        """
+        if self.AL * ksoil2stem > 1E-09:
+            J_sr = (psi_stem - psi_stem_prev) * \
+                    self.Cs / self.timestep_sec + (transpiration * self.AL)
+        else:
+            J_sr = 0.0
+
+        return J_sr
 
     def update_sw_bucket(self, precip, water_loss, sw_prev):
         """
