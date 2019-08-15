@@ -280,17 +280,17 @@ class Desica(object):
                                                      out.ksoil2stem[i])
 
         out.psi_stem[i-1] = out.psi_stem[i]
-        out.psi_stem[i] = self.update_stem_wp2(out.ksoil2stem[i],
-                                              out.psi_soil[i-1],
-                                              out.flux_to_leaf[i],
-                                              out.psi_stem[i-1],
-                                              out.Eleaf[i])
+        out.psi_stem[i] = self.update_stem_again(out.ksoil2stem[i],
+                                                 out.psi_soil[i-1],
+                                                 out.flux_to_leaf[i],
+                                                 out.psi_stem[i-1],
+                                                 out.Eleaf[i])
 
         # Flux from the soil to the stem = change in storage + flux_to_leaf
-        out.flux_to_stem[i] = self.calc_flux_to_stem(out.psi_stem[i],
-                                                     out.psi_stem[i-1],
-                                                     out.Eleaf[i]*self.AL,
-                                                     out.ksoil2stem[i])
+        out.flux_to_stem[i] = self.calc_flux_to_stem_again(out.psi_stem[i],
+                                                           out.psi_stem[i-1],
+                                                           out.Eleaf[i],
+                                                           out.ksoil2stem[i])
 
 
 
@@ -454,7 +454,8 @@ class Desica(object):
         """
         return self.psi_e * (sw / self.theta_sat)**-self.b
 
-    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf, ksoil2stem):
+    def calc_flux_to_stem(self, psi_stem, psi_stem_prev, flux_to_leaf,
+                          ksoil2stem):
         """
         Calculate the flux from the root to the stem, i.e. the root water
         uptake (mmol s-1) = change in stem storage plus flux_to_leaf
@@ -476,6 +477,34 @@ class Desica(object):
         if self.AL * ksoil2stem > 1E-09:
             J_sr = (psi_stem - psi_stem_prev) * \
                     self.Cs / self.timestep_sec + flux_to_leaf
+        else:
+            J_sr = 0.0
+
+        return J_sr
+
+    def calc_flux_to_stem_again(self, psi_stem, psi_stem_prev, transpiration,
+                                ksoil2stem):
+        """
+        Calculate the flux from the root to the stem, i.e. the root water
+        uptake (mmol s-1) = change in stem storage plus flux_to_leaf
+
+        Parameters:
+        -----------
+        psi_stem : float
+            stem water potential, MPa
+        psi_stem_prev : float
+            stem water potential from the previous timestep, MPa
+        flux_to_leaf : float
+            flux of water from the stem to leaf
+
+        Returns:
+        -------
+        flux_to_stem : float
+            flux from soil to the stem, mmol s-1
+        """
+        if self.AL * ksoil2stem > 1E-09:
+            J_sr = (psi_stem - psi_stem_prev) * \
+                    self.Cs / self.timestep_sec + (transpiration * self.AL)
         else:
             J_sr = 0.0
 
@@ -564,8 +593,8 @@ class Desica(object):
 
         return psi_stem
 
-    def update_stem_wp2(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
-                        psi_stem_prev, Eleaf):
+    def update_stem_again(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
+                          psi_stem_prev, Eleaf):
         """
         Calculate the flux from the stem to the leaf = change in leaf storage
         plus transpiration
