@@ -257,8 +257,10 @@ class Desica(object):
         out.Eleaf[i] = gsw * (met.vpd[i] / met.press[i])
 
         # Calculate the leaf water potential assuming psi_stem is constant
-        out.psi_leaf[i] = self.calc_lwp(out.kstem2leaf[i], out.psi_stem[i-1],
-                                        out.psi_leaf[i-1], out.Eleaf[i])
+        out.psi_leaf[i] = self.calc_psi_leaf(out.kstem2leaf[i],
+                                             out.psi_stem[i-1],
+                                             out.psi_leaf[i-1],
+                                             out.Eleaf[i])
 
         # Flux from stem to leaf (mmol s-1) = change in leaf storage,
         # plus transpiration
@@ -375,7 +377,7 @@ class Desica(object):
 
         return (relk)
 
-    def calc_lwp(self, kstem2leaf, psi_stem_prev, psi_leaf_prev, Eleaf):
+    def calc_psi_leaf(self, kstem2leaf, psi_stem_prev, psi_leaf_prev, Eleaf):
         """
         Calculate leaf water potential, MPa
 
