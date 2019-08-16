@@ -123,6 +123,16 @@ class Desica(object):
         doy = 0
         for i in range(1, n):
 
+            # Impose pre-dawn (6 am) xylem refilling 
+            if hod == 12 and out.psi_stem[i-1] > -4:
+                # assuming psi_stem can refill 50% of distance to psi_soil
+                refill = np.abs(out.psi_stem[i-1] - out.psi_soil[i-1]) * 0.5
+                out.psi_stem[i-1] += refill
+                out.psi_stem[i-1] = min(out.psi_stem[i-1], out.psi_soil[i-1])
+
+                # assume complete refilling
+                #out.psi_stem[i-1] = out.psi_soil[i-1]
+
             out = self.run_timestep(i, met, out)
 
             rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i],
@@ -874,7 +884,7 @@ def plot_swp_ksoil(odir, out, year=None):
                     pad_inches=0.1)
     plt.close('all')
 
-def plot_transpiration(odir, out, year=None):
+def plot_transpiration(odir, out, to_screen=False, year=None):
 
     conv = c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * c.G_TO_KG * \
             c.SEC_2_HLFHR
@@ -908,6 +918,8 @@ def plot_transpiration(odir, out, year=None):
     ax1.set_ylabel("Transpiration (mm d$^{-1}$)")
     ax1.set_xlabel("Time (days)")
 
+    if to_screen:
+        plt.show()
     if year is None:
         fig.savefig("%s/transpiration.pdf" % (odir), bbox_inches='tight',
                     pad_inches=0.1)
@@ -1112,7 +1124,7 @@ if __name__ == "__main__":
     do_sensitivity = False
     lat = -35.76
     lon = 148.0
-    met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=700,
+    met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=300,
                             lat=lat, lon=lon, time_step=time_step)
 
     b = 6          # SW retention curve param
@@ -1153,7 +1165,7 @@ if __name__ == "__main__":
         os.makedirs(odir)
 
     plot_time_to_mortality(odir, out, time_step, to_screen=True)
-
+    #plot_transpiration(odir, out, to_screen=True)
     """
     plot_swp_sw(odir, out)
     plot_swp_ksoil(odir, out)
