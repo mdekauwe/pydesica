@@ -125,6 +125,7 @@ class Desica(object):
 
             # Impose pre-dawn (6 am) xylem refilling
             if hod == 12 and out.psi_stem[i-1] > -4:
+
                 # assuming psi_stem can refill 50% of distance to psi_soil
                 refill = np.abs(out.psi_stem[i-1] - out.psi_soil[i-1]) * 0.5
                 out.psi_stem[i-1] += refill
