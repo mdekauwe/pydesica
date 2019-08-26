@@ -688,7 +688,6 @@ class Desica(object):
 
         sw = min(self.theta_sat, \
                  sw_prev + delta_sw / (self.soil_volume * c.M_2_MM))
-        print(self.soil_volume * c.M_2_MM)
         return sw
 
     def calc_plc(self, kp):
