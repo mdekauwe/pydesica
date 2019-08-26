@@ -1003,27 +1003,7 @@ def plot_cwd(odir, out, timestep=15, year=None):
         cum_sumx += pet - aet
         cwd.append(cum_sumx)
     """
-    cwd = []
-    cum_sumx = 0.0
-
-    dx = 0.0
-    dy = 0.0
-    hod = 0
-    for i in range(len(out)):
-        pet = out.pet[i] * c.SEC_2_HLFHR
-        aet = out["Eplant"][i] * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
-                c.G_TO_KG * c.SEC_2_HLFHR
-        cum_sumx += pet - aet
-        cwd.append(cum_sumx)
-        dx += pet
-        dy += aet
-
-        hod += 1
-        if hod > 47:
-            hod = 0.0
-            #print(dx, dy)
-            dx = 0.0
-            dy = 0.0
+    cwd = calc_cwd(out)
 
     cb = ['#377eb8', '#ff7f00', '#4daf4a', \
           '#f781bf', '#a65628', '#984ea3',\
