@@ -19,13 +19,18 @@ import seaborn as sns
 
 df = pd.read_csv("outputs/rel_imp.csv")
 
-
+df.gmin *= 100.
+df.lai *= 100.
+df.p50 *= 100.
+df.depth *= 100.
+df.Cl *= 100.
+df.Cs *= 100.
 
 width = 9
 height = 6
 fig = plt.figure(figsize=(width, height))
 fig.subplots_adjust(hspace=0.3)
-fig.subplots_adjust(wspace=0.05)
+fig.subplots_adjust(wspace=0.1)
 plt.rcParams['text.usetex'] = False
 plt.rcParams['font.family'] = "sans-serif"
 plt.rcParams['font.sans-serif'] = "Helvetica"
@@ -75,12 +80,12 @@ change_width(ax5, .9)
 change_width(ax6, .9)
 
 
-ax1.set_ylim(0,0.9)
-ax2.set_ylim(0,0.9)
-ax3.set_ylim(0,0.9)
-ax4.set_ylim(0,0.9)
-ax5.set_ylim(0,0.9)
-ax6.set_ylim(0,0.9)
+#ax1.set_ylim(0,95)
+ax2.set_ylim(0,95)
+#ax3.set_ylim(0,95)
+#ax4.set_ylim(0,95)
+#ax5.set_ylim(0,95)
+#ax6.set_ylim(0,95)
 
 ax1.set_xlim(-1,5)
 ax2.set_xlim(-1,5)
@@ -94,9 +99,9 @@ plt.setp(ax2.get_xticklabels(), visible=False)
 plt.setp(ax3.get_xticklabels(), visible=False)
 plt.setp(ax4.get_xticklabels(), visible=False)
 
-plt.setp(ax2.get_yticklabels(), visible=False)
-plt.setp(ax4.get_yticklabels(), visible=False)
-plt.setp(ax6.get_yticklabels(), visible=False)
+#plt.setp(ax2.get_yticklabels(), visible=False)
+#plt.setp(ax4.get_yticklabels(), visible=False)
+#plt.setp(ax6.get_yticklabels(), visible=False)
 
 ax1.set_xlabel('')
 ax2.set_xlabel('')
@@ -107,7 +112,7 @@ ax6.set_xlabel('')
 
 ax1.set_ylabel('')
 ax2.set_ylabel('')
-ax3.set_ylabel('Relative importance R$^{2}$')
+ax3.set_ylabel('Relative importance (% R$^{2}$)')
 ax4.set_ylabel('')
 ax5.set_ylabel('')
 ax6.set_ylabel('')
@@ -121,26 +126,26 @@ ax6.set_title('')
 
 props = dict(boxstyle='round', facecolor='white', alpha=1.0,
                      ec="white")
-ax1.text(0.03, 0.93, "(a) gmin",
+ax1.text(0.03, 0.93, "(a) $g_{\mathrm{min}}$",
         transform=ax1.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
 ax2.text(0.03, 0.93, "(b) LAI",
         transform=ax2.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax3.text(0.03, 0.93, "(c) p50",
+ax3.text(0.03, 0.93, "(c) $p_{\mathrm{50}}$",
         transform=ax3.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax4.text(0.03, 0.93, "(d) depth",
+ax4.text(0.03, 0.93, "(d) Depth",
         transform=ax4.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax5.text(0.03, 0.93, "(e) Cl",
+ax5.text(0.03, 0.93, "(e) $C_{\mathrm{l}}$",
         transform=ax5.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax6.text(0.03, 0.93, "(f) Cs",
+ax6.text(0.03, 0.93, "(f) $C_{\mathrm{s}}$",
         transform=ax6.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
 
 ofdir = "/Users/mdekauwe/Desktop"
-ofname = "rel_imp.pdf"
+ofname = "day_of_death_rel_imp.pdf"
 fig.savefig(os.path.join(ofdir, ofname),
             bbox_inches='tight', pad_inches=0.1)
