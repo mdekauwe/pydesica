@@ -179,6 +179,8 @@ class Desica(object):
 
         out = out[~np.isnan(out.year)]
 
+        out["cwd"] = calc_cwd(out)
+
         return (out, day_of_death)
 
     def initialise_model(self, met):
@@ -1121,6 +1123,32 @@ def plot_sw(odir, out, time_step=30, year=None):
         fig.savefig("%s/sw_%d.pdf" % (odir, year), bbox_inches='tight',
                     pad_inches=0.1)
     plt.close('all')
+
+def calc_cwd(out):
+
+    cwd = []
+    cum_sumx = 0.0
+
+    dx = 0.0
+    dy = 0.0
+    hod = 0
+    for i in range(len(out)):
+        pet = out.pet[i] * c.SEC_2_HLFHR
+        aet = out["Eplant"][i] * c.MMOL_2_MOL * c.MOL_WATER_2_G_WATER * \
+                c.G_TO_KG * c.SEC_2_HLFHR
+        cum_sumx += pet - aet
+        cwd.append(cum_sumx)
+        dx += pet
+        dy += aet
+
+        hod += 1
+        if hod > 47:
+            hod = 0.0
+            #print(dx, dy)
+            dx = 0.0
+            dy = 0.0
+
+    return cwd
 
 if __name__ == "__main__":
 

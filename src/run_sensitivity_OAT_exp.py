@@ -61,7 +61,7 @@ def main(pft_name, p, ranges):
                FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
-             'depth', 'psi_stem', 'min_plc', 'day_of_death']
+             'depth', 'psi_stem', 'cwd', 'min_plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
 
@@ -90,8 +90,10 @@ def main(pft_name, p, ranges):
         out, day_of_death = D.run_simulation(met)
         psi_stem = out.psi_stem.iloc[-1]
         min_plc = out.min_plc.iloc[-1]
+        cwd = out.min_plc.iloc[-1]
+
         result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
-                  soil_depth, psi_stem, min_plc, day_of_death]
+                  soil_depth, psi_stem, cwd, min_plc, day_of_death]
 
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
@@ -134,7 +136,7 @@ if __name__ == "__main__":
 
     chg = 1.5
     N = 1
-    NN = 10
+    NN = 20
 
     # gmin
     print("gmin")
@@ -148,6 +150,7 @@ if __name__ == "__main__":
     ]
     df1 = main(pft_name, p, ranges)
 
+    sys.exit()
     # LAI
     print("lai")
     ranges = [
