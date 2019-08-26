@@ -204,7 +204,7 @@ if __name__ == "__main__":
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
-        np.linspace(0.25, 1.5, NN)               # soil_depth
+        np.linspace(0.1, 1.0, NN)               # soil_depth
     ]
     df6 = main(pft_name, p, ranges)
 
