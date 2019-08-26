@@ -170,6 +170,7 @@ class Desica(object):
                 doy += 1
 
         out["min_plc"] = min_plc
+        out["plc"] = self.calc_plc(out.kplant)
 
         # mmol s-1
         out["Eplant"] = self.AL * out.Eleaf
