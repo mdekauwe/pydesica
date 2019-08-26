@@ -17,13 +17,18 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 
-dsf = pd.read_csv("outputs/dsf_trait_sensitivity.csv")
-saw = pd.read_csv("outputs/saw_trait_sensitivity.csv")
 rf = pd.read_csv("outputs/rf_trait_sensitivity.csv")
+wsf = pd.read_csv("outputs/wsf_trait_sensitivity.csv")
+dsf = pd.read_csv("outputs/dsf_trait_sensitivity.csv")
+grw = pd.read_csv("outputs/grw_trait_sensitivity.csv")
+saw = pd.read_csv("outputs/saw_trait_sensitivity.csv")
 
-dsf = dsf[dsf.day_of_death > 0]
-saw = saw[saw.day_of_death > 0]
 rf = rf[rf.day_of_death > 0]
+wsf = wsf[wsf.day_of_death > 0]
+dsf = dsf[dsf.day_of_death > 0]
+grw = grw[grw.day_of_death > 0]
+saw = saw[saw.day_of_death > 0]
+
 
 width = 9
 height = 6
@@ -42,10 +47,14 @@ plt.rcParams['ytick.labelsize'] = 16
 ax = fig.add_subplot(111)
 #ax.hist(dsf.day_of_death, alpha=0.5, label='DSF', density=True)
 #ax.hist(saw.day_of_death, alpha=0.5, label='SAW', density=True)
-#sns.distplot(rf.day_of_death, ax=ax, rug=False, norm_hist=True,
-#             kde_kws={"label": "RF"})
+sns.distplot(rf.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "RF"})
+sns.distplot(wsf.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "WSF"})
 sns.distplot(dsf.day_of_death, ax=ax, rug=False, norm_hist=True,
              kde_kws={"label": "DSF"})
+sns.distplot(grw.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "GRW"})
 sns.distplot(saw.day_of_death, ax=ax, rug=False, norm_hist=True,
              kde_kws={"label": "SAW"})
 ax.tick_params(direction='in', length=4)

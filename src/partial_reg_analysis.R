@@ -9,16 +9,23 @@ library(tidyverse)
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
-pft = "dsf"
-fname <- sprintf("%s_trait_sensitivity.csv", pft)
+#pft = "wsf"
+#fname <- sprintf("%s_trait_sensitivity.csv", pft)
+#df <- read.csv(fname)
+
+pft = "rf"
+fname <- sprintf("%s_trait_sens_OAT.csv", pft)
 df <- read.csv(fname)
+
 #head(df)
 
-fit <- lm(plc ~ gmin + p50 + depth, data=df)
+
+fit <- lm(min_plc ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
 
 #visreg(fit)
-par(mfrow=c(2,3))
+par(mfrow=c(3,3))
 visreg(fit, "gmin")
+visreg(fit, "lai")
 visreg(fit, "p50")
 visreg(fit, "Cl")
 visreg(fit, "Cs")

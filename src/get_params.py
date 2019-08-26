@@ -41,3 +41,9 @@ def get_params():
                                   'Cleaf_preTLP_mmol.m2.MPa1':'Cl'})
     sites = sites.transpose()
     return (sites)
+
+if __name__ == "__main__":
+
+
+    sites = get_params()
+    print(sites)

@@ -34,7 +34,8 @@ def main(ncpus=None):
 
     params = get_params()
     pfts = list(params)
-    #pfts = ["rf"]
+
+    pfts = ["rf"]
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -83,77 +84,68 @@ def worker(pft_name, p):
     D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
                FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
 
-    names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'p50', 'Cl', 'Cs', \
+    names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
              'depth', 'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
 
-    #Tmaxx = [30, 40]
-    #RHx = [20, 10]
+    lai = {}
+    lai["rf"] = (4.78, 6.94)
+    lai["wsf"] = (3.46, 6.19)
+    lai["dsf"] = (1.43, 4.75)
+    lai["grw"] = (1.27, 3.39)
+    lai["saw"] = (0.34, 1.67)
 
-    Tmaxx = [35]
-    RHx = [10]
+    lai_low, lai_high = lai[pft_name]
+
+    Tmax = 35.
+    RH = 10.
+    met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=720,
+                            lat=lat, lon=lon, time_step=time_step)
+    Dmax = np.max(met.vpd)
+    Dmean = np.mean(met.vpd)
 
     N = 5
-    total_exp = 3125
+    chg = 1.3
+    total_exp = 15625
 
-    #ranges = [
-    #    np.linspace(5, 15, N),        # gmin
-    #    np.linspace(1, 5, N),         # AL
-    #    np.linspace(-1, -6, N),       # p50
-    #    np.linspace(200, 800, N),     # Cl
-    #    np.linspace(10000, 50000, N), # Cs
-    #    np.linspace(0.5, 2.0, N)      # soil_depth
-    #]
-    chg = 1.5
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
+        np.linspace(lai_low, lai_high,  N),      # AL
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
-        np.linspace(0.5, 2.0, N)                 # soil_depth
+        np.linspace(0.25, 1.5, N)                # soil_depth
     ]
 
-
-
     count = 0
-    last_count = 0
-    for Tmax in Tmaxx:
-        for RH in RHx:
-            met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=500,
-                                    lat=lat, lon=lon, time_step=time_step)
-            Dmax = np.max(met.vpd)
-            Dmean = np.mean(met.vpd)
+    last_progress = 9.0
+    for gmin, AL, p50, Cl, Cs, soil_depth, in \
+        itertools.product(*ranges):
 
-            for gmin, p50, Cl, Cs, soil_depth, in \
-                itertools.product(*ranges):
 
-                #"""
-                (D.gmin, D.p50, D.Cl, D.Cs,
-                 D.soil_depth) = gmin, p50, Cl, Cs, soil_depth
+        #"""
+        (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
+         D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
 
-                out, day_of_death = D.run_simulation(met)
-                psi_stem = out.psi_stem.iloc[-1]
-                plc = out.plc.iloc[-1]
+        out, day_of_death = D.run_simulation(met)
+        psi_stem = out.psi_stem.iloc[-1]
+        plc = out.plc.iloc[-1]
 
-                result = [Tmax, Dmax, Dmean, gmin, p50, Cl, Cs,  \
-                          soil_depth, psi_stem, plc, day_of_death]
+        result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
+                  soil_depth, psi_stem, plc, day_of_death]
 
-                s = pd.Series(result, index=df.columns)
-                df = df.append(s, ignore_index=True)
-                #"""
+        s = pd.Series(result, index=df.columns)
+        df = df.append(s, ignore_index=True)
+        #"""
 
-                count += 1
-                progress = (count / total_exp) * 100.0
+        count += 1
+        progress = (count / total_exp) * 100.0
 
-                if count + 300 > last_count:
-                    print(pft_name, "--", round(progress,3),
-                          count, ":", total_exp)
-                    last_count = count
-                    
-                #if count == 10:
-                #    sys.exit()
-    #print(count-1)
+        if progress > last_progress:
+            print(pft_name, "--", round(progress,3), count, ":", total_exp)
+            last_progress += 9.
+
 
     odir = "outputs"
     if not os.path.exists(odir):

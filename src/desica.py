@@ -121,6 +121,7 @@ class Desica(object):
 
         hod = 1
         doy = 0
+        min_plc = -999.
         for i in range(1, n):
 
             # Impose pre-dawn (6 am) xylem refilling
@@ -149,6 +150,8 @@ class Desica(object):
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
+                if plc > min_plc:
+                    min_plc = plc
                 if plc > self.plc_dead:
                     if self.met_timestep == 15:
                         day_of_death = i / 96.
@@ -166,7 +169,7 @@ class Desica(object):
                 hod = 0
                 doy += 1
 
-        out["plc"] = self.calc_plc(out.kplant)
+        out["min_plc"] = min_plc
 
         # mmol s-1
         out["Eplant"] = self.AL * out.Eleaf
