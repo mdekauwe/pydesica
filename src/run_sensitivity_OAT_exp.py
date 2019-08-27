@@ -150,7 +150,6 @@ if __name__ == "__main__":
     ]
     df1 = main(pft_name, p, ranges)
 
-    sys.exit()
     # LAI
     print("lai")
     ranges = [

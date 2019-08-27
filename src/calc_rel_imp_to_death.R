@@ -45,4 +45,9 @@ fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
 rel_imp <- calc.relimp(fit, type=c("lmg","last", "first"), rela=TRUE)
 saw_imp <- rel_imp$lmg
 
+# Clean up and save the output
+all <- rbind(rf_imp, wsf_imp, dsf_imp, grw_imp, saw_imp)
+all <- cbind(c("RF", "WSF", "DSF", "GRW", "SAW"), all)
+colnames(all) <- c("pft","gmin","lai","p50","depth","Cl","Cs")
+write.csv(all,"rel_imp.csv", row.names=FALSE)
 
