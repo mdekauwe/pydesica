@@ -16,9 +16,11 @@ from get_params import get_params
 params = get_params()
 pfts = list(params)
 
+print("pft", "t_crit", "p50", "gmin", "capac")
 for pft_name in pfts:
 
     p = params[pft_name]
     capac = p.Cs + p.Cl
     t_crit = -10**-3 * capac * p.p50 / p.gmin
-    print(pft_name, t_crit)
+    print( pft_name, round(t_crit,2), round(p.p50,2),
+           round(p.gmin,2), round(capac, 2) )
