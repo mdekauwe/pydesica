@@ -41,6 +41,43 @@ dsf = dsf.drop_duplicates(subset='day_of_death')
 grw = grw.drop_duplicates(subset='day_of_death')
 saw = saw.drop_duplicates(subset='day_of_death')
 
+width = 9
+height = 6
+fig = plt.figure(figsize=(width, height))
+fig.subplots_adjust(hspace=0.13)
+fig.subplots_adjust(wspace=0.13)
+plt.rcParams['text.usetex'] = False
+plt.rcParams['font.family'] = "sans-serif"
+plt.rcParams['font.sans-serif'] = "Helvetica"
+plt.rcParams['axes.labelsize'] = 16
+plt.rcParams['font.size'] = 16
+plt.rcParams['legend.fontsize'] = 12
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
+
+colours = sns.color_palette("Set2", 8)
+
+ax = fig.add_subplot(111)
+
+sns.distplot(rf.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "RF"}, kde=True, color=colours[0])
+sns.distplot(wsf.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "WSF"}, kde=True, color=colours[1])
+sns.distplot(dsf.day_of_death, ax=ax, rug=False, norm_hist=True,
+             kde_kws={"label": "DSF"}, kde=True, color=colours[2])
+
+
+ax.tick_params(direction='in', length=4)
+ax.set_xlabel("Day of death")
+ax.set_ylabel("Probability density")
+ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
+
+ofdir = "/Users/mdekauwe/Desktop"
+ofname = "day_of_death_RF_WSF_DSF.pdf"
+fig.savefig(os.path.join(ofdir, ofname),
+            bbox_inches='tight', pad_inches=0.1)
+
+sys.exit()
 
 width = 9
 height = 6
@@ -56,32 +93,23 @@ plt.rcParams['legend.fontsize'] = 12
 plt.rcParams['xtick.labelsize'] = 16
 plt.rcParams['ytick.labelsize'] = 16
 
+colours = sns.color_palette("Set2", 8)
+
 ax = fig.add_subplot(111)
 
-
-sns.distplot(rf.day_of_death, ax=ax, rug=False, norm_hist=True,
-             kde_kws={"label": "RF"}, kde=True)
-sns.distplot(wsf.day_of_death, ax=ax, rug=False, norm_hist=True,
-             kde_kws={"label": "WSF"}, kde=True)
-sns.distplot(dsf.day_of_death, ax=ax, rug=False, norm_hist=True,
-             kde_kws={"label": "DSF"}, kde=True)
 sns.distplot(grw.day_of_death, ax=ax, rug=False, norm_hist=True,
-             kde_kws={"label": "GRW"}, kde=True)
+             kde_kws={"label": "GRW"}, kde=True, color=colours[3])
 sns.distplot(saw.day_of_death, ax=ax,  rug=False, norm_hist=True,
-             kde_kws={"label": "SAW"}, kde=True)
+             kde_kws={"label": "SAW"}, kde=True, color=colours[4])
 
-
-
-ax.set_ylim(0, 0.09)
-ax.set_xlim(0, 100)
-#ax2.set_ylim(0.6, 0.8)
+ax.set_xlim(0, 600)
 
 ax.tick_params(direction='in', length=4)
 ax.set_xlabel("Day of death")
 ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
-plt.show()
+
 ofdir = "/Users/mdekauwe/Desktop"
-ofname = "day_of_death.pdf"
+ofname = "day_of_death_GRW_SAW.pdf"
 fig.savefig(os.path.join(ofdir, ofname),
             bbox_inches='tight', pad_inches=0.1)

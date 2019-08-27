@@ -89,14 +89,15 @@ def worker(pft_name, p):
     df = pd.DataFrame(columns=names)
 
 
+    # min, max, mean
     lai = {}
-    lai["rf"] = (4.78, 6.94)
-    lai["wsf"] = (3.46, 6.19)
-    lai["dsf"] = (1.43, 4.75)
-    lai["grw"] = (1.27, 3.39)
-    lai["saw"] = (0.34, 1.67)
+    lai["rf"] = (4.78, 6.94, 5.86)
+    lai["wsf"] = (3.46, 6.19, 4.83)
+    lai["dsf"] = (1.43, 4.75, 3.09)
+    lai["grw"] = (1.27, 3.39, 2.33)
+    lai["saw"] = (0.34, 1.67, 1.0)
 
-    lai_low, lai_high = lai[pft_name]
+    lai_low, lai_high, lai_mu = lai[pft_name]
 
     Tmax = 35.
     RH = 10.
@@ -106,7 +107,7 @@ def worker(pft_name, p):
     Dmean = np.mean(met.vpd)
 
     N = 5
-    chg = 1.3
+    chg = 1.5
     total_exp = 15625
 
     ranges = [
@@ -115,7 +116,7 @@ def worker(pft_name, p):
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
-        np.linspace(0.25, 1.5, N)                # soil_depth
+        np.linspace(0.1, 1.0, N)                 # soil_depth
     ]
 
     count = 0
@@ -124,7 +125,7 @@ def worker(pft_name, p):
         itertools.product(*ranges):
 
 
-        #"""
+        """
         (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
          D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
 
@@ -133,11 +134,11 @@ def worker(pft_name, p):
         plc = out.plc.iloc[-1]
 
         result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
-                  soil_depth, psi_stem, plc, day_of_death]
+                  soil_depth, psi_stem, cwd, plc, day_of_death]
 
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
-        #"""
+        """
 
         count += 1
         progress = (count / total_exp) * 100.0
