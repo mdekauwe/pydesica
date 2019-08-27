@@ -19,5 +19,6 @@ pfts = list(params)
 for pft_name in pfts:
 
     p = params[pft_name]
-    t_crit = -10**-3 * (p.Cs + p.Cl) * p.p50 / p.gmin
+    capac = p.Cs + p.Cl
+    t_crit = -10**-3 * capac * p.p50 / p.gmin
     print(pft_name, t_crit)
