@@ -25,12 +25,13 @@ df.p50 *= 100.
 df.depth *= 100.
 df.Cl *= 100.
 df.Cs *= 100.
+df.pft = df.pft.str.upper()
 
 width = 9
 height = 6
 fig = plt.figure(figsize=(width, height))
-fig.subplots_adjust(hspace=0.3)
-fig.subplots_adjust(wspace=0.1)
+fig.subplots_adjust(hspace=0.15)
+fig.subplots_adjust(wspace=0.15)
 plt.rcParams['text.usetex'] = False
 plt.rcParams['font.family'] = "sans-serif"
 plt.rcParams['font.sans-serif'] = "Helvetica"
@@ -112,17 +113,11 @@ ax6.set_xlabel('')
 
 ax1.set_ylabel('')
 ax2.set_ylabel('')
-ax3.set_ylabel('Relative importance (% R$^{2}$)')
+ax3.set_ylabel('Relative importance\n(% R$^{2}$)', position=(1.5, 0.5))
 ax4.set_ylabel('')
 ax5.set_ylabel('')
 ax6.set_ylabel('')
 
-ax1.set_title('')
-ax2.set_title('')
-ax3.set_title('')
-ax4.set_title('')
-ax5.set_title('')
-ax6.set_title('')
 
 props = dict(boxstyle='round', facecolor='white', alpha=1.0,
                      ec="white")

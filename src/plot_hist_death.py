@@ -72,7 +72,7 @@ sns.distplot(saw.day_of_death, ax=ax,  rug=False, norm_hist=True,
 
 
 
-ax.set_ylim(0, 0.04)
+ax.set_ylim(0, 0.09)
 ax.set_xlim(0, 100)
 #ax2.set_ylim(0.6, 0.8)
 

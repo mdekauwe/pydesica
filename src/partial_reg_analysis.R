@@ -13,16 +13,22 @@ setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 #fname <- sprintf("%s_trait_sensitivity.csv", pft)
 #df <- read.csv(fname)
 
-pft = "rf"
+pft = "grw"
 fname <- sprintf("%s_trait_sens_OAT.csv", pft)
 df <- read.csv(fname)
 
 #head(df)
 
 df <- unique(df)
-
-fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs + cwd, data=df)
+df <- df[df$day_of_death> 0, ]
+#df <- df[!duplicated(df), ]
+df <- unique(df)
+fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
 visreg(fit)
+
+
+#x <- pcor(df[,c("gmin","lai","p50","depth","Cl","Cs")])
+#sens_2 <- sort(abs(x$estimate[1,-1]),T)
 
 #visreg(fit)
 par(mfrow=c(3,3))
