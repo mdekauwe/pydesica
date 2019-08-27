@@ -21,7 +21,8 @@ df <- read.csv(fname)
 
 df <- unique(df)
 
-fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
+fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs + cwd, data=df)
+visreg(fit)
 
 #visreg(fit)
 par(mfrow=c(3,3))

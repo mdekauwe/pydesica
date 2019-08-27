@@ -58,12 +58,7 @@ plt.rcParams['ytick.labelsize'] = 16
 
 ax = fig.add_subplot(111)
 
-"""
-ax.hist(rf.day_of_death, alpha=0.5, label='RF', density=True)
-ax.hist(dsf.day_of_death, alpha=0.5, label='DSF', density=True)
-ax.hist(grw.day_of_death, alpha=0.5, label='GRW', density=True)
 
-"""
 sns.distplot(rf.day_of_death, ax=ax, rug=False, norm_hist=True,
              kde_kws={"label": "RF"}, kde=True)
 sns.distplot(wsf.day_of_death, ax=ax, rug=False, norm_hist=True,
