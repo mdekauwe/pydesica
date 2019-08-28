@@ -77,7 +77,6 @@ ofname = "day_of_death_RF_WSF_DSF.pdf"
 fig.savefig(os.path.join(ofdir, ofname),
             bbox_inches='tight', pad_inches=0.1)
 
-sys.exit()
 
 width = 9
 height = 6
