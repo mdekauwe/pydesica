@@ -169,6 +169,15 @@ class Desica(object):
                 hod = 0
                 doy += 1
 
+                # calculate diel range in psi_leaf
+                days_psi_leaf = out.psi_leaf[i-47:i].values
+                idx = np.argwhere(met.par[i-47:i] > 0.0).flatten()
+                diel_psi_leaf = -1 * np.fabs(np.min(days_psi_leaf[idx]) - \
+                                             np.max(days_psi_leaf[idx]))
+                #print(diel_psi_leaf)
+
+
+
         out["min_plc"] = min_plc
         out["plc"] = self.calc_plc(out.kplant)
 

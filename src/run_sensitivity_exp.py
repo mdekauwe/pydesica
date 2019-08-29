@@ -22,13 +22,12 @@ from calc_pet import calc_net_radiation, calc_pet_energy
 import constants as c
 from desica import Desica
 from desica import plot_time_to_mortality
-from desica import plot_transpiration
-from desica import plot_cwd
-from desica import plot_sw
-from desica import plot_transpiration_and_pet
 from get_params import get_params
 import itertools
 import multiprocessing as mp
+
+
+
 
 def main(ncpus=None):
 
@@ -108,7 +107,8 @@ def worker(pft_name, p):
 
     N = 5
     chg = 1.5
-    total_exp = 15625
+    total_exp = 15624
+
 
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
@@ -134,20 +134,20 @@ def worker(pft_name, p):
         plc = out.plc.iloc[-1]
 
         result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
-                  soil_depth, psi_stem, cwd, plc, day_of_death]
+                  soil_depth, psi_stem, plc, day_of_death]
 
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
         """
 
-        count += 1
         progress = (count / total_exp) * 100.0
 
         if progress > last_progress:
             print(pft_name, "--", round(progress,3), count, ":", total_exp)
             last_progress += 9.
+        count += 1
 
-
+    print(count-1)
     odir = "outputs"
     if not os.path.exists(odir):
         os.makedirs(odir)

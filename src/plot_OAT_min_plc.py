@@ -50,25 +50,25 @@ colours = sns.color_palette("Set2", 8)
 
 
 tmp = rf.drop_duplicates(subset='gmin')
-ax1.plot(tmp.gmin, tmp.min_plc, color=colours[0], marker="o", ls=" ",
+ax1.plot(tmp.gmin, tmp.plc, color=colours[0], marker="o", ls=" ",
          label="RF", ms=3)
 #ax1.plot(tmp.gmin, tmp.day_of_death, "ro")
 
 tmp = rf.drop_duplicates(subset='lai')
-ax2.plot(tmp.lai, tmp.min_plc, color=colours[0], marker="o", ls=" ", ms=3)
+ax2.plot(tmp.lai, tmp.plc, color=colours[0], marker="o", ls=" ", ms=3)
 
 tmp = rf.drop_duplicates(subset='p50')
-ax3.plot(tmp.p50, tmp.min_plc, color=colours[0], marker="o", ls=" ", ms=3)
+ax3.plot(tmp.p50, tmp.plc, color=colours[0], marker="o", ls=" ", ms=3)
 
 tmp = rf.drop_duplicates(subset='depth')
-ax4.plot(tmp.depth, tmp.min_plc, color=colours[0], marker="o", ls=" ",
+ax4.plot(tmp.depth, tmp.plc, color=colours[0], marker="o", ls=" ",
          ms=3)
 
 tmp = rf.drop_duplicates(subset='Cl')
-ax5.plot(tmp.Cl, tmp.min_plc, color=colours[0], marker="o", ls=" ", ms=3)
+ax5.plot(tmp.Cl, tmp.plc, color=colours[0], marker="o", ls=" ", ms=3)
 
 tmp = rf.drop_duplicates(subset='Cs')
-ax6.plot(tmp.Cs, tmp.min_plc, color=colours[0], marker="o", ls=" ", ms=3)
+ax6.plot(tmp.Cs, tmp.plc, color=colours[0], marker="o", ls=" ", ms=3)
 
 ax1.set_ylim(40, 100)
 ax2.set_ylim(40, 100)

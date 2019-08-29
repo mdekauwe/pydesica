@@ -31,6 +31,8 @@ def generate_met_data(year=2000, PPFDmax=2000, RH=30, Tmax=30, Tmin=10,
         nx = 48
     elif time_step == 60:
         nx = 24
+    elif time_step == 120:
+        nx = 12
 
     r = np.arange(0, (24 * 60 - time_step) + time_step, time_step)
     p = np.zeros(len(r))
