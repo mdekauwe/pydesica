@@ -170,10 +170,10 @@ class Desica(object):
                 doy += 1
 
                 # calculate diel range in psi_leaf
-                days_psi_leaf = out.psi_leaf[i-47:i].values
-                idx = np.argwhere(met.par[i-47:i] > 0.0).flatten()
-                diel_psi_leaf = -1 * np.fabs(np.min(days_psi_leaf[idx]) - \
-                                             np.max(days_psi_leaf[idx]))
+                #days_psi_leaf = out.psi_leaf[i-47:i].values
+                #idx = np.argwhere(met.par[i-47:i] > 0.0).flatten()
+                #diel_psi_leaf = -1 * np.fabs(np.min(days_psi_leaf[idx]) - \
+                #                             np.max(days_psi_leaf[idx]))
                 #print(diel_psi_leaf)
 
 
@@ -1160,6 +1160,7 @@ if __name__ == "__main__":
     gmin = 10.     # minimum stomatal conductance, mmol m-2 s-1
     Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
     Cs = 120000.   # stem capacitance, mmol MPa-1
+
     g1 = 4.0       # sensitivity of stomatal conductance to the assimilation
                    # rate, kPa
     g0 = 0.0
