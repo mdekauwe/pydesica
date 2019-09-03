@@ -106,9 +106,8 @@ def worker(pft_name, p):
     Dmean = np.mean(met.vpd)
 
     N = 5
-    chg = 1.5
-    total_exp = 15624
-
+    chg = 1.35
+    total_exp = N**6 # N vars
 
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
@@ -147,7 +146,7 @@ def worker(pft_name, p):
             last_progress += 9.
         count += 1
 
-    print(count-1)
+    
     odir = "outputs"
     if not os.path.exists(odir):
         os.makedirs(odir)
