@@ -29,34 +29,31 @@ import multiprocessing as mp
 
 
 
-def main(ncpus=None):
-
-    params = get_params()
-    pfts = list(params)
-
-    pfts = ["rf"]
+def main(pft_name, params, potentials, total_exp, ncpus=None):
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
 
+    chunk_size = int(np.ceil(len(potentials) / float(ncpus)))
     pool = mp.Pool(processes=ncpus)
-
     processes = []
-    for i, pft_name in enumerate(pfts):
-        #print(i, pft_name)
-        px = params[pft_name]
-        p = mp.Process(target=worker, args=(pft_name, px, ))
+    for i in range(ncpus):
+        start = chunk_size * i
+        end = chunk_size * (i + 1)
+        if end > len(potentials):
+            end = len(potentials)
+
+        p = mp.Process(target=worker, args=(potentials[start:end],
+                                            pft_name, params, total_exp, i, ))
+
         processes.append(p)
 
     # Run processes
     for p in processes:
         p.start()
 
-def worker(pft_name, p):
+def worker(potentials, pft_name, p, total_exp, cpu_count):
 
-    time_step = 30
-    lat = -35.76
-    lon = 148.0
     g0 = 0.0
     theta_J = 0.85
     Rd25 = 0.92
@@ -87,7 +84,55 @@ def worker(pft_name, p):
              'b', 'psi_e', 'depth', 'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
+    #count = 0
+    #last_progress = 9.0
+    for gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e in potentials:
 
+        #"""
+        (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
+         D.soil_depth, D.b,
+         D.psi_e) = gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e
+
+        out, day_of_death = D.run_simulation(met)
+        psi_stem = out.psi_stem.iloc[-1]
+        plc = out.plc.iloc[-1]
+
+        result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
+                  b, psi_e, soil_depth, psi_stem, plc, day_of_death]
+
+        s = pd.Series(result, index=df.columns)
+        df = df.append(s, ignore_index=True)
+        #"""
+
+        #progress = (count / total_exp) * 100.0
+        #if progress > last_progress:
+        #    print(pft_name, "--", round(progress,3), count, ":", total_exp)
+        #    last_progress += 9.
+        #count += 1
+
+    odir = "outputs"
+    if not os.path.exists(odir):
+        os.makedirs(odir)
+
+    ofname = os.path.join(odir,
+                         "%s_trait_sensitivity_%d.csv" % (pft_name, cpu_count))
+    df.to_csv(ofname, index=False)
+
+
+if __name__ == "__main__":
+
+    # Expecting PFT to be supplied on cmd line, e.g.
+    # $ python src/run_sensitivity_OAT_exp.py "rf"
+    if len(sys.argv) < 2:
+        raise TypeError("Expecting pft name to be supplied on cmd line!")
+    pft_name = sys.argv[1]
+
+    params = get_params()
+    p = params[pft_name]
+
+    #
+    ## Generate trait space...
+    #
     # min, max, mean
     lai = {}
     lai["rf"] = (4.78, 6.94, 5.86)
@@ -98,14 +143,18 @@ def worker(pft_name, p):
 
     lai_low, lai_high, lai_mu = lai[pft_name]
 
+    lat = -35.76
+    lon = 148.0
     Tmax = 35.
     RH = 10.
+    time_step = 30
+
     met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=720,
                             lat=lat, lon=lon, time_step=time_step)
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
 
-    N = 5
+    N = 1#5
     chg = 1.35
     total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
 
@@ -121,45 +170,13 @@ def worker(pft_name, p):
                  -1.32*1e-03, -3.17*1e-03])      # psi_e
     ]
 
-    count = 0
-    last_progress = 9.0
+    potentials = []
     for gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e in \
         itertools.product(*ranges):
+        potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
 
+    N = 5
+    chg = 1.35
+    total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
 
-        """
-        (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
-         D.soil_depth, D.b,
-         D.psi_e) = gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e
-
-        out, day_of_death = D.run_simulation(met)
-        psi_stem = out.psi_stem.iloc[-1]
-        plc = out.plc.iloc[-1]
-
-        result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
-                  b, psi_e, soil_depth, psi_stem, plc, day_of_death]
-
-        s = pd.Series(result, index=df.columns)
-        df = df.append(s, ignore_index=True)
-        """
-
-        progress = (count / total_exp) * 100.0
-
-        if progress > last_progress:
-            print(pft_name, "--", round(progress,3), count, ":", total_exp)
-            last_progress += 9.
-        count += 1
-
-
-    odir = "outputs"
-    if not os.path.exists(odir):
-        os.makedirs(odir)
-
-    ofname = os.path.join(odir, "%s_trait_sensitivity.csv" % (pft_name))
-    df.to_csv(ofname, index=False)
-
-
-if __name__ == "__main__":
-
-    #main(ncpus=3)
-    main()
+    main(pft_name, p, potentials, total_exp)
