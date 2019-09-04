@@ -107,7 +107,7 @@ def worker(pft_name, p):
 
     N = 5
     chg = 1.35
-    total_exp = N**6 * (3**2)
+    total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
 
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
@@ -144,7 +144,7 @@ def worker(pft_name, p):
         """
 
         progress = (count / total_exp) * 100.0
-        
+
         if progress > last_progress:
             print(pft_name, "--", round(progress,3), count, ":", total_exp)
             last_progress += 9.
