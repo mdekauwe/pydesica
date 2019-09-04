@@ -161,7 +161,7 @@ if __name__ == "__main__":
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
 
-    N = 1#5
+    N = 5
     chg = 1.35
     total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
 

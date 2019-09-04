@@ -5,7 +5,7 @@
 #PBS -q normalbw
 #PBS -M mdekauwe@gmail.com
 #PBS -l mem=16GB
-#PBS -l ncpus=16
+#PBS -l ncpus=512
 #PBS -l walltime=00:05:00
 #PBS -l wd
 #PBS -j oe
