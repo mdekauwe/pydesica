@@ -61,8 +61,8 @@ class Desica(object):
                  met_timestep=30., sf=8., g1=4., Cs=100000., b=6.,
                  Cl=10000., kp_sat=4., p50=-4., psi_f=-2., s50=30., gmin=10,
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
-                 psi_e=-0.8*1E-03, Ksat=20., Lv=10000., F=None, keep_wet=False,
-                 stop_dead=True, rroot=1E-06, FAO=False):
+                 psi_e=-0.8*c.KPA_2_MPA, Ksat=20., Lv=10000., F=None,
+                 keep_wet=False, stop_dead=True, rroot=1E-06, FAO=False):
 
         self.keep_wet = keep_wet
         self.stop_dead = stop_dead
@@ -1149,11 +1149,14 @@ if __name__ == "__main__":
     lon = 148.0
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=300,
                             lat=lat, lon=lon, time_step=time_step)
-    psi_e = -0.68 * 1E-03  # Sand, MPa
+    psi_e = -0.68 * \
+             c.KPA_2_MPA   # Sand, MPa
     b = 2.79               # Sand, SW retention curve param
-    #psi_e = -1.32 * 1E-03 # Sandy clay loam, MPa
+    #psi_e = -1.32 * \
+    #         c.KPA_2_MPA  # Sandy clay loam, MPa
     #b = 6.77              # Sandy clay loam, SW retention curve param
-    #psi_e = -3.17 * 1E-03 # Silty clay clay loam, MPa
+    #psi_e = -3.17 * \
+    #         c.KPA_2_MPA  # Silty clay clay loam, MPa
     #b = 10.39             # Silty clay, SW retention curve param
     kp_sat = 4             # Tim Brodribb pers comm
     psi_stem0 = 0.         # initial stem water potential, MPa

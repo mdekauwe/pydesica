@@ -20,3 +20,4 @@ H2OMW = 18E-3           # mol mass H20 (kg mol-1)
 CP = 1010.0             # specific heat of dry air (j kg-1 k-1)
 MASS_AIR = 29.0E-3      # mol mass air (kg mol-1)
 KPA_2_PA = 1000.
+KPA_2_MPA = 0.001
