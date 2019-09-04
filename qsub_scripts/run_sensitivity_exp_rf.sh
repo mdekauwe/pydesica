@@ -14,4 +14,5 @@
 module load dot
 source activate sci
 
-python src/run_sensitivity_exp.py "rf"
+#python src/run_sensitivity_exp.py "rf" 16
+python src/run_sensitivity_exp.py "rf" 512

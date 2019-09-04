@@ -28,7 +28,6 @@ import multiprocessing as mp
 
 
 
-
 def main(pft_name, params, potentials, total_exp, ncpus=None):
 
     if ncpus is None: # use them all!
@@ -122,10 +121,16 @@ def worker(potentials, pft_name, p, total_exp, cpu_count):
 if __name__ == "__main__":
 
     # Expecting PFT to be supplied on cmd line, e.g.
-    # $ python src/run_sensitivity_OAT_exp.py "rf"
+    # $ python src/run_sensitivity_exp.py "rf"
     if len(sys.argv) < 2:
         raise TypeError("Expecting pft name to be supplied on cmd line!")
     pft_name = sys.argv[1]
+
+    # Expecting ncpus to be supplied on cmd line, e.g.
+    # $ python src/run_sensitivity_exp.py "rf" 512
+    ncpus = None
+    if len(sys.argv) == 3:
+        ncpus = sys.argv[2]
 
     params = get_params()
     p = params[pft_name]
@@ -179,4 +184,4 @@ if __name__ == "__main__":
     chg = 1.35
     total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
 
-    main(pft_name, p, potentials, total_exp)
+    main(pft_name, p, potentials, total_exp, ncpus=ncpus)
