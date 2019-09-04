@@ -4,7 +4,7 @@
 #PBS -P w35
 #PBS -q normalbw
 #PBS -M mdekauwe@gmail.com
-#PBS -l mem=16GB
+#PBS -l mem=480GB
 #PBS -l ncpus=532
 #PBS -l walltime=00:05:00
 #PBS -l wd
@@ -15,4 +15,4 @@ module load dot
 source activate sci
 
 #python src/run_sensitivity_exp.py "rf" 16
-python src/run_sensitivity_exp.py "rf" 532 # multiples of 28
+python src/run_sensitivity_exp.py "rf" 532 # multiples of 28, so 19 nodes
