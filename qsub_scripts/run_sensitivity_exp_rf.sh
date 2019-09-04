@@ -6,7 +6,7 @@
 #PBS -M mdekauwe@gmail.com
 #PBS -l mem=480GB
 #PBS -l ncpus=532
-#PBS -l walltime=00:05:00
+#PBS -l walltime=05:00:00
 #PBS -l wd
 #PBS -j oe
 #PBS -l other=gdata1
