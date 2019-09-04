@@ -22,7 +22,6 @@ from calc_pet import calc_net_radiation, calc_pet_energy
 import constants as c
 from desica import Desica
 from desica import plot_time_to_mortality
-from get_params import get_params
 import itertools
 import multiprocessing as mp
 
@@ -132,7 +131,10 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         ncpus = sys.argv[2]
 
-    params = get_params()
+    #from get_params import get_params
+    #params = get_params()
+    params = pd.read_csv("outputs/params.csv", index_col=None)
+    params.index = params["trait"]
     p = params[pft_name]
 
     #
