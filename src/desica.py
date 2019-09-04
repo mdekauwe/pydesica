@@ -1149,20 +1149,24 @@ if __name__ == "__main__":
     lon = 148.0
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=300,
                             lat=lat, lon=lon, time_step=time_step)
+    psi_e = -0.68 * 1E-03  # Sand, MPa
+    b = 2.79               # Sand, SW retention curve param
+    #psi_e = -1.32 * 1E-03 # Sandy clay loam, MPa
+    #b = 6.77              # Sandy clay loam, SW retention curve param
+    #psi_e = -3.17 * 1E-03 # Silty clay clay loam, MPa
+    #b = 10.39             # Silty clay, SW retention curve param
+    kp_sat = 4             # Tim Brodribb pers comm
+    psi_stem0 = 0.         # initial stem water potential, MPa
+    AL = 6.                # plant leaf area, m2
+    p50 = -4.              # xylem pressure inducing 50% loss of hydraulic
+                           # conductivity due to embolism, MPa
+    psi_f = -3.            # reference potential for Tuzet model, MPa
+    gmin = 10.             # minimum stomatal conductance, mmol m-2 s-1
+    Cl = 10000.            # leaf capacitance, mmol MPa-1 (total plant)
+    Cs = 120000.           # stem capacitance, mmol MPa-1
 
-    b = 6          # SW retention curve param
-    kp_sat = 4     # Tim Brodribb pers comm
-    psi_stem0 = 0. # initial stem water potential, MPa
-    AL = 6.        # plant leaf area, m2
-    p50 = -4.      # xylem pressure inducing 50% loss of hydraulic conductivity
-                   # due to embolism, MPa
-    psi_f = -3.    # reference potential for Tuzet model, MPa
-    gmin = 10.     # minimum stomatal conductance, mmol m-2 s-1
-    Cl = 10000.    # leaf capacitance, mmol MPa-1 (total plant)
-    Cs = 120000.   # stem capacitance, mmol MPa-1
-
-    g1 = 4.0       # sensitivity of stomatal conductance to the assimilation
-                   # rate, kPa
+    g1 = 4.0               # sensitivity of stomatal conductance to the
+                           # assimilation rate, kPa
     g0 = 0.0
     theta_J = 0.85
     Rd25 = 0.92
@@ -1180,7 +1184,7 @@ if __name__ == "__main__":
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav, deltaSv=deltaSv,
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
-               Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True,
+               Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True, psi_e=psi_e,
                FAO=FAO, kp_sat=kp_sat, b=b)
     out, day_of_death = D.run_simulation(met)
 
@@ -1190,6 +1194,7 @@ if __name__ == "__main__":
 
     plot_time_to_mortality(odir, out, time_step, to_screen=True)
     #plot_transpiration(odir, out, to_screen=True)
+    plot_swp_sw(odir, out, to_screen=True)
     """
     plot_swp_sw(odir, out)
     plot_swp_ksoil(odir, out)

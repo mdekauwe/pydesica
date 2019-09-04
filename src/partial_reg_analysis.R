@@ -17,14 +17,22 @@ pft = "grw"
 fname <- sprintf("%s_trait_sens_OAT.csv", pft)
 df <- read.csv(fname)
 
-#head(df)
-
-df <- unique(df)
 df <- df[df$day_of_death> 0, ]
+
+#gmin <- df %>% distinct(gmin, .keep_all=TRUE)
+#lai <- df %>% distinct(lai, .keep_all=TRUE)
+#p50 <- df %>% distinct(p50, .keep_all=TRUE)
+#depth <- df %>% distinct(depth, .keep_all=TRUE)
+#Cl <- df %>% distinct(Cl, .keep_all=TRUE)
+#Cs <- df %>% distinct(Cs, .keep_all=TRUE)
+#dfx <- rbind(gmin, lai, p50, depth, Cl, Cs)
+
+
 #df <- df[!duplicated(df), ]
 df <- unique(df)
 fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
 visreg(fit)
+
 
 
 #x <- pcor(df[,c("gmin","lai","p50","depth","Cl","Cs")])
