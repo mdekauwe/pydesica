@@ -129,7 +129,7 @@ if __name__ == "__main__":
     # $ python src/run_sensitivity_exp.py "rf" 512
     ncpus = None
     if len(sys.argv) == 3:
-        ncpus = sys.argv[2]
+        ncpus = int(sys.argv[2])
 
     #from get_params import get_params
     #params = get_params()
