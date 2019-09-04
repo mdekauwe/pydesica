@@ -84,7 +84,7 @@ def worker(pft_name, p):
                FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
-             'depth', 'psi_stem', 'plc', 'day_of_death']
+             'b', 'psi_e', 'depth', 'psi_stem', 'plc', 'day_of_death']
     df = pd.DataFrame(columns=names)
 
 
@@ -107,7 +107,7 @@ def worker(pft_name, p):
 
     N = 5
     chg = 1.35
-    total_exp = N**6 # N vars
+    total_exp = N**6 * (3**2)
 
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
@@ -115,38 +115,42 @@ def worker(pft_name, p):
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
-        np.linspace(0.1, 1.0, N)                 # soil_depth
+        np.linspace(0.1, 1.0, N),                # soil_depth
+        np.array([2.79, 6.77, 10.39]),           # b - retension param: sand, sandy clay loam and silty clay
+        np.array([-0.68*1e-03, \
+                 -1.32*1e-03, -3.17*1e-03])      # psi_e
     ]
 
     count = 0
     last_progress = 9.0
-    for gmin, AL, p50, Cl, Cs, soil_depth, in \
+    for gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e in \
         itertools.product(*ranges):
 
 
         """
         (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
-         D.soil_depth) = gmin, AL, p50, Cl, Cs, soil_depth
+         D.soil_depth, D.b,
+         D.psi_e) = gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e
 
         out, day_of_death = D.run_simulation(met)
         psi_stem = out.psi_stem.iloc[-1]
         plc = out.plc.iloc[-1]
 
         result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
-                  soil_depth, psi_stem, plc, day_of_death]
+                  b, psi_e, soil_depth, psi_stem, plc, day_of_death]
 
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
         """
 
         progress = (count / total_exp) * 100.0
-
+        
         if progress > last_progress:
             print(pft_name, "--", round(progress,3), count, ":", total_exp)
             last_progress += 9.
         count += 1
 
-    
+
     odir = "outputs"
     if not os.path.exists(odir):
         os.makedirs(odir)
