@@ -17,9 +17,10 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 
-def get_rel_imp(chg, fix_eff):
-    mu = np.mean(np.abs(chg - fix_eff) / fix_eff * 100.0)
-    sigma = np.std(np.abs(chg - fix_eff) / fix_eff * 100.0)
+def get_change(current, previous):
+    chg = np.abs(current - previous) / previous * 100.0
+    mu = np.mean(chg)
+    sigma = np.std(chg)
 
     return mu, sigma
 
@@ -36,7 +37,7 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = gmin.day_of_death.values
-    gmin_mu, gmin_sigma = get_rel_imp(chg, fix_eff)
+    gmin_mu, gmin_sigma = get_change(chg, fix_eff)
 
     dfx = pd.read_csv("outputs/%s_trait_sens_OAT.csv" % (pft_name))
     dfx = dfx[dfx.day_of_death > 0]
@@ -44,12 +45,12 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = lai.day_of_death.values
-    lai_mu, lai_sigma = get_rel_imp(chg, fix_eff)
-    print(fix_eff)
-    print(chg)
-    print(lai_mu)
-    print("\n")
-    lai_mu, lai_sigma = get_rel_imp(chg, fix_eff)
+    lai_mu, lai_sigma = get_change(chg, fix_eff)
+    #print(fix_eff)
+    #print(chg)
+    #print(lai_mu)
+    #print("\n")
+    lai_mu, lai_sigma = get_change(chg, fix_eff)
 
     dfx = pd.read_csv("outputs/%s_trait_sens_OAT.csv" % (pft_name))
     dfx = dfx[dfx.day_of_death > 0]
@@ -57,7 +58,7 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = p50.day_of_death.values
-    p50_mu, p50_sigma = get_rel_imp(chg, fix_eff)
+    p50_mu, p50_sigma = get_change(chg, fix_eff)
 
     dfx = pd.read_csv("outputs/%s_trait_sens_OAT.csv" % (pft_name))
     dfx = dfx[dfx.day_of_death > 0]
@@ -65,7 +66,7 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = depth.day_of_death.values
-    depth_mu, depth_sigma = get_rel_imp(chg, fix_eff)
+    depth_mu, depth_sigma = get_change(chg, fix_eff)
 
     dfx = pd.read_csv("outputs/%s_trait_sens_OAT.csv" % (pft_name))
     dfx = dfx[dfx.day_of_death > 0]
@@ -73,7 +74,7 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = Cl.day_of_death.values
-    Cl_mu, Cl_sigma = get_rel_imp(chg, fix_eff)
+    Cl_mu, Cl_sigma = get_change(chg, fix_eff)
 
     dfx = pd.read_csv("outputs/%s_trait_sens_OAT.csv" % (pft_name))
     dfx = dfx[dfx.day_of_death > 0]
@@ -81,7 +82,7 @@ for pft_name in ["rf", "wsf", "dsf", "grw", "saw"]:
 
     fix_eff = df_fix[df_fix.pft == pft_name].day_of_death.values
     chg = Cs.day_of_death.values
-    Cs_mu, Cs_sigma = get_rel_imp(chg, fix_eff)
+    Cs_mu, Cs_sigma = get_change(chg, fix_eff)
 
     result = [pft_name, gmin_mu, lai_mu, p50_mu, depth_mu, Cl_mu, Cs_mu]
     s = pd.Series(result, index=df.columns)
