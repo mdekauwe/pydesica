@@ -24,7 +24,7 @@ from desica import Desica
 from desica import plot_time_to_mortality
 import itertools
 import multiprocessing as mp
-
+import random
 
 
 def main(pft_name, params, potentials, total_exp, ncpus=None):
@@ -182,8 +182,8 @@ if __name__ == "__main__":
         itertools.product(*ranges):
         potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
 
-    N = 5
-    chg = 1.35
-    total_exp = N**6 * (3**2)  # 5 steps ** 6 vars * 3 steps x 2 vars
+    # Randomly sub-sample trait space
+    N = 15360 # rough 128 * 60 x 2 hrs
+    potentials = random.sample(potentials, N)
 
     main(pft_name, p, potentials, total_exp, ncpus=ncpus)
