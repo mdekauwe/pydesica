@@ -4,9 +4,9 @@
 #PBS -P w35
 #PBS -q normal
 #PBS -M mdekauwe@gmail.com
-#PBS -l mem=128GB
-#PBS -l ncpus=128
-#PBS -l walltime=00:10:00
+#PBS -l mem=256GB
+#PBS -l ncpus=256
+#PBS -l walltime=05:00:00
 #PBS -l wd
 #PBS -j oe
 #PBS -l other=gdata1
@@ -18,5 +18,5 @@ source activate sci
 # your job will be using 8 nodes (there are 16 CPU cores in each node in the
 # normal queue on Raijin) and 16GB of RAM will be allocated on each of the
 # 8 nodes.
-python src/run_sensitivity_exp.py "rf" 128
+python src/run_sensitivity_exp.py "rf" 256
 #python src/run_sensitivity_exp.py "rf" 532 # multiples of 28, so 19 nodes
