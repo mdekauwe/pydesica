@@ -183,7 +183,7 @@ if __name__ == "__main__":
         potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
 
     # Randomly sub-sample trait space
-    N = 15360 # rough 128 * 60 x 2 hrs
+    N = 7680 # rough 128 * 60 x 2 hrs
     potentials = random.sample(potentials, N)
 
     main(pft_name, p, potentials, total_exp, ncpus=ncpus)
