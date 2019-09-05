@@ -13,7 +13,7 @@ setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 #fname <- sprintf("%s_trait_sensitivity.csv", pft)
 #df <- read.csv(fname)
 
-pft = "grw"
+pft = "dsf"
 fname <- sprintf("%s_trait_sens_OAT.csv", pft)
 df <- read.csv(fname)
 

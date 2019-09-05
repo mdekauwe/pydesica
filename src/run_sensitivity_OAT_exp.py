@@ -73,12 +73,6 @@ def main(pft_name, p, ranges):
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
 
-    N = 5
-    chg = 1.3
-    total_exp = 15625
-
-    count = 0
-    last_progress = 9.0
     for gmin, AL, p50, Cl, Cs, soil_depth, in \
         itertools.product(*ranges):
 
@@ -98,13 +92,6 @@ def main(pft_name, p, ranges):
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
         #"""
-
-        count += 1
-        progress = (count / total_exp) * 100.0
-
-        if progress > last_progress:
-            print(pft_name, "--", round(progress,3), count, ":", total_exp)
-            last_progress += 9.
 
 
     return df
@@ -136,7 +123,7 @@ if __name__ == "__main__":
 
     chg = 1.35
     N = 1
-    NN = 40
+    NN = 50
 
     # gmin
     print("gmin")

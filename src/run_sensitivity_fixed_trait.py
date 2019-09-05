@@ -43,13 +43,13 @@ lai["grw"] = (1.27, 3.39, 2.33)
 lai["saw"] = (0.34, 1.67, 1.0)
 
 depth = {}
-depth["rf"] = 0.5
-depth["wsf"] = 0.5
-depth["dsf"] = 0.5
+depth["rf"] = 1.0 #0.5
+depth["wsf"] = 1.0 #0.5
+depth["dsf"] = 1.0 #0.5
 #depth["grw"] = 0.3
 #depth["saw"] = 0.3
-depth["grw"] = 0.5
-depth["saw"] = 0.5
+depth["grw"] = 1.0 #0.5
+depth["saw"] = 1.0 #0.5
 
 params = get_params()
 #pfts = [pft_name]

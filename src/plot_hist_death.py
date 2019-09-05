@@ -17,6 +17,19 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 
+
+def drop_duplicates(df):
+
+    gmin = df.drop_duplicates(subset='gmin')
+    lai = df.drop_duplicates(subset='lai')
+    p50 = df.drop_duplicates(subset='p50')
+    depth = df.drop_duplicates(subset='depth')
+    Cl = df.drop_duplicates(subset='Cl')
+    Cs = df.drop_duplicates(subset='Cs')
+
+    return pd.concat([gmin, lai, p50, depth, Cl, Cs])
+
+
 #rf = pd.read_csv("outputs/rf_trait_sensitivity.csv")
 #wsf = pd.read_csv("outputs/wsf_trait_sensitivity.csv")
 #dsf = pd.read_csv("outputs/dsf_trait_sensitivity.csv")
@@ -34,6 +47,12 @@ wsf = wsf[wsf.day_of_death > 0]
 dsf = dsf[dsf.day_of_death > 0]
 grw = grw[grw.day_of_death > 0]
 saw = saw[saw.day_of_death > 0]
+
+rf = drop_duplicates(rf)
+wsf = drop_duplicates(wsf)
+dsf = drop_duplicates(dsf)
+grw = drop_duplicates(grw)
+saw = drop_duplicates(saw)
 
 rf = rf.drop_duplicates(subset='day_of_death')
 wsf = wsf.drop_duplicates(subset='day_of_death')
