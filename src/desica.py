@@ -124,6 +124,7 @@ class Desica(object):
         min_plc = -999.
         for i in range(1, n):
 
+            """
             # Impose pre-dawn (6 am) xylem refilling
             if hod == 12 and out.psi_stem[i-1] > -4:
 
@@ -136,7 +137,7 @@ class Desica(object):
 
                 # assume complete refilling
                 #out.psi_stem[i-1] = out.psi_soil[i-1]
-
+            """
             out = self.run_timestep(i, met, out)
 
             rnet = calc_net_radiation(i, hod, met.lat[i], met.lon[i],
@@ -1149,9 +1150,12 @@ if __name__ == "__main__":
     lon = 148.0
     met = generate_met_data(Tmin=10, Tmax=30.0, RH=30, ndays=300,
                             lat=lat, lon=lon, time_step=time_step)
-    psi_e = -0.68 * \
+    psi_e = -0.8 * \
              c.KPA_2_MPA   # Sand, MPa
-    b = 2.79               # Sand, SW retention curve param
+    b = 6.
+    #psi_e = -0.68 * \
+    #         c.KPA_2_MPA   # Sand, MPa
+    #b = 2.79               # Sand, SW retention curve param
     #psi_e = -1.32 * \
     #         c.KPA_2_MPA  # Sandy clay loam, MPa
     #b = 6.77              # Sandy clay loam, SW retention curve param

@@ -134,7 +134,7 @@ if __name__ == "__main__":
     p = params[pft_name]
     lai_low, lai_high, lai_mu = lai[pft_name]
 
-    chg = 1.5
+    chg = 1.35
     N = 1
     NN = 40
 
