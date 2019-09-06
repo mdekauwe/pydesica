@@ -4,6 +4,16 @@
 """
 Explore how traits affect vulnerability to reaching critical water potential
 
+To run, we are splitting this across a node with 16 cores. I've estimated that
+this approach will do about 7000 sims i 3 hrs. So to do the current experiments
+we will need 21 nodes
+
+python src/run_sensitivity_exp.py "rf" 16 1
+.
+.
+.
+python src/run_sensitivity_exp.py "rf" 16 21
+
 That's all folks.
 """
 __author__ = "Martin De Kauwe"
@@ -27,7 +37,7 @@ import multiprocessing as mp
 import random
 
 
-def main(pft_name, params, potentials, total_exp, ncpus=None):
+def main(pft_name, params, potentials, total_exp, node, ncpus=None):
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -42,15 +52,15 @@ def main(pft_name, params, potentials, total_exp, ncpus=None):
             end = len(potentials)
 
         p = mp.Process(target=worker, args=(potentials[start:end],
-                                            pft_name, params, total_exp, i, ))
-
+                                            pft_name, params, total_exp,
+                                            i, node, ))
         processes.append(p)
 
     # Run processes
     for p in processes:
         p.start()
 
-def worker(potentials, pft_name, p, total_exp, cpu_count):
+def worker(potentials, pft_name, p, total_exp, cpu_count, node):
 
     g0 = 0.0
     theta_J = 0.85
@@ -112,8 +122,8 @@ def worker(potentials, pft_name, p, total_exp, cpu_count):
     if not os.path.exists(odir):
         os.makedirs(odir)
 
-    ofname = os.path.join(odir,
-                         "%s_trait_sensitivity_%d.csv" % (pft_name, cpu_count))
+    ofn = "%s_trait_sensitivity_%d_%d.csv" % (pft_name, node, cpu_count)
+    ofname = os.path.join(odir, ofn)
     df.to_csv(ofname, index=False)
 
 
@@ -126,10 +136,15 @@ if __name__ == "__main__":
     pft_name = sys.argv[1]
 
     # Expecting ncpus to be supplied on cmd line, e.g.
-    # $ python src/run_sensitivity_exp.py "rf" 512
+    # $ python src/run_sensitivity_exp.py "rf" 16
     ncpus = None
     if len(sys.argv) == 3:
         ncpus = int(sys.argv[2])
+
+    # Expecting node number to be supplied on cmd line, e.g.
+    # $ python src/run_sensitivity_exp.py "rf" 16 1
+    if len(sys.argv) == 4:
+        node = int(sys.argv[3])
 
     #from get_params import get_params
     #params = get_params()
@@ -182,8 +197,15 @@ if __name__ == "__main__":
         itertools.product(*ranges):
         potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
 
-    # Randomly sub-sample trait space
-    N = 7680 # rough 128 * 60 x 2 hrs
-    potentials = random.sample(potentials, N)
+    # Calculate the trait space to explore on this node.
+    chunk_size = 7000 # does ~7000 on 16 cores in 3 hrs
+    start = chunk_size * (node - 1)
+    end = chunk_size * ((node - 1) + 1)
+    if end > len(potentials):
+        end = len(potentials)
 
-    main(pft_name, p, potentials, total_exp, ncpus=ncpus)
+    # Randomly sub-sample trait space
+    #N = 7680 # rough 128 * 60 x 2 hrs
+    #potentials = random.sample(potentials, N)
+
+    main(pft_name, p, potentials[start:end], total_exp, node, ncpus=ncpus)
