@@ -51,9 +51,10 @@ for pft in ["rf", "wsf", "dsf", "grw", "saw"]:
         make_qsub_file(qsub_fn, pft, node)
 
         qs_cmd = "qsub %s" % (qsub_fn)
-        error = subprocess.call(qs_cmd, shell=True)
-        if error is 1:
-            print("Job failed to submit")
+        #error = subprocess.call(qs_cmd, shell=True)
+        #if error is 1:
+        #    print("Job failed to submit")
 
+        sys.exit()
         node += 1
-        count += 7000
+        count += 3500 #7000
