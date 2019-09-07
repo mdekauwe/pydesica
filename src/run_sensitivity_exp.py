@@ -198,7 +198,7 @@ if __name__ == "__main__":
         potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
 
     # Calculate the trait space to explore on this node.
-    chunk_size = 3500 # does ~7000 on 16 cores in 3 hrs
+    chunk_size = 5400 # does ~7000 on 16 cores in 3 hrs
     start = chunk_size * (node - 1)
     end = chunk_size * ((node - 1) + 1)
     if end > len(potentials):

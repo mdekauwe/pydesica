@@ -55,6 +55,5 @@ for pft in ["rf", "wsf", "dsf", "grw", "saw"]:
         if error is 1:
             print("Job failed to submit")
 
-        sys.exit()
         node += 1
-        count += 3500 #7000
+        count += 5400 
