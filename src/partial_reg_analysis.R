@@ -9,13 +9,13 @@ library(tidyverse)
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
-#pft = "wsf"
-#fname <- sprintf("%s_trait_sensitivity.csv", pft)
-#df <- read.csv(fname)
-
-pft = "dsf"
-fname <- sprintf("%s_trait_sens_OAT.csv", pft)
+pft = "wsf"
+fname <- sprintf("%s_trait_sensitivity_all.csv", pft)
 df <- read.csv(fname)
+
+#pft = "dsf"
+#fname <- sprintf("%s_trait_sens_OAT.csv", pft)
+#df <- read.csv(fname)
 
 df <- df[df$day_of_death> 0, ]
 

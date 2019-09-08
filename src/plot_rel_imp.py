@@ -31,7 +31,7 @@ width = 9
 height = 6
 fig = plt.figure(figsize=(width, height))
 fig.subplots_adjust(hspace=0.15)
-fig.subplots_adjust(wspace=0.15)
+fig.subplots_adjust(wspace=0.2)
 plt.rcParams['text.usetex'] = False
 plt.rcParams['font.family'] = "sans-serif"
 plt.rcParams['font.sans-serif'] = "Helvetica"
@@ -42,12 +42,14 @@ plt.rcParams['xtick.labelsize'] = 14
 plt.rcParams['ytick.labelsize'] = 14
 
 
-ax1 = fig.add_subplot(321)
-ax2 = fig.add_subplot(322)
-ax3 = fig.add_subplot(323)
-ax4 = fig.add_subplot(324)
-ax5 = fig.add_subplot(325)
-ax6 = fig.add_subplot(326)
+ax1 = fig.add_subplot(421)
+ax2 = fig.add_subplot(422)
+ax3 = fig.add_subplot(423)
+ax4 = fig.add_subplot(424)
+ax5 = fig.add_subplot(425)
+ax6 = fig.add_subplot(426)
+ax7 = fig.add_subplot(427)
+ax8 = fig.add_subplot(428)
 
 sns.barplot(x="pft", y="gmin", data=df, palette="muted", ax=ax1)
 sns.barplot(x="pft", y="lai",  data=df, palette="muted", ax=ax2)
@@ -55,6 +57,8 @@ sns.barplot(x="pft", y="p50", data=df, palette="muted", ax=ax3)
 sns.barplot(x="pft", y="depth", data=df, palette="muted", ax=ax4)
 sns.barplot(x="pft", y="Cl", data=df, palette="muted", ax=ax5)
 sns.barplot(x="pft", y="Cs", data=df, palette="muted", ax=ax6)
+sns.barplot(x="pft", y="b", data=df, palette="muted", ax=ax7)
+sns.barplot(x="pft", y="psi_e", data=df, palette="muted", ax=ax8)
 #ax1.legend_.remove()
 #ax2.legend_.remove()
 #ax3.legend_.remove()
@@ -79,6 +83,8 @@ change_width(ax3, .9)
 change_width(ax4, .9)
 change_width(ax5, .9)
 change_width(ax6, .9)
+change_width(ax7, .9)
+change_width(ax8, .9)
 
 
 #ax1.set_ylim(0,95)
@@ -94,11 +100,15 @@ ax3.set_xlim(-1,5)
 ax4.set_xlim(-1,5)
 ax5.set_xlim(-1,5)
 ax6.set_xlim(-1,5)
+ax7.set_xlim(-1,5)
+ax8.set_xlim(-1,5)
 
 plt.setp(ax1.get_xticklabels(), visible=False)
 plt.setp(ax2.get_xticklabels(), visible=False)
 plt.setp(ax3.get_xticklabels(), visible=False)
 plt.setp(ax4.get_xticklabels(), visible=False)
+plt.setp(ax5.get_xticklabels(), visible=False)
+plt.setp(ax6.get_xticklabels(), visible=False)
 
 #plt.setp(ax2.get_yticklabels(), visible=False)
 #plt.setp(ax4.get_yticklabels(), visible=False)
@@ -110,34 +120,44 @@ ax3.set_xlabel('')
 ax4.set_xlabel('')
 ax5.set_xlabel('')
 ax6.set_xlabel('')
+ax7.set_xlabel('')
+ax8.set_xlabel('')
 
 ax1.set_ylabel('')
 ax2.set_ylabel('')
-ax3.set_ylabel('Relative importance\n(% R$^{2}$)', position=(1.5, 0.5))
+ax3.set_ylabel('')
 ax4.set_ylabel('')
-ax5.set_ylabel('')
+ax5.set_ylabel('Relative importance\n(% R$^{2}$)', position=(1.5, 1.0))
 ax6.set_ylabel('')
+ax7.set_ylabel('')
+ax8.set_ylabel('')
 
 
 props = dict(boxstyle='round', facecolor='white', alpha=1.0,
                      ec="white")
-ax1.text(0.03, 0.93, "(a) $g_{\mathrm{min}}$",
+ax1.text(0.7, 0.93, "(a) $g_{\mathrm{min}}$",
         transform=ax1.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax2.text(0.03, 0.93, "(b) LAI",
+ax2.text(0.7, 0.93, "(b) LAI",
         transform=ax2.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax3.text(0.03, 0.93, "(c) $p_{\mathrm{50}}$",
+ax3.text(0.7, 0.93, "(c) $p_{\mathrm{50}}$",
         transform=ax3.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax4.text(0.03, 0.93, "(d) Depth",
+ax4.text(0.7, 0.93, "(d) Depth",
         transform=ax4.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax5.text(0.03, 0.93, "(e) $C_{\mathrm{l}}$",
+ax5.text(0.7, 0.93, "(e) $C_{\mathrm{l}}$",
         transform=ax5.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
-ax6.text(0.03, 0.93, "(f) $C_{\mathrm{s}}$",
+ax6.text(0.7, 0.93, "(f) $C_{\mathrm{s}}$",
         transform=ax6.transAxes, fontsize=14, verticalalignment='top',
+        bbox=props)
+ax7.text(0.7, 0.93, "(e) $b$",
+        transform=ax7.transAxes, fontsize=14, verticalalignment='top',
+        bbox=props)
+ax8.text(0.7, 0.93, "(f) $\psi_{\mathrm{e}}$",
+        transform=ax8.transAxes, fontsize=14, verticalalignment='top',
         bbox=props)
 
 ofdir = "/Users/mdekauwe/Desktop"
