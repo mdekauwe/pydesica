@@ -536,7 +536,7 @@ class Desica(object):
 
         # plant cannot take up water, change of psi_stem is solely due to
         # flux_to_leaf (J_rl)
-        if psi_soil_prev == 0.0:
+        if ksoil2stem == 0.0:
             psi_stem = psi_stem_prev - \
                             flux_to_leaf * self.timestep_sec / self.Cs
         # plant can take up water
@@ -613,7 +613,7 @@ class Desica(object):
 
         # plant cannot take up water, change of psi_stem is solely due to
         # flux_to_leaf (J_rl)
-        if psi_soil_prev == 0.0:
+        if ksoil2stem == 0.0:
             psi_stem = psi_stem_prev - \
                         (self.AL * Eleaf) * self.timestep_sec / total_capac
         # plant can take up water
