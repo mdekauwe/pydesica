@@ -28,7 +28,7 @@ def get_params():
 
     # Till its fixed, gap fill the rf Kplant
     sites["rf"]["Kplant"] = df.Kplant.mean()
-    sites = sites.drop(["Cs", "Cl"])
+    #sites = sites.drop(["Cs", "Cl"])
     sites = sites.transpose()
 
 
@@ -37,13 +37,17 @@ def get_params():
     sites['Jmax'] = sites.Vcmax * 1.67
 
 
-    sites = sites.rename(columns={'Cbranch_mmol.kg.MPa':'Cs',
+    #sites = sites.rename(columns={'Cbranch_mmol.kg.MPa':'Cs',
+    #                              'Cleaf_preTLP_mmol.m2.MPa1':'Cl'})
+
+    sites = sites.rename(columns={'Cwood_mmol.kg.MPa':'Cs',
                                   'Cleaf_preTLP_mmol.m2.MPa1':'Cl'})
+
     sites = sites.transpose()
 
     sites.index.name = "trait"
     sites.to_csv("outputs/params.csv")
-    
+
     return (sites)
 
 if __name__ == "__main__":
