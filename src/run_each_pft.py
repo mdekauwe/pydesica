@@ -20,8 +20,8 @@ from canopy import Canopy, FarquharC3
 from math import isclose
 from calc_pet import calc_net_radiation, calc_pet_energy
 import constants as c
-#from old_desica import Desica
-from desica import Desica
+from old_desica import Desica
+#from desica import Desica
 from desica import plot_time_to_mortality
 import itertools
 import multiprocessing as mp
@@ -95,8 +95,8 @@ for pft in pfts:
     out, day_of_death = D.run_simulation(met)
 
     #odir = "/Users/mdekauwe/Desktop/refilling_plots"
-    odir = "/Users/mdekauwe/Desktop/new_plots"
-    #odir = "/Users/mdekauwe/Desktop/old_plots"
+    #odir = "/Users/mdekauwe/Desktop/new_plots"
+    odir = "/Users/mdekauwe/Desktop/old_plots"
     if not os.path.exists(odir):
         os.makedirs(odir)
 
