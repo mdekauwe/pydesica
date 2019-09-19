@@ -123,7 +123,7 @@ class Desica(object):
 
         hod = 1
         doy = 0
-
+        min_plc = -999.
         for i in range(1, n):
 
             if self.force_refilling:
@@ -159,6 +159,8 @@ class Desica(object):
             # Stop the simulation if we've died, i.e. reached P88
             if self.stop_dead:
                 plc = self.calc_plc(out.kplant[i])
+                if plc > min_plc:
+                    min_plc = plc
                 if plc > self.plc_dead:
                     if self.met_timestep == 15:
                         day_of_death = i / 96.
@@ -183,6 +185,9 @@ class Desica(object):
                 #                             np.max(days_psi_leaf[idx]))
                 #print(diel_psi_leaf)
 
+
+
+        out["min_plc"] = min_plc
         out["plc"] = self.calc_plc(out.kplant)
 
         # mmol s-1
@@ -224,8 +229,7 @@ class Desica(object):
         out.Eleaf[0] = 0.0
         out.pet[0] = 0.0
         out.gsw[0] = 0.0
-        out.plc[0] = 0.0
-        out.kplant[0] = self.kp_sat * self.fsig_hydr(out.psi_stem[0])
+
         # soil hydraulic conductance (mmol m-2 s-1 MPa-1)
         out.ksoil[0] = self.calc_ksoil(out.psi_soil[0])
 
@@ -254,7 +258,6 @@ class Desica(object):
                             'doy':dummy,
                             'hod':dummy,
                             'Eleaf':dummy,
-                            'plc':dummy,
                             'psi_leaf':dummy,
                             'psi_stem':dummy,
                             'psi_soil':dummy,
@@ -358,11 +361,12 @@ class Desica(object):
 
         # Plant hydraulic conductance (mmol m-2 s-1 MPa-1). NB. depends on stem
         # water potential from the previous timestep.
-        out.kplant[i] = self.kp_sat * self.fsig_hydr(out.psi_stem[i-1])
+        out.kplant[i] = self.kp_sat * self.fsig_hydr(out.psi_stem[i-1]) * \
+                        self.AL
 
         # Conductance from root surface to the stem water pool (assumed to be
         # halfway to the leaves)
-        kroot2stem = 2.0 * (out.kplant[i] * self.AL)
+        kroot2stem = 2.0 * out.kplant[i]
 
         # Conductance from soil to stem water store (mmol m-2 s-1 MPa-1)
         # (conductances combined in series)
@@ -370,7 +374,7 @@ class Desica(object):
 
         # Conductance from stem water store to the leaves (mmol m-2 s-1 MPa-1)
         # assumning the water pool is halfway up the stem
-        out.kstem2leaf[i] = 2.0 * (out.kplant[i] * self.AL)
+        out.kstem2leaf[i] = 2.0 * out.kplant[i]
 
         return out
 
@@ -736,7 +740,6 @@ class Desica(object):
             percent loss of conductivity (-)
 
         """
-
         return 100.0 * (1.0 - kp / self.kp_sat)
 
     def fsig_tuzet(self, psi_leaf):
@@ -1260,7 +1263,7 @@ if __name__ == "__main__":
 
     plot_time_to_mortality(odir, out, time_step, to_screen=True)
     #plot_transpiration(odir, out, to_screen=True)
-    #plot_swp_sw(odir, out, to_screen=True)
+    plot_swp_sw(odir, out, to_screen=True)
     """
     plot_swp_sw(odir, out)
     plot_swp_ksoil(odir, out)
