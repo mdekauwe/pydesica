@@ -25,7 +25,7 @@ def make_qsub_file(qsub_fname, pft, node):
 #PBS -M mdekauwe@gmail.com
 #PBS -l mem=16GB
 #PBS -l ncpus=16
-#PBS -l walltime=04:00:00
+#PBS -l walltime=07:00:00
 #PBS -l wd
 #PBS -j oe
 #PBS -l other=gdata1
@@ -56,4 +56,4 @@ for pft in ["rf", "wsf", "dsf", "grw", "saw"]:
             print("Job failed to submit")
 
         node += 1
-        count += 5400 
+        count += 5400
