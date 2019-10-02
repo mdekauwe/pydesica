@@ -162,8 +162,25 @@ if __name__ == "__main__":
     lai["dsf"] = (1.43, 4.75, 3.09)
     lai["grw"] = (1.27, 3.39, 2.33)
     lai["saw"] = (0.34, 1.67, 1.0)
-
     lai_low, lai_high, lai_mu = lai[pft_name]
+
+    # min, max, mean
+    bch = {}
+    bch["rf"] = (5.99, 6.78, 6.39)
+    bch["wsf"] = (5.5, 7.07, 6.28)
+    bch["dsf"] = (4.7, 7.83, 6.27)
+    bch["grw"] = (4.56, 9.03, 6.8)
+    bch["saw"] = (4.25, 9.16, 6.7)
+    bch_low, bch_high, bch_mu = bch[pft_name]
+
+    # min, max, mean
+    sucs = {}
+    sucs["rf"] = (-0.00262715, -0.00115466, -0.00189091)
+    sucs["wsf"] = (-0.00220028, -0.00071131, -0.00145579)
+    sucs["dsf"] = (-0.00203474, -0.00034522, -0.00118998)
+    sucs["grw"] = (-0.0023947, -0.00029328, -0.00134399)
+    sucs["saw"] = (-0.00245857, -0.00019036, -0.00132447)
+    sucs_low, sucs_high, sucs_mu = sucs[pft_name]
 
     lat = -35.76
     lon = 148.0
@@ -187,9 +204,11 @@ if __name__ == "__main__":
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
         np.linspace(0.1, 1.0, N),                # soil_depth
-        np.array([2.79, 6.77, 10.39]),           # b - retension param: sand, sandy clay loam and silty clay
-        np.array([-0.68*1e-03, \
-                 -1.32*1e-03, -3.17*1e-03])      # psi_e
+        np.linspace(bch_low, bch_high,  3),      # b - retension param
+        #np.array([2.79, 6.77, 10.39]),          # b - retension param: sand, sandy clay loam and silty clay
+        np.array([sucs_low, sucs_high, 3])       # psi_e
+        #np.array([-0.68*1e-03, \
+        #         -1.32*1e-03, -3.17*1e-03])      # psi_e
     ]
 
     potentials = []
