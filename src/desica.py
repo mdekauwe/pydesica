@@ -317,16 +317,16 @@ class Desica(object):
 
         # Update psi_stem
         out.psi_stem[i-1] = out.psi_stem[i]
-        out.psi_stem[i] = self.update_stem_again(out.ksoil2stem[i],
-                                                 out.psi_soil[i-1],
-                                                 out.Eleaf[i],
-                                                 out.psi_stem[i-1])
+        #out.psi_stem[i] = self.update_stem_again(out.ksoil2stem[i],
+        #                                         out.psi_soil[i-1],
+        #                                         out.Eleaf[i],
+        #                                         out.psi_stem[i-1])
 
         # Flux from the soil to the stem = change in storage + flux_to_leaf
-        out.flux_to_stem[i] = self.calc_flux_to_stem_again(out.psi_stem[i],
-                                                           out.psi_stem[i-1],
-                                                           out.Eleaf[i],
-                                                           out.ksoil2stem[i])
+        #out.flux_to_stem[i] = self.calc_flux_to_stem_again(out.psi_stem[i],
+        #                                                   out.psi_stem[i-1],
+        #                                                   out.Eleaf[i],
+        #                                                   out.ksoil2stem[i])
 
         out.sw[i] = self.update_sw_bucket(met.precip[i], out.flux_to_stem[i],
                                           out.sw[i-1])
