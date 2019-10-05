@@ -48,6 +48,13 @@ dsf = dsf[dsf.day_of_death > 0]
 grw = grw[grw.day_of_death > 0]
 saw = saw[saw.day_of_death > 0]
 
+# temp until re-run
+rf = rf[rf.psi_e != 3.0]
+wsf = wsf[wsf.psi_e != 3.0]
+dsf = dsf[dsf.psi_e != 3.0]
+grw = grw[grw.psi_e != 3.0]
+saw = saw[saw.psi_e != 3.0]
+
 #rf = drop_duplicates(rf)
 #wsf = drop_duplicates(wsf)
 #dsf = drop_duplicates(dsf)
@@ -92,9 +99,9 @@ ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 
 ofdir = "/Users/mdekauwe/Desktop"
-ofname = "day_of_death_RF_WSF_DSF.pdf"
+ofname = "day_of_death_RF_WSF_DSF.png"
 fig.savefig(os.path.join(ofdir, ofname),
-            bbox_inches='tight', pad_inches=0.1)
+            bbox_inches='tight', pad_inches=0.1, dpi=300)
 
 
 width = 9
@@ -128,9 +135,9 @@ ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 
 ofdir = "/Users/mdekauwe/Desktop"
-ofname = "day_of_death_GRW_SAW.pdf"
+ofname = "day_of_death_GRW_SAW.png"
 fig.savefig(os.path.join(ofdir, ofname),
-            bbox_inches='tight', pad_inches=0.1)
+            bbox_inches='tight', pad_inches=0.1, dpi=300)
 
 
 width = 9
@@ -162,7 +169,8 @@ sns.distplot(grw.day_of_death, ax=ax, rug=False, norm_hist=True,
 sns.distplot(saw.day_of_death, ax=ax,  rug=False, norm_hist=True,
              kde_kws={"label": "SAW"}, kde=True, color=colours[4])
 
-ax.set_xlim(0, 300)
+#ax.set_xlim(100, 600)
+#ax.set_ylim(0.0, 0.005)
 
 ax.tick_params(direction='in', length=4)
 ax.set_xlabel("Day of death")
@@ -170,6 +178,6 @@ ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 
 ofdir = "/Users/mdekauwe/Desktop"
-ofname = "day_of_death_all.pdf"
+ofname = "day_of_death_all.png"
 fig.savefig(os.path.join(ofdir, ofname),
-            bbox_inches='tight', pad_inches=0.1)
+            bbox_inches='tight', pad_inches=0.1, dpi=300)
