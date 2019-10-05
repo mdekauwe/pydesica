@@ -206,7 +206,7 @@ if __name__ == "__main__":
         np.linspace(0.1, 1.0, N),                # soil_depth
         np.linspace(bch_low, bch_high,  3),      # b - retension param
         #np.array([2.79, 6.77, 10.39]),          # b - retension param: sand, sandy clay loam and silty clay
-        np.array([sucs_low, sucs_high, 3])       # psi_e
+        np.linspace([sucs_low, sucs_high, 3])       # psi_e
         #np.array([-0.68*1e-03, \
         #         -1.32*1e-03, -3.17*1e-03])      # psi_e
     ]
