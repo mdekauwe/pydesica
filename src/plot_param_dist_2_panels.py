@@ -55,7 +55,7 @@ ax2.set_xticklabels(labels)
 
 
 ax1.set_ylabel("$g_{\mathrm{min}}$\n(mmol m$^{-2}$ s$^{-1}$)")
-ax2.set_ylabel("$p_{\mathrm{50}}$\n(MPa)")
+ax2.set_ylabel("$P_{\mathrm{50}}$\n(MPa)")
 
 ofdir = "/Users/mdekauwe/Desktop"
 ofname = "day_of_death_rel_imp.png"

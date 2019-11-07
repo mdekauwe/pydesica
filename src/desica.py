@@ -447,6 +447,9 @@ class Desica(object):
           appendix and code. Can write the dynamic equation as:
           dpsi_leaf_dt = b + a*psi_leaf
         """
+
+        psi_leaf_min = -20.0
+
         # scale up leaf-specific capacitance
         leaf_capac = self.Cl * self.AL
 
@@ -462,6 +465,9 @@ class Desica(object):
         else:
             psi_leaf = (psi_leaf_prev - \
                         self.AL * Eleaf * self.timestep_sec) / leaf_capac
+
+        if psi_leaf < psi_leaf_min:
+            psi_leaf = psi_leaf_min
 
         return psi_leaf
 
@@ -534,6 +540,8 @@ class Desica(object):
           appendix and code
         """
 
+        psi_stem_min = 2.0 * self.p50
+
         # mmol MPA-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
@@ -548,6 +556,9 @@ class Desica(object):
             bp = (ksoil2stem * psi_soil_prev - flux_to_leaf) / stem_capac
             psi_stem = ((ap * psi_stem_prev + bp) * \
                         np.exp(ap * self.timestep_sec) - bp) / ap
+
+        if psi_stem < psi_stem_min:
+            psi_stem = psi_stem_min
 
         return psi_stem
 
@@ -614,6 +625,9 @@ class Desica(object):
         * Xu et al. (2016) New Phytol, 212: 8095. doi:10.1111/nph.14009; see
           appendix and code
         """
+
+        psi_stem_min = 3.0 * self.p50
+
         # mmol MPA-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
@@ -634,6 +648,10 @@ class Desica(object):
                   (self.AL * Eleaf)) / total_capac
             psi_stem = ((ap * psi_stem_prev + bp) * \
                         np.exp(ap * self.timestep_sec) - bp) / ap
+
+
+        if psi_stem < psi_stem_min:
+            psi_stem = psi_stem_min
 
         return psi_stem
 
