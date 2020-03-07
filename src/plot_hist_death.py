@@ -172,8 +172,11 @@ sns.distplot(saw.day_of_death, ax=ax,  rug=False, norm_hist=True,
 #ax.set_xlim(100, 600)
 #ax.set_ylim(0.0, 0.005)
 
+plt.xticks([], [])
+plt.setp(ax.get_xticklabels(), visible=False)
+
 ax.tick_params(direction='in', length=4)
-ax.set_xlabel("Day of death")
+ax.set_xlabel("Day of death", labelpad=10)
 ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 
