@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+from tabulate import tabulate
 
 def get_params():
     fname = "/Users/mdekauwe/Dropbox/ARC drought Trial/Parameters for Martin/parameters/parameters.csv"
@@ -54,4 +55,16 @@ if __name__ == "__main__":
 
 
     sites = get_params()
-    print(sites)
+    #print(sites)
+
+    sites = sites.round(2)
+    sites = sites.drop(['AL', 'SM', 'SLA', 'LM' ,'kpsat'], axis=0)
+
+
+    sites.loc['gmin',:] /= 2.0 # original was two sided
+
+    sites = sites.reindex(["g1","gmin","Vcmax", "Jmax","psiv","sf",\
+                            "Kplant","s50","p50","Cl","Cs"])
+
+
+    print(tabulate(sites, tablefmt="pipe", headers="keys"))
