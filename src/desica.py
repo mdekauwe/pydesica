@@ -74,7 +74,7 @@ class Desica(object):
         self.met_timestep = met_timestep
         self.sf = sf # sensitivity parameter, MPa-1
         self.g1 = g1 # sensitivity of stomatal conductance to the assimilation
-                     # rate, kPa
+                     # rate (-)
         self.Cs = Cs # stem capacitance, mmol MPa-1
         self.Cl = Cl # leaf capacitance, mmol MPa-1 (total plant)
         self.kp_sat = kp_sat # plant saturated hydraulic conductance
@@ -1250,7 +1250,7 @@ if __name__ == "__main__":
     Cs = 53266.089926 #120000.  stem capacitance, mmol MPa-1
     s50 = 35.26948
     g1 = 3.154297 #4.0     # sensitivity of stomatal conductance to the
-                           # assimilation rate, kPa
+                           # assimilation rate (-)
     g0 = 0.0
     theta_J = 0.85
     Rd25 = 0.92
