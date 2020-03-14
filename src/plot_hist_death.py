@@ -176,7 +176,7 @@ plt.xticks([], [])
 plt.setp(ax.get_xticklabels(), visible=False)
 
 ax.tick_params(direction='in', length=4)
-ax.set_xlabel("Day of death", labelpad=10)
+ax.set_xlabel("Day of hydraulic failure ($\Psi$$_{\mathrm{crit}}$)", labelpad=10)
 ax.set_ylabel("Probability density")
 ax.legend(numpoints=1, ncol=1, loc="best", frameon=False)
 
