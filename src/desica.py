@@ -61,7 +61,7 @@ class Desica(object):
                  met_timestep=30., sf=8., g1=4., Cs=100000., b=6.,
                  Cl=10000., kp_sat=4., p50=-4., psi_f=-2., s50=30., gmin=10,
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
-                 psi_e=-0.8*c.KPA_2_MPA, Ksat=20., Lv=10000., F=None,
+                 psi_e=-0.8*c.KPA_2_MPA, Ksat=20., Lv=10000., height=20, F=None,
                  keep_wet=False, stop_dead=True, rroot=1E-06, FAO=False,
                  force_refilling=False):
 
@@ -102,6 +102,7 @@ class Desica(object):
         self.timestep_sec = 60. * self.met_timestep
         self.FAO = FAO
         self.force_refilling = force_refilling
+        self.height = height # m, used to scale up stem capacitance
 
     def run_simulation(self, met=None):
         """
@@ -356,7 +357,7 @@ class Desica(object):
             current index
         """
 
-        # Plant hydraulic conductance. NB. depends on stem water potential 
+        # Plant hydraulic conductance. NB. depends on stem water potential
         # from the previous timestep.
         # mmol m-2 leaf s-1 MPa-1
         out.kplant[i] = self.kp_sat * self.fsig_hydr(out.psi_stem[i-1])
@@ -860,11 +861,6 @@ class Desica(object):
         # and moisture so taking a rough average LA:SA
         la_sa = 5000.0 # m2 m-2
 
-        # We need a height and in the longterm we will use POP, but for now from
-        # Simard et al. and sampling where Butt et al. say there are Eucs...we
-        # can make an extremely horrible assumption that height is 20 m
-        height = 20.0 # m
-
         # From Bowman we are taking a rough sapwood density (fig 5), which seems
         # to agree with Xu et al.
         sapwood_density = 500.0 # kg m-3
@@ -874,7 +870,7 @@ class Desica(object):
         # We could of course include this but given this is pretty rough, this
         # seems OK
         # (kg m-2)
-        capac_conv = self.lai * height / la_sa * sapwood_density
+        capac_conv = self.lai * self.height / la_sa * sapwood_density
 
         return capac_conv
 
@@ -1267,6 +1263,7 @@ if __name__ == "__main__":
     g1 = 3.154297 #4.0     # sensitivity of stomatal conductance to the
                            # assimilation rate (-)
     g0 = 0.0
+    height = 20 # m, used to scale up stem capacitance
     theta_J = 0.85
     Rd25 = 0.92
     Q10 = 1.92
@@ -1284,7 +1281,7 @@ if __name__ == "__main__":
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True, psi_e=psi_e,
-               FAO=FAO, kp_sat=kp_sat, b=b, s50=s50)
+               FAO=FAO, kp_sat=kp_sat, b=b, s50=s50, height=height)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
