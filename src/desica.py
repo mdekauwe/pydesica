@@ -75,8 +75,8 @@ class Desica(object):
         self.sf = sf # sensitivity parameter, MPa-1
         self.g1 = g1 # sensitivity of stomatal conductance to the assimilation
                      # rate (-)
-        self.Cs = Cs # stem capacitance, mmol MPa-1
-        self.Cl = Cl # leaf capacitance, mmol MPa-1 (total plant)
+        self.Cs = Cs # stem capacitance, mmol kg-1 MPa-1
+        self.Cl = Cl # leaf capacitance, mmol m-2 leaf MPa-1
         self.kp_sat = kp_sat # plant saturated hydraulic conductance
                              # (mmol m-2 s-1 MPa-1)
         self.p50 = p50 # xylem pressure inducing 50% loss of hydraulic
@@ -89,7 +89,7 @@ class Desica(object):
         self.psi_stem0 = psi_stem0 # initial stem water potential, MPa
         self.theta_sat = theta_sat # soil water capacity at saturation (m3 m-3)
         self.sw0 = sw0 # initial soil volumetric water content (m3 m-3)
-        self.AL = AL # plant leaf area, m2
+        self.AL = AL   # plant leaf area, m2
         self.lai = AL / self.ground_area # leaf area index, m2 m-2
         self.b = b # empirical coefficient related to the clay content of the
                    # soil (Cosby et al. 1984).
@@ -186,7 +186,7 @@ class Desica(object):
         out["plc"] = self.calc_plc(out.kplant)
 
         # mmol s-1
-        out["Eplant"] = self.AL * out.Eleaf
+        out["Eplant"] = self.lai * out.Eleaf
 
         out["t"] = np.arange(1, n+1)
 
@@ -356,21 +356,24 @@ class Desica(object):
             current index
         """
 
-        # Plant hydraulic conductance (mmol m-2 s-1 MPa-1). NB. depends on stem
-        # water potential from the previous timestep.
+        # Plant hydraulic conductance. NB. depends on stem water potential 
+        # from the previous timestep.
+        # mmol m-2 leaf s-1 MPa-1
         out.kplant[i] = self.kp_sat * self.fsig_hydr(out.psi_stem[i-1])
 
         # Conductance from root surface to the stem water pool (assumed to be
         # halfway to the leaves)
-        kroot2stem = 2.0 * (out.kplant[i] * self.AL)
+        # mmol m-2 ground area s-1 MPa-1
+        kroot2stem = 2.0 * (out.kplant[i] * self.lai)
 
         # Conductance from soil to stem water store (mmol m-2 s-1 MPa-1)
         # (conductances combined in series)
         out.ksoil2stem[i] = 1.0 / (1.0 / out.ksoil[i-1] + 1.0 / kroot2stem)
 
-        # Conductance from stem water store to the leaves (mmol m-2 s-1 MPa-1)
+        # Conductance from stem water store to the leaves
         # assumning the water pool is halfway up the stem
-        out.kstem2leaf[i] = 2.0 * (out.kplant[i] * self.AL)
+        # mmol m-2 ground area s-1 MPa-1
+        out.kstem2leaf[i] = 2.0 * (out.kplant[i] * self.lai)
 
         return out
 
@@ -428,7 +431,7 @@ class Desica(object):
         Parameters:
         -----------
         kstem2leaf : float
-            conductance from stem to leaf, mmol m-2 s-1 MPa-1
+            conductance from stem to leaf, mmol m-2 ground area s-1 MPa-1
         psi_stem_prev : float
             stem water potential from the previous timestep, MPa
         psi_leaf_prev : float
@@ -448,26 +451,29 @@ class Desica(object):
           dpsi_leaf_dt = b + a*psi_leaf
         """
 
+        # MPa
         psi_leaf_min = -20.0
 
-        # scale up leaf-specific capacitance
-        leaf_capac = self.Cl * self.AL
+        # scale up leaf-specific capacitance (mmol m-2 ground area MPa-1 s-1)
+        leaf_capac = self.Cl * self.lai
 
         # there is conductance in the trunk
         if kstem2leaf > 1E-09:
-            ap = - kstem2leaf / leaf_capac
-            bp = (psi_stem_prev * kstem2leaf - self.AL * Eleaf) / leaf_capac
+            ap = - kstem2leaf / leaf_capac # unitless
+            # MPa
+            bp = (psi_stem_prev * kstem2leaf - self.lai * Eleaf) / leaf_capac
             psi_leaf = ((ap * psi_leaf_prev + bp) * \
-                        np.exp(ap * self.timestep_sec) - bp) / ap
+                        np.exp(ap * self.timestep_sec) - bp) / ap # MPa
 
         # No conductance in the trunk, change in psi_leaf is due only to
         # transpiration
         else:
+            # MPa
             psi_leaf = (psi_leaf_prev - \
-                        self.AL * Eleaf * self.timestep_sec) / leaf_capac
+                        self.lai * Eleaf * self.timestep_sec) / leaf_capac
 
         if psi_leaf < psi_leaf_min:
-            psi_leaf = psi_leaf_min
+            psi_leaf = psi_leaf_min # MPa
 
         return psi_leaf
 
@@ -488,24 +494,26 @@ class Desica(object):
         Returns:
         -------
         flux_to_leaf : float
-            flux from stem to the leaf, mmol s-1
+            flux from stem to the leaf, mmol m−2 s−1
         """
-        # scale up leaf-specific capacitance
-        leaf_capac = self.Cl * self.AL
+        # scale up leaf-specific capacitance (mmol m-2 ground area MPa-1 s-1)
+        leaf_capac = self.Cl * self.lai
 
         # there is conductance in the trunk
         if kstem2leaf > 1E-09:
 
             # sapflow rate from stem to leaf within the time step
-            J_rl =  (psi_leaf - psi_leaf_prev) * \
-                     leaf_capac / self.timestep_sec + (self.AL * Eleaf)
+            # mmol m−2 s−1
+            J_sl =  (psi_leaf - psi_leaf_prev) * \
+                     leaf_capac / self.timestep_sec + (self.lai * Eleaf)
         else:
             # no conductance in the trunk
 
             # sapflow rate from stem to leaf within the time step
-            J_rl = 0.0
+            # mmol m−2 s−1
+            J_sl = 0.0
 
-        return J_rl
+        return J_sl
 
     def update_stem_wp(self, ksoil2stem, psi_soil_prev, flux_to_leaf,
                        psi_stem_prev):
@@ -539,26 +547,26 @@ class Desica(object):
         * Xu et al. (2016) New Phytol, 212: 8095. doi:10.1111/nph.14009; see
           appendix and code
         """
-
+        # MPa
         psi_stem_min = 2.0 * self.p50
 
-        # mmol MPA-1
+        # mmol m-2 MPa-1 s-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
         # plant cannot take up water, change of psi_stem is solely due to
-        # flux_to_leaf (J_rl)
+        # flux_to_leaf (J_sl)
         if ksoil2stem == 0.0:
             psi_stem = psi_stem_prev - \
-                            flux_to_leaf * self.timestep_sec / stem_capac
+                            flux_to_leaf * self.timestep_sec / stem_capac # MPa
         # plant can take up water
         else:
-            ap = - ksoil2stem / stem_capac
-            bp = (ksoil2stem * psi_soil_prev - flux_to_leaf) / stem_capac
+            ap = - ksoil2stem / stem_capac  # unitless
+            bp = (ksoil2stem * psi_soil_prev - flux_to_leaf) / stem_capac # MPa
             psi_stem = ((ap * psi_stem_prev + bp) * \
-                        np.exp(ap * self.timestep_sec) - bp) / ap
+                        np.exp(ap * self.timestep_sec) - bp) / ap # MPa
 
         if psi_stem < psi_stem_min:
-            psi_stem = psi_stem_min
+            psi_stem = psi_stem_min # MPa
 
         return psi_stem
 
@@ -580,14 +588,16 @@ class Desica(object):
         Returns:
         -------
         flux_to_stem : float
-            flux from soil to the stem, mmol s-1
+            flux from soil to the stem, mmol m−2 s−1
         """
-        # mmol MPA-1
+        # mmol m-2 MPa-1 s-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
         if ksoil2stem == 0.0:
+            # mmol m−2 s−1
             J_sr = 0.0
         else:
+            # mmol m−2 s−1
             J_sr = (psi_stem - psi_stem_prev) * \
                     stem_capac / self.timestep_sec + flux_to_leaf
 
@@ -607,7 +617,7 @@ class Desica(object):
         Parameters:
         -----------
         ksoil2stem : float
-            conductance from soil to stem, mmol m-2 s-1 MPa-1
+            conductance from soil to stem, mmol m-2 ground area s-1 MPa-1
         psi_soil_prev : float
             soil water potential from the previous timestep, MPa
         Eleaf : float
@@ -626,32 +636,35 @@ class Desica(object):
           appendix and code
         """
 
+        # MPa
         psi_stem_min = 3.0 * self.p50
 
-        # mmol MPA-1
+        # mmol m-2 MPa-1 s-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
-        # scale up leaf-specific capacitance
-        leaf_capac = self.Cl * self.AL
+        # scale up leaf-specific capacitance (mmol m-2 ground area MPa-1 s-1)
+        leaf_capac = self.Cl * self.lai
 
+        # mmol m-2 MPa-1 s-1
         total_capac = stem_capac + leaf_capac
 
         # plant cannot take up water, change of psi_stem is solely due to
-        # flux_to_leaf (J_rl)
+        # flux_to_leaf (J_sl)
         if ksoil2stem == 0.0:
+            # MPa
             psi_stem = psi_stem_prev - \
-                        (self.AL * Eleaf) * self.timestep_sec / total_capac
+                        (self.lai * Eleaf) * self.timestep_sec / total_capac
         # plant can take up water
         else:
-            ap = - ksoil2stem / total_capac
+            ap = - ksoil2stem / total_capac  # unitless
             bp = (ksoil2stem * psi_soil_prev - \
-                  (self.AL * Eleaf)) / total_capac
+                  (self.lai * Eleaf)) / total_capac  # MPa
             psi_stem = ((ap * psi_stem_prev + bp) * \
-                        np.exp(ap * self.timestep_sec) - bp) / ap
+                        np.exp(ap * self.timestep_sec) - bp) / ap # MPa
 
 
         if psi_stem < psi_stem_min:
-            psi_stem = psi_stem_min
+            psi_stem = psi_stem_min # MPa
 
         return psi_stem
 
@@ -674,7 +687,7 @@ class Desica(object):
         -----------
         * Duursma et al. (2008) Tree Physiology 28, 265276, eqn 10
         """
-        return self.psi_e * (sw / self.theta_sat)**-self.b
+        return self.psi_e * (sw / self.theta_sat)**-self.b # MPa
 
     def calc_flux_to_stem_again(self, psi_stem, psi_stem_prev, transpiration,
                                 ksoil2stem):
@@ -691,22 +704,24 @@ class Desica(object):
         Eleaf : float
             transpiration, mmol m-2 s-1
         ksoil2stem : float
-            conductance from soil to stem, mmol m-2 s-1 MPa-1
+            conductance from soil to stem, mmol m-2 ground area s-1 MPa-1
 
         Returns:
         -------
         flux_to_stem : float
-            flux from soil to the stem, mmol s-1
+            flux from soil to the stem, mmol m−2 s−1
         """
 
-        # mmol MPA-1
+        # mmol m-2 MPa-1 s-1
         stem_capac = self.Cs * self.scale_up_stem_capac()
 
         if ksoil2stem == 0.0:
+            # mmol m−2 s−1
             J_sr = 0.0
         else:
+            # mmol m−2 s−1
             J_sr = (psi_stem - psi_stem_prev) * \
-                    stem_capac / self.timestep_sec + (transpiration * self.AL)
+                    stem_capac / self.timestep_sec + (transpiration * self.lai)
 
         return J_sr
 
@@ -754,8 +769,7 @@ class Desica(object):
             percent loss of conductivity (-)
 
         """
-
-        return 100.0 * (1.0 - kp / self.kp_sat)
+        return 100.0 * (1.0 - kp / self.kp_sat) # unitless
 
     def fsig_tuzet(self, psi_leaf):
         """
@@ -786,7 +800,7 @@ class Desica(object):
         num = 1.0 + np.exp(self.sf * self.psi_f)
         den = 1.0 + np.exp(self.sf * (self.psi_f - psi_leaf))
         fw = num / den
-        fw = max(1.0e-9, min(1.0, fw))
+        fw = max(1.0e-9, min(1.0, fw)) # unitless
 
         return fw
 
@@ -859,7 +873,8 @@ class Desica(object):
         # the spirit of Xu et al. but dropping the root capacitance they include.
         # We could of course include this but given this is pretty rough, this
         # seems OK
-        capac_conv = self.AL * height / la_sa * sapwood_density
+        # (kg m-2)
+        capac_conv = self.lai * height / la_sa * sapwood_density
 
         return capac_conv
 
@@ -1246,8 +1261,8 @@ if __name__ == "__main__":
                            # conductivity due to embolism, MPa
     psi_f = -2.455474 #-3. # reference potential for Tuzet model, MPa
     gmin = 10.             # minimum stomatal conductance, mmol m-2 s-1
-    Cl = 342.904821 #10000.# leaf capacitance, mmol MPa-1 (total plant)
-    Cs = 53266.089926 #120000.  stem capacitance, mmol MPa-1
+    Cl = 342.904821        # leaf capacitance, mmol m-2 leaf MPa-1
+    Cs = 53266.089926      # stem capacitance, mmol kg-1 MPa-1
     s50 = 35.26948
     g1 = 3.154297 #4.0     # sensitivity of stomatal conductance to the
                            # assimilation rate (-)
