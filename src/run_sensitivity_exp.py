@@ -152,11 +152,7 @@ if __name__ == "__main__":
     params = pd.read_csv("outputs/params.csv", index_col=None)
     params.index = params["trait"]
     p = params[pft_name]
-
-    # gmin should be single sided, fix it here.
-    p.loc["gmin"] /= 2.0
-
-
+    
     #
     ## Generate trait space...
     #

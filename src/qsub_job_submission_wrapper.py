@@ -20,7 +20,7 @@ def make_qsub_file(qsub_fname, pft, node):
 #!/bin/bash
 
 #PBS -m ae
-#PBS -P w35
+#PBS -P dp72
 #PBS -q normal
 #PBS -M mdekauwe@gmail.com
 #PBS -l mem=64GB
@@ -33,7 +33,7 @@ def make_qsub_file(qsub_fname, pft, node):
 module load dot
 source activate sci
 
-python src/run_sensitivity_exp.py %s 16 %d
+python ./src/run_sensitivity_exp.py %s 16 %d
         """ % (pft, node)
 
     f = open(qsub_fname, 'w')
