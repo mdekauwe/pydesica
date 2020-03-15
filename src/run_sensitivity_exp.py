@@ -37,7 +37,7 @@ import multiprocessing as mp
 import random
 
 
-def main(pft_name, params, potentials, total_exp, node, ncpus=None):
+def main(pft_name, pft_height, params, potentials, total_exp, node, ncpus=None):
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -52,6 +52,7 @@ def main(pft_name, params, potentials, total_exp, node, ncpus=None):
             end = len(potentials)
 
         p = mp.Process(target=worker, args=(potentials[start:end],
+                                            pft_height,
                                             pft_name, params, total_exp,
                                             i, node, ))
         processes.append(p)
@@ -60,7 +61,7 @@ def main(pft_name, params, potentials, total_exp, node, ncpus=None):
     for p in processes:
         p.start()
 
-def worker(potentials, pft_name, p, total_exp, cpu_count, node):
+def worker(potentials, pft_height, pft_name, p, total_exp, cpu_count, node):
 
     g0 = 0.0
     theta_J = 0.85
@@ -86,7 +87,7 @@ def worker(potentials, pft_name, p, total_exp, cpu_count, node):
                deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
     D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
-               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL)
+               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL, height=pft_height)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
              'b', 'psi_e', 'depth', 'psi_stem', 'plc', 'day_of_death']
@@ -152,6 +153,10 @@ if __name__ == "__main__":
     params.index = params["trait"]
     p = params[pft_name]
 
+    # gmin should be single sided, fix it here.
+    p.loc["gmin"] /= 2.0
+
+
     #
     ## Generate trait space...
     #
@@ -163,6 +168,16 @@ if __name__ == "__main__":
     lai["grw"] = (1.27, 3.39, 2.33)
     lai["saw"] = (0.34, 1.67, 1.0)
     lai_low, lai_high, lai_mu = lai[pft_name]
+
+    height = {}
+    height["rf"] = 32.0
+    height["wsf"] = 29.0
+    height["dsf"] = 25.0
+    height["grw"] = 11.0
+    height["saw"] = 7.0
+
+    pft_height = height[pft_name]
+
 
     # min, max, mean
     bch = {}
@@ -227,4 +242,5 @@ if __name__ == "__main__":
     #N = 7680 # rough 128 * 60 x 2 hrs
     #potentials = random.sample(potentials, N)
 
-    main(pft_name, p, potentials[start:end], total_exp, node, ncpus=ncpus)
+    main(pft_name, pft_height, p, potentials[start:end], total_exp, node,
+         ncpus=ncpus)
