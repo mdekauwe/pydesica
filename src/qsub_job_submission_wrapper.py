@@ -23,12 +23,12 @@ def make_qsub_file(qsub_fname, pft, node):
 #PBS -P w35
 #PBS -q normal
 #PBS -M mdekauwe@gmail.com
-#PBS -l mem=16GB
+#PBS -l mem=64GB
 #PBS -l ncpus=16
 #PBS -l walltime=08:00:00
 #PBS -l wd
 #PBS -j oe
-#PBS -l other=gdata1
+#PBS -l other=gdata/w35+gdata/wd9
 
 module load dot
 source activate sci
