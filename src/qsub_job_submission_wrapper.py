@@ -28,7 +28,7 @@ def make_qsub_file(qsub_fname, pft, node):
 #PBS -l walltime=08:00:00
 #PBS -l wd
 #PBS -j oe
-#PBS -l other=gdata/w35+gdata/wd9
+#PBS -l storage=gdata/w35+gdata/wd9
 
 module load dot
 source activate sci
