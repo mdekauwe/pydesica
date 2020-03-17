@@ -20,7 +20,7 @@ def make_qsub_file(qsub_fname, pft, node):
 #!/bin/bash
 
 #PBS -m ae
-#PBS -P dp72
+#PBS -P w35
 #PBS -q normal
 #PBS -M mdekauwe@gmail.com
 #PBS -l mem=64GB
