@@ -157,13 +157,24 @@ if __name__ == "__main__":
     ## Generate trait space...
     #
     # min, max, mean
+    #lai = {}
+    #lai["rf"] = (4.78, 6.94, 5.86)
+    #lai["wsf"] = (3.46, 6.19, 4.83)
+    #lai["dsf"] = (1.43, 4.75, 3.09)
+    #lai["grw"] = (1.27, 3.39, 2.33)
+    #lai["saw"] = (0.34, 1.67, 1.0)
+    #lai_low, lai_high, lai_mu = lai[pft_name]
+
+
+    # min, max: 5th and 95th percentiles
     lai = {}
-    lai["rf"] = (4.78, 6.94, 5.86)
-    lai["wsf"] = (3.46, 6.19, 4.83)
-    lai["dsf"] = (1.43, 4.75, 3.09)
-    lai["grw"] = (1.27, 3.39, 2.33)
-    lai["saw"] = (0.34, 1.67, 1.0)
-    lai_low, lai_high, lai_mu = lai[pft_name]
+    lai["rf"] = (2.41, 5.99)
+    lai["wsf"] = (0.87, 5.83)
+    lai["dsf"] = (0.22, 4.17)
+    lai["grw"] = (0.22, 3.28)
+    lai["saw"] = (0.11, 0.83)
+    lai_low, lai_high = lai[pft_name]
+
 
     height = {}
     height["rf"] = 32.0
@@ -171,27 +182,27 @@ if __name__ == "__main__":
     height["dsf"] = 25.0
     height["grw"] = 11.0
     height["saw"] = 7.0
-
     pft_height = height[pft_name]
 
 
     # min, max, mean
     bch = {}
-    bch["rf"] = (5.99, 6.78, 6.39)
-    bch["wsf"] = (5.5, 7.07, 6.28)
-    bch["dsf"] = (4.7, 7.83, 6.27)
-    bch["grw"] = (4.56, 9.03, 6.8)
-    bch["saw"] = (4.25, 9.16, 6.7)
+    bch["rf"] = (6.92,9.81,8.15)
+    bch["wsf"] = (5.95,9.59,7.89)
+    bch["dsf"] = (5.80,11.57,7.60)
+    bch["grw"] = (5.62,12.37,8.73)
+    bch["saw"] = (5.03,11.52,7.62)
     bch_low, bch_high, bch_mu = bch[pft_name]
 
     # min, max, mean
     sucs = {}
-    sucs["rf"] = (-0.00262715, -0.00115466, -0.00189091)
-    sucs["wsf"] = (-0.00220028, -0.00071131, -0.00145579)
-    sucs["dsf"] = (-0.00203474, -0.00034522, -0.00118998)
-    sucs["grw"] = (-0.0023947, -0.00029328, -0.00134399)
-    sucs["saw"] = (-0.00245857, -0.00019036, -0.00132447)
+    sucs["rf"] = (-0.002700,-0.001100,-0.001850)
+    sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
+    sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
+    sucs["grw"] = (-0.002930,-0.000760,-0.001410)
+    sucs["saw"] = (-0.002160,-0.000630,-0.001060)
     sucs_low, sucs_high, sucs_mu = sucs[pft_name]
+
 
     lat = -35.76
     lon = 148.0
