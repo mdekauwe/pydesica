@@ -206,8 +206,8 @@ if __name__ == "__main__":
 
     lat = -35.76
     lon = 148.0
-    Tmax = 35.
-    RH = 10.
+    Tmax = 30.
+    RH = 30.
     time_step = 30
 
     met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=720,

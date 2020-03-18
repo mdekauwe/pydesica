@@ -624,7 +624,9 @@ class FarquharC3(object):
         """
         d = b**2 - 4.0 * a * c # discriminant
         if d < 0.0:
-            raise ValueError('imaginary root found')
+            #raise ValueError('imaginary root found')
+            return 0.0 # following maespa so as not to crash
+
         #root1 = np.where(d>0.0, (-b - np.sqrt(d)) / (2.0 * a), d)
         #root2 = np.where(d>0.0, (-b + np.sqrt(d)) / (2.0 * a), d)
 
