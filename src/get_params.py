@@ -61,7 +61,7 @@ if __name__ == "__main__":
     sites = sites.drop(['AL', 'SM', 'SLA', 'LM' ,'kpsat'], axis=0)
 
 
-    sites.loc['gmin',:] /= 2.0 # original was two sided
+    #sites.loc['gmin',:] /= 2.0 # original was two sided
 
     sites = sites.reindex(["g1","gmin","Vcmax", "Jmax","psiv","sf",\
                             "Kplant","s50","p50","Cl","Cs"])

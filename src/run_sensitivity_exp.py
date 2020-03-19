@@ -177,12 +177,18 @@ if __name__ == "__main__":
 
 
     height = {}
-    height["rf"] = 32.0
-    height["wsf"] = 29.0
-    height["dsf"] = 25.0
-    height["grw"] = 11.0
-    height["saw"] = 7.0
+    #height["rf"] = 32.0
+    #height["wsf"] = 29.0
+    #height["dsf"] = 25.0
+    #height["grw"] = 11.0
+    #height["saw"] = 7.0
+    height["rf"] = 20.0
+    height["wsf"] = 20.0
+    height["dsf"] = 20.0
+    height["grw"] = 20.0
+    height["saw"] = 20.0
     pft_height = height[pft_name]
+
 
 
     # min, max, mean
@@ -207,7 +213,7 @@ if __name__ == "__main__":
     lat = -35.76
     lon = 148.0
     Tmax = 30.
-    RH = 30.
+    RH = 10.
     time_step = 30
 
     met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=720,
