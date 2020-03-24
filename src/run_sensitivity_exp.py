@@ -80,14 +80,13 @@ def worker(potentials, pft_height, pft_name, p, total_exp, cpu_count, node):
     g1 = p.g1
     s50 = p.s50
     sf = p.sf
-    AL = 2.0
 
     F = Canopy(g1=g1, g0=g0, theta_J=theta_J, Rd25=Rd25, Q10=Q10,
                Vcmax25=Vcmax25, Jmax25=Jmax25, Eav=Eav,
                deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
     D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
-               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, AL=AL, height=pft_height)
+               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, height=pft_height)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
              'b', 'psi_e', 'depth', 'psi_stem', 'plc', 'day_of_death']
@@ -193,26 +192,42 @@ if __name__ == "__main__":
 
     # min, max, mean
     bch = {}
-    bch["rf"] = (6.92,9.81,8.15)
-    bch["wsf"] = (5.95,9.59,7.89)
-    bch["dsf"] = (5.80,11.57,7.60)
-    bch["grw"] = (5.62,12.37,8.73)
-    bch["saw"] = (5.03,11.52,7.62)
+    #bch["rf"] = (6.92,9.81,8.15)
+    #bch["wsf"] = (5.95,9.59,7.89)
+    #bch["dsf"] = (5.80,11.57,7.60)
+    #bch["grw"] = (5.62,12.37,8.73)
+    #bch["saw"] = (5.03,11.52,7.62)
+
+    # old soils
+    bch["rf"] = (5.99, 6.78, 6.39)
+    bch["wsf"] = (5.5, 7.07, 6.28)
+    bch["dsf"] = (4.7, 7.83, 6.27)
+    bch["grw"] = (4.56, 9.03, 6.8)
+    bch["saw"] = (4.25, 9.16, 6.7)
     bch_low, bch_high, bch_mu = bch[pft_name]
 
     # min, max, mean
     sucs = {}
-    sucs["rf"] = (-0.002700,-0.001100,-0.001850)
-    sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
-    sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
-    sucs["grw"] = (-0.002930,-0.000760,-0.001410)
-    sucs["saw"] = (-0.002160,-0.000630,-0.001060)
+
+    #sucs["rf"] = (-0.002700,-0.001100,-0.001850)
+    #sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
+    #sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
+    #sucs["grw"] = (-0.002930,-0.000760,-0.001410)
+    #sucs["saw"] = (-0.002160,-0.000630,-0.001060)
+
+    # old soils
+    sucs["rf"] = (-0.00262715, -0.00115466, -0.00189091)
+    sucs["wsf"] = (-0.00220028, -0.00071131, -0.00145579)
+    sucs["dsf"] = (-0.00203474, -0.00034522, -0.00118998)
+    sucs["grw"] = (-0.0023947, -0.00029328, -0.00134399)
+    sucs["saw"] = (-0.00245857, -0.00019036, -0.00132447)
+
     sucs_low, sucs_high, sucs_mu = sucs[pft_name]
 
 
     lat = -35.76
     lon = 148.0
-    Tmax = 30.
+    Tmax = 35.
     RH = 10.
     time_step = 30
 
