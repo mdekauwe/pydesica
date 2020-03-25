@@ -176,52 +176,36 @@ if __name__ == "__main__":
 
 
     height = {}
-    #height["rf"] = 32.0
-    #height["wsf"] = 29.0
-    #height["dsf"] = 25.0
-    #height["grw"] = 11.0
-    #height["saw"] = 7.0
-    height["rf"] = 20.0
-    height["wsf"] = 20.0
-    height["dsf"] = 20.0
-    height["grw"] = 20.0
-    height["saw"] = 20.0
+    height["rf"] = 32.0
+    height["wsf"] = 29.0
+    height["dsf"] = 25.0
+    height["grw"] = 11.0
+    height["saw"] = 7.0
+    #height["rf"] = 20.0
+    #height["wsf"] = 20.0
+    #height["dsf"] = 20.0
+    #height["grw"] = 20.0
+    #height["saw"] = 20.0
     pft_height = height[pft_name]
 
 
 
     # min, max, mean
     bch = {}
-    #bch["rf"] = (6.92,9.81,8.15)
-    #bch["wsf"] = (5.95,9.59,7.89)
-    #bch["dsf"] = (5.80,11.57,7.60)
-    #bch["grw"] = (5.62,12.37,8.73)
-    #bch["saw"] = (5.03,11.52,7.62)
-
-    # old soils
-    bch["rf"] = (5.99, 6.78, 6.39)
-    bch["wsf"] = (5.5, 7.07, 6.28)
-    bch["dsf"] = (4.7, 7.83, 6.27)
-    bch["grw"] = (4.56, 9.03, 6.8)
-    bch["saw"] = (4.25, 9.16, 6.7)
+    bch["rf"] = (6.92,9.81,8.15)
+    bch["wsf"] = (5.95,9.59,7.89)
+    bch["dsf"] = (5.80,11.57,7.60)
+    bch["grw"] = (5.62,12.37,8.73)
+    bch["saw"] = (5.03,11.52,7.62)
     bch_low, bch_high, bch_mu = bch[pft_name]
 
     # min, max, mean
     sucs = {}
-
-    #sucs["rf"] = (-0.002700,-0.001100,-0.001850)
-    #sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
-    #sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
-    #sucs["grw"] = (-0.002930,-0.000760,-0.001410)
-    #sucs["saw"] = (-0.002160,-0.000630,-0.001060)
-
-    # old soils
-    sucs["rf"] = (-0.00262715, -0.00115466, -0.00189091)
-    sucs["wsf"] = (-0.00220028, -0.00071131, -0.00145579)
-    sucs["dsf"] = (-0.00203474, -0.00034522, -0.00118998)
-    sucs["grw"] = (-0.0023947, -0.00029328, -0.00134399)
-    sucs["saw"] = (-0.00245857, -0.00019036, -0.00132447)
-
+    sucs["rf"] = (-0.002700,-0.001100,-0.001850)
+    sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
+    sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
+    sucs["grw"] = (-0.002930,-0.000760,-0.001410)
+    sucs["saw"] = (-0.002160,-0.000630,-0.001060)
     sucs_low, sucs_high, sucs_mu = sucs[pft_name]
 
 
@@ -231,7 +215,7 @@ if __name__ == "__main__":
     RH = 10.
     time_step = 30
 
-    met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=720,
+    met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=1200,
                             lat=lat, lon=lon, time_step=time_step)
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
