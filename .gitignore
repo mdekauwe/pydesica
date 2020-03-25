@@ -3,3 +3,4 @@ src/__pycache__/*
 .DS_Store
 outputs/*.csv
 qsub_scripts/run_sensitivity_exp_*
+old_outputs/
