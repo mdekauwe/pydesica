@@ -219,7 +219,7 @@ if __name__ == "__main__":
     RH = 10.
     time_step = 30
 
-    met = generate_met_data(Tmin=Tmax, Tmax=Tmax, RH=RH, ndays=800,
+    met = generate_met_data(Tmin=Tmax, Tmax=Tmax, RH=RH, ndays=720,
                             lat=lat, lon=lon, time_step=time_step)
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
