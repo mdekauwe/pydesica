@@ -94,19 +94,23 @@ def worker(potentials, pft_height, pft_name, p, total_exp, cpu_count, node):
 
     #count = 0
     #last_progress = 9.0
-    for gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e in potentials:
+    for gmin, lai, p50, Cl, Cs, soil_depth, b, psi_e in potentials:
 
         #"""
-        (D.gmin, D.AL, D.p50, D.Cl, D.Cs,
+        (D.gmin, D.lai, D.p50, D.Cl, D.Cs,
          D.soil_depth, D.b,
-         D.psi_e) = gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e
+         D.psi_e) = gmin, lai, p50, Cl, Cs, soil_depth, b, psi_e
 
         out, day_of_death = D.run_simulation(met)
         psi_stem = out.psi_stem.iloc[-1]
         plc = out.plc.iloc[-1]
 
-        result = [Tmax, Dmax, Dmean, gmin, AL, p50, Cl, Cs,  \
+        result = [Tmax, Dmax, Dmean, gmin, lai, p50, Cl, Cs,  \
                   b, psi_e, soil_depth, psi_stem, plc, day_of_death]
+
+        print(day_of_death)
+        print(p)
+        print(" ")
 
         s = pd.Series(result, index=df.columns)
         df = df.append(s, ignore_index=True)
@@ -215,7 +219,7 @@ if __name__ == "__main__":
     RH = 10.
     time_step = 30
 
-    met = generate_met_data(Tmin=15, Tmax=Tmax, RH=RH, ndays=1200,
+    met = generate_met_data(Tmin=Tmax, Tmax=Tmax, RH=RH, ndays=1200,
                             lat=lat, lon=lon, time_step=time_step)
     Dmax = np.max(met.vpd)
     Dmean = np.mean(met.vpd)
@@ -226,7 +230,7 @@ if __name__ == "__main__":
 
     ranges = [
         np.linspace(p.gmin/chg, p.gmin*chg, N),  # gmin
-        np.linspace(lai_low, lai_high,  N),      # AL
+        np.linspace(lai_low, lai_high,  N),      # lai
         np.linspace(p.p50/chg, p.p50*chg, N),    # p50
         np.linspace(p.Cl/chg, p.Cl*chg, N),      # Cl
         np.linspace(p.Cs/chg, p.Cs*chg, N),      # Cs
@@ -239,9 +243,9 @@ if __name__ == "__main__":
     ]
 
     potentials = []
-    for gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e in \
+    for gmin, lai, p50, Cl, Cs, soil_depth, b, psi_e in \
         itertools.product(*ranges):
-        potentials.append([gmin, AL, p50, Cl, Cs, soil_depth, b, psi_e])
+        potentials.append([gmin, lai, p50, Cl, Cs, soil_depth, b, psi_e])
 
     # Calculate the trait space to explore on this node.
     chunk_size = 5400 # does ~7000 on 16 cores in 3 hrs
