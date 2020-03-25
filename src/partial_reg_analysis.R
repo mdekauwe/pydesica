@@ -9,7 +9,7 @@ library(tidyverse)
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
-pft = "wsf"
+pft = "rf"
 fname <- sprintf("%s_trait_sensitivity_all.csv", pft)
 df <- read.csv(fname)
 
@@ -30,7 +30,7 @@ df <- df[df$day_of_death> 0, ]
 
 #df <- df[!duplicated(df), ]
 df <- unique(df)
-fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
+fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs + b + psi_e, data=df)
 visreg(fit)
 
 
@@ -39,13 +39,15 @@ visreg(fit)
 #sens_2 <- sort(abs(x$estimate[1,-1]),T)
 
 #visreg(fit)
-par(mfrow=c(3,3))
+par(mfrow=c(4,3))
 visreg(fit, "gmin")
 visreg(fit, "lai")
 visreg(fit, "p50")
 visreg(fit, "Cl")
 visreg(fit, "Cs")
 visreg(fit, "depth")
+visreg(fit, "b")
+visreg(fit, "psi_e")
 
 summary(fit)
 
