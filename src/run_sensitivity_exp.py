@@ -180,16 +180,16 @@ if __name__ == "__main__":
 
 
     height = {}
-    height["rf"] = 32.0
-    height["wsf"] = 29.0
-    height["dsf"] = 25.0
-    height["grw"] = 11.0
-    height["saw"] = 7.0
-    #height["rf"] = 20.0
-    #height["wsf"] = 20.0
-    #height["dsf"] = 20.0
-    #height["grw"] = 20.0
-    #height["saw"] = 20.0
+    #height["rf"] = 32.0
+    #height["wsf"] = 29.0
+    #height["dsf"] = 25.0
+    #height["grw"] = 11.0
+    #height["saw"] = 7.0
+    height["rf"] = 20.0
+    height["wsf"] = 20.0
+    height["dsf"] = 20.0
+    height["grw"] = 20.0
+    height["saw"] = 20.0
     pft_height = height[pft_name]
 
 
