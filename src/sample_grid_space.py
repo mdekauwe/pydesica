@@ -38,9 +38,17 @@ def main():
 
     for veg_num in np.arange(18.0, 23.0):
         lai_veg = lai[:,iveg == veg_num]
+
+        q3 = np.percentile(lai_veg, 75)
+        q1 = np.percentile(lai_veg, 25)
+        iqr = q3 - q1
+        upp = q3 + (1.5 * iqr)
+        low = q1 - (1.5 * iqr)
         #print(veg_num, np.nanmin(lai_veg), np.nanmax(lai_veg), np.nanmean(lai_veg))
-        print(np.round(np.percentile(lai_veg, 5), 2),
-              np.round(np.percentile(lai_veg, 95),2))
+        print(veg_num, np.round(q1, 2),
+              np.round(q3,2))
+        #print(veg_num, np.round(low, 2),
+        #      np.round(upp,2))
 
 
 

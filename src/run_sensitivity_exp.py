@@ -171,25 +171,29 @@ if __name__ == "__main__":
 
     # min, max: 5th and 95th percentiles
     lai = {}
-    lai["rf"] = (2.41, 5.99)
-    lai["wsf"] = (0.87, 5.83)
-    lai["dsf"] = (0.22, 4.17)
-    lai["grw"] = (0.22, 3.28)
-    lai["saw"] = (0.11, 0.83)
+    #lai["rf"] = (2.41, 5.99)
+    #lai["wsf"] = (0.87, 5.83)
+    #lai["dsf"] = (0.22, 4.17)
+    #lai["grw"] = (0.22, 3.28)
+    #lai["saw"] = (0.11, 0.83)
+    #lai_low, lai_high = lai[pft_name]
+
+    # min, max: IQR -> 25th and 75th percentiles
+    lai = {}
+    lai["rf"] = (4.43, 5.71)
+    lai["wsf"] = (2.7, 4.81)
+    lai["dsf"] = (0.44, 2.84)
+    lai["grw"] = (0.47, 1.55)
+    lai["saw"] = (0.16, 0.42)
     lai_low, lai_high = lai[pft_name]
 
 
     height = {}
-    #height["rf"] = 32.0
-    #height["wsf"] = 29.0
-    #height["dsf"] = 25.0
-    #height["grw"] = 11.0
-    #height["saw"] = 7.0
-    height["rf"] = 20.0
-    height["wsf"] = 20.0
-    height["dsf"] = 20.0
-    height["grw"] = 20.0
-    height["saw"] = 20.0
+    height["rf"] = 32.0
+    height["wsf"] = 29.0
+    height["dsf"] = 25.0
+    height["grw"] = 11.0
+    height["saw"] = 7.0
     pft_height = height[pft_name]
 
 
