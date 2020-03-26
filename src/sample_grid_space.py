@@ -45,8 +45,7 @@ def main():
         upp = q3 + (1.5 * iqr)
         low = q1 - (1.5 * iqr)
         #print(veg_num, np.nanmin(lai_veg), np.nanmax(lai_veg), np.nanmean(lai_veg))
-        print(veg_num, np.round(q1, 2),
-              np.round(q3,2))
+        print(veg_num, np.round(q1, 2), np.round(q3,2))
         #print(veg_num, np.round(low, 2),
         #      np.round(upp,2))
 
@@ -59,17 +58,25 @@ def main():
     for veg_num in np.arange(18.0, 23.0):
 
         sucs_veg = sucs[iveg == veg_num]
-        print("%.5f,%.5f,%.5f" % (np.nanmin(sucs_veg) * M_HEAD_TO_MPa,
-                                  np.nanmax(sucs_veg)* M_HEAD_TO_MPa,
-                                  np.nanmean(sucs_veg)* M_HEAD_TO_MPa))
+        q3 = np.percentile(sucs_veg, 75) * M_HEAD_TO_MPa
+        q1 = np.percentile(sucs_veg, 25) * M_HEAD_TO_MPa
+
+        print("%.5f,%.5f" % (q1, q3))
+
+
 
     print(" ")
     for veg_num in np.arange(18.0, 23.0):
 
         bch_veg = bch[iveg == veg_num]
-        print("%.2f,%.2f,%.2f" % (np.nanmin(bch_veg),
-                                  np.nanmax(bch_veg),
-                                  np.nanmean(bch_veg)))
+        q3 = np.percentile(bch_veg, 75)
+        q1 = np.percentile(bch_veg, 25)
+
+        print("%.2f,%.2f" % (q1, q3))
+
+        #print("%.2f,%.2f,%.2f" % (np.nanmin(bch_veg),
+        #                          np.nanmax(bch_veg),
+        #                          np.nanmean(bch_veg)))
 
 if __name__ == "__main__":
 

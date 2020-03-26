@@ -178,7 +178,7 @@ if __name__ == "__main__":
     #lai["saw"] = (0.11, 0.83)
     #lai_low, lai_high = lai[pft_name]
 
-    # min, max: IQR -> 25th and 75th percentiles
+    # IQR -> 25th and 75th percentiles
     lai = {}
     lai["rf"] = (4.43, 5.71)
     lai["wsf"] = (2.7, 4.81)
@@ -199,22 +199,52 @@ if __name__ == "__main__":
 
 
     # min, max, mean
+    #bch = {}
+    #bch["rf"] = (6.92,9.81,8.15)
+    #bch["wsf"] = (5.95,9.59,7.89)
+    #bch["dsf"] = (5.80,11.57,7.60)
+    #bch["grw"] = (5.62,12.37,8.73)
+    #bch["saw"] = (5.03,11.52,7.62)
+    #bch_low, bch_high, bch_mu = bch[pft_name]
+
+
+
+
+
+
+
+    # IQR -> 25th and 75th percentiles
     bch = {}
-    bch["rf"] = (6.92,9.81,8.15)
-    bch["wsf"] = (5.95,9.59,7.89)
-    bch["dsf"] = (5.80,11.57,7.60)
-    bch["grw"] = (5.62,12.37,8.73)
-    bch["saw"] = (5.03,11.52,7.62)
-    bch_low, bch_high, bch_mu = bch[pft_name]
+    bch["rf"] = (7.86,8.42)
+    bch["wsf"] = (7.67,8.16)
+    bch["dsf"] = (7.14,8.00)
+    bch["grw"] = (8.09,9.30)
+    bch["saw"] = (6.81,8.31)
+    bch_low, bch_high = bch[pft_name]
+
+
+
+
+
+
+
+    # IQR -> 25th and 75th percentiles
+    sucs = {}
+    sucs["rf"] = (-0.00199,-0.00176)
+    sucs["wsf"] = (-0.00187,-0.00149)
+    sucs["dsf"] = (-0.00144,-0.00112)
+    sucs["grw"] = (-0.00158,-0.00122)
+    sucs["saw"] = (-0.00116,-0.00089)
+    sucs_low, sucs_high = sucs[pft_name]
 
     # min, max, mean
-    sucs = {}
-    sucs["rf"] = (-0.002700,-0.001100,-0.001850)
-    sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
-    sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
-    sucs["grw"] = (-0.002930,-0.000760,-0.001410)
-    sucs["saw"] = (-0.002160,-0.000630,-0.001060)
-    sucs_low, sucs_high, sucs_mu = sucs[pft_name]
+    #sucs = {}
+    #sucs["rf"] = (-0.002700,-0.001100,-0.001850)
+    #sucs["wsf"] = (-0.002610,-0.000720,-0.001670)
+    #sucs["dsf"] = (-0.002180,-0.000750,-0.001280)
+    #sucs["grw"] = (-0.002930,-0.000760,-0.001410)
+    #sucs["saw"] = (-0.002160,-0.000630,-0.001060)
+    #sucs_low, sucs_high, sucs_mu = sucs[pft_name]
 
 
     lat = -35.76
