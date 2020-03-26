@@ -57,7 +57,7 @@ if __name__ == "__main__":
     sites = get_params()
     #print(sites)
 
-    sites = sites.round(2)
+    sites = sites.round(1)
     sites = sites.drop(['AL', 'SM', 'SLA', 'LM' ,'kpsat'], axis=0)
 
 
@@ -65,6 +65,38 @@ if __name__ == "__main__":
 
     sites = sites.reindex(["g1","gmin","Vcmax", "Jmax","psiv","sf",\
                             "Kplant","s50","p50","Cl","Cs"])
+
+    sites.columns = sites.columns.str.upper()
+
+    sites["Definitions"] = ["Stomatal slope", \
+                            "Cuticular conductance",\
+                            "Value of Vcmax at 25 °C", \
+                            "Value of Jmax at 25 °C",\
+                            "Reference water potential", \
+                            "Shape of response to $\Psi_{l}$",\
+                            "Plant hydraulic conductance", \
+                            "Stomatal sensitivity parameter",\
+                            "$\Psi$ at 50% loss of hydraulic conductivity", \
+                            "Leaf capacitance",\
+                            "Stem capacitance"]
+    sites["Units"] = ["-", \
+                      "mmol m^-2^ s^-1^",\
+                      "$\mu$mol m^-2^ s^-1^", \
+                      "$\mu$mol m^-2^ s^-1^",\
+                      "MPa", \
+                      "MPa^−1^",\
+                      "mmol m^-2^ leaf s^-1^ MPa^-1^", \
+                      "% MPa^-1^",\
+                      "MPa", \
+                      "mmol m^-2^ s^-1^ MPa^-1^",\
+                      "mmol m^-2^ s^-1^ MPa^-1^"]
+    cols = sites.columns.tolist()
+    cols = cols[-2:] + cols[:-2]
+    sites = sites[cols]
+
+    sites.index = ["g~1~", "g~min~", "V~cmax~ ", "J~max~", \
+                   "$\Psi$~f~", "S~f~", "k~plant~", "S~50~", \
+                   "P~50~", "C~l~", "C~s~"]
 
 
     print(tabulate(sites, tablefmt="pipe", headers="keys"))
