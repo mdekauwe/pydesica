@@ -55,7 +55,6 @@ if __name__ == "__main__":
 
 
     sites = get_params()
-    #print(sites)
 
     sites = sites.round(1)
     sites = sites.drop(['AL', 'SM', 'SLA', 'LM' ,'kpsat'], axis=0)
@@ -98,5 +97,26 @@ if __name__ == "__main__":
                    "$\Psi$~f~", "S~f~", "k~plant~", "S~50~", \
                    "P~50~", "C~l~", "C~s~"]
 
+    la_sa = {}
+    la_sa["Definitions"] = "Leaf area-to-sapwood area ratio"
+    la_sa["Units"] = "m^2^ m^-2^"
+    la_sa["RF"] = 10000.0
+    la_sa["WSF"] = 9434.74
+    la_sa["DSF"] = 7908.55
+    la_sa["GRW"] = 6139.23
+    la_sa["SAW"] = 2556.9
+
+
+    sapwood_density = {}
+    sapwood_density["Definitions"] = "Sapwood density"
+    sapwood_density["Units"] = "kg m^-3^"
+    sapwood_density["RF"] = 540.0
+    sapwood_density["WSF"] = 355.0
+    sapwood_density["DSF"] = 460.0
+    sapwood_density["GRW"] = 436.67
+    sapwood_density["SAW"] = 613.33
+
+    sites = sites.append(la_sa, ignore_index=True)
+    sites = sites.append(sapwood_density, ignore_index=True)
 
     print(tabulate(sites, tablefmt="pipe", headers="keys"))
