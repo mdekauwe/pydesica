@@ -63,6 +63,7 @@ class Desica(object):
                  psi_leaf0=-1., psi_stem0=-0.5, theta_sat=0.5, sw0=0.5, AL=2.5,
                  psi_e=-0.8*c.KPA_2_MPA, Ksat=20., Lv=10000., height=20, F=None,
                  keep_wet=False, stop_dead=True, rroot=1E-06, FAO=False,
+                 sapwood_density=500.0, la_sa=5000.0,
                  force_refilling=False):
 
         self.keep_wet = keep_wet
@@ -103,6 +104,8 @@ class Desica(object):
         self.FAO = FAO
         self.force_refilling = force_refilling
         self.height = height # m, used to scale up stem capacitance
+        self.sapwood_density = sapwood_density # kg m-3
+        self.la_sa = la_sa # m2 m-2
 
     def run_simulation(self, met=None):
         """
@@ -840,7 +843,7 @@ class Desica(object):
 
     def scale_up_stem_capac(self):
         """
-        Calculate relative plant conductance as a function of xylem pressure
+        Scale up the measurements to infer a total stem capacitance
 
         References:
         ==========
@@ -854,23 +857,12 @@ class Desica(object):
           of mature Dacrydium cupressinum trees. New Phytologist, 167: 815-828.
         """
 
-        # We need to scale up the measurements to infer a total stem capacitance
-        # These assumption will *clearly* need to be improved!
-
-        # From Togashi et al. it looks like there is no obvious reln btw LA:SA
-        # and moisture so taking a rough average LA:SA
-        la_sa = 5000.0 # m2 m-2
-
-        # From Bowman we are taking a rough sapwood density (fig 5), which seems
-        # to agree with Xu et al.
-        sapwood_density = 500.0 # kg m-3
-
         # scalar to *roughly* convert stem capacitance. We are broadly matching
         # the spirit of Xu et al. but dropping the root capacitance they include.
         # We could of course include this but given this is pretty rough, this
         # seems OK
         # (kg m-2)
-        capac_conv = self.lai * self.height / la_sa * sapwood_density
+        capac_conv = self.lai * self.height / self.la_sa * self.sapwood_density
 
         return capac_conv
 
@@ -1264,6 +1256,18 @@ if __name__ == "__main__":
                            # assimilation rate (-)
     g0 = 0.0
     height = 20 # m, used to scale up stem capacitance
+
+    # From Togashi et al. it looks like there is no obvious reln btw LA:SA
+    # and moisture so taking a rough average LA:SA
+    # used to scale up stem capacitance
+    la_sa = 5000.0 # m2 m-2
+
+    # From Bowman we are taking a rough sapwood density (fig 5), which seems
+    # to agree with Xu et al.
+    # used to scale up stem capacitance
+    sapwood_density = 500.0 # kg m-3
+
+
     theta_J = 0.85
     Rd25 = 0.92
     Q10 = 1.92
@@ -1281,7 +1285,8 @@ if __name__ == "__main__":
                Eaj=Eaj, deltaSj=deltaSj)
     D = Desica(psi_stem0=psi_stem0, AL=AL, p50=p50, psi_f=psi_f, gmin=gmin,
                Cl=Cl, Cs=Cs, F=F, g1=g1, stop_dead=True, psi_e=psi_e,
-               FAO=FAO, kp_sat=kp_sat, b=b, s50=s50, height=height)
+               FAO=FAO, kp_sat=kp_sat, b=b, s50=s50, height=height,
+               la_sa=la_sa, sapwood_density=sapwood_density)
     out, day_of_death = D.run_simulation(met)
 
     odir = "plots"
