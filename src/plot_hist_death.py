@@ -17,19 +17,6 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 
-
-def drop_duplicates(df):
-
-    gmin = df.drop_duplicates(subset='gmin')
-    lai = df.drop_duplicates(subset='lai')
-    p50 = df.drop_duplicates(subset='p50')
-    depth = df.drop_duplicates(subset='depth')
-    Cl = df.drop_duplicates(subset='Cl')
-    Cs = df.drop_duplicates(subset='Cs')
-
-    return pd.concat([gmin, lai, p50, depth, Cl, Cs])
-
-
 rf = pd.read_csv("outputs/rf_trait_sensitivity_all.csv")
 wsf = pd.read_csv("outputs/wsf_trait_sensitivity_all.csv")
 dsf = pd.read_csv("outputs/dsf_trait_sensitivity_all.csv")
@@ -48,24 +35,6 @@ dsf = dsf[dsf.day_of_death > 0]
 grw = grw[grw.day_of_death > 0]
 saw = saw[saw.day_of_death > 0]
 
-# temp until re-run
-rf = rf[rf.psi_e != 3.0]
-wsf = wsf[wsf.psi_e != 3.0]
-dsf = dsf[dsf.psi_e != 3.0]
-grw = grw[grw.psi_e != 3.0]
-saw = saw[saw.psi_e != 3.0]
-
-#rf = drop_duplicates(rf)
-#wsf = drop_duplicates(wsf)
-#dsf = drop_duplicates(dsf)
-#grw = drop_duplicates(grw)
-#saw = drop_duplicates(saw)
-
-#rf = rf.drop_duplicates(subset='day_of_death')
-#wsf = wsf.drop_duplicates(subset='day_of_death')
-#dsf = dsf.drop_duplicates(subset='day_of_death')
-#grw = grw.drop_duplicates(subset='day_of_death')
-#saw = saw.drop_duplicates(subset='day_of_death')
 
 width = 9
 height = 6
@@ -172,8 +141,8 @@ sns.distplot(saw.day_of_death, ax=ax,  rug=False, norm_hist=True,
 #ax.set_xlim(100, 600)
 #ax.set_ylim(0.0, 0.005)
 
-plt.xticks([], [])
-plt.setp(ax.get_xticklabels(), visible=False)
+#plt.xticks([], [])
+#splt.setp(ax.get_xticklabels(), visible=False)
 
 ax.tick_params(direction='in', length=4)
 ax.set_xlabel("Day of hydraulic failure ($\Psi$$_{\mathrm{crit}}$)", labelpad=10)

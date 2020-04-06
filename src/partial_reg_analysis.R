@@ -9,7 +9,7 @@ library(tidyverse)
 
 setwd("/Users/mdekauwe/src/python/pydesica/outputs")
 
-pft = "rf"
+pft = "saw"
 fname <- sprintf("%s_trait_sensitivity_all.csv", pft)
 df <- read.csv(fname)
 
@@ -58,7 +58,7 @@ plot(rel_imp)
 pft = "rf"
 fname <- sprintf("%s_trait_sens_OAT.csv", pft)
 df <- read.csv(fname)
-fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs, data=df)
+fit <- lm(day_of_death ~ gmin + lai + p50 + depth + Cl + Cs + b + psi_e, data=df)
 rel_imp <- calc.relimp(fit, type=c("lmg","last", "first"), rela=TRUE)
 rf_imp <- rel_imp$lmg
 

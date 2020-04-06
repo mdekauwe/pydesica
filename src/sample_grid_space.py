@@ -20,7 +20,7 @@ def main():
 
     ds = xr.open_dataset(os.path.join("/Users/mdekauwe/Desktop/",
                                       "gridinfo_AWAP_OpenLandMap_new_iveg.nc"))
-    print(ds)
+    #print(ds)
 
     lat_bnds, lon_bnds = [-40, -28], [140, 154]
     ds = ds.sel(latitude=slice(*lat_bnds), longitude=slice(*lon_bnds))
@@ -44,7 +44,15 @@ def main():
         iqr = q3 - q1
         upp = q3 + (1.5 * iqr)
         low = q1 - (1.5 * iqr)
-        #print(veg_num, np.nanmin(lai_veg), np.nanmax(lai_veg), np.nanmean(lai_veg))
+
+        print("size1", veg_num, lai_veg.shape)
+        xx = lai_veg[11,:]
+        xx = xx[xx> 1.5]
+
+
+        print("size2", veg_num, len(xx))
+
+        print(veg_num, np.nanmin(lai_veg), np.nanmax(lai_veg))
         print(veg_num, np.round(q1, 2), np.round(q3,2))
         #print(veg_num, np.round(low, 2),
         #      np.round(upp,2))
