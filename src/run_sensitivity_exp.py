@@ -37,7 +37,8 @@ import multiprocessing as mp
 import random
 
 
-def main(pft_name, pft_height, params, potentials, total_exp, node, ncpus=None):
+def main(pft_name, pft_height, pft_la_sa, pft_sapwood_density, params,
+         potentials, total_exp, node, ncpus=None):
 
     if ncpus is None: # use them all!
         ncpus = mp.cpu_count()
@@ -52,7 +53,8 @@ def main(pft_name, pft_height, params, potentials, total_exp, node, ncpus=None):
             end = len(potentials)
 
         p = mp.Process(target=worker, args=(potentials[start:end],
-                                            pft_height,
+                                            pft_height, pft_la_sa,
+                                            pft_sapwood_density,
                                             pft_name, params, total_exp,
                                             i, node, ))
         processes.append(p)
@@ -61,7 +63,8 @@ def main(pft_name, pft_height, params, potentials, total_exp, node, ncpus=None):
     for p in processes:
         p.start()
 
-def worker(potentials, pft_height, pft_name, p, total_exp, cpu_count, node):
+def worker(potentials, pft_height, pft_la_sa, pft_sapwood_density, pft_name, p,
+           total_exp, cpu_count, node):
 
     g0 = 0.0
     theta_J = 0.85
@@ -86,7 +89,8 @@ def worker(potentials, pft_height, pft_name, p, total_exp, cpu_count, node):
                deltaSv=deltaSv, Eaj=Eaj, deltaSj=deltaSj)
 
     D = Desica(psi_stem0=psi_stem0, psi_f=psi_f, F=F, g1=g1, stop_dead=True,
-               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, height=pft_height)
+               FAO=FAO, kp_sat=kp_sat, s50=s50, sf=sf, height=pft_height,
+               la_sa=pft_la_sa, sapwood_density=pft_sapwood_density)
 
     names = ['Tmax', 'Dmax', 'Dmean', 'gmin', 'lai', 'p50', 'Cl', 'Cs', \
              'b', 'psi_e', 'depth', 'psi_stem', 'plc', 'day_of_death']
@@ -197,6 +201,27 @@ if __name__ == "__main__":
     pft_height = height[pft_name]
 
 
+    la_sa = {}
+    la_sa["rf"] = 10000.0
+    la_sa["wsf"] = 9434.74
+    la_sa["dsf"] = 7908.55
+    la_sa["grw"] = 6139.23
+    la_sa["saw"] = 2556.9
+    pft_la_sa = la_sa[pft_name]
+
+    sapwood_density = {}
+    sapwood_density["rf"] = 540.0
+    sapwood_density["wsf"] = 355.0
+    sapwood_density["dsf"] = 460.0
+    sapwood_density["grw"] = 436.67
+    sapwood_density["saw"] = 613.33
+    pft_sapwood_density = sapwood_density[pft_name]
+
+
+    #pft_la_sa = 5000.0
+    #pft_sapwood_density = 500.0
+
+
 
     # min, max, mean
     #bch = {}
@@ -292,5 +317,5 @@ if __name__ == "__main__":
     #N = 7680 # rough 128 * 60 x 2 hrs
     #potentials = random.sample(potentials, N)
 
-    main(pft_name, pft_height, p, potentials[start:end], total_exp, node,
-         ncpus=ncpus)
+    main(pft_name, pft_height, pft_la_sa, pft_sapwood_density, p,
+         potentials[start:end], total_exp, node, ncpus=ncpus)
